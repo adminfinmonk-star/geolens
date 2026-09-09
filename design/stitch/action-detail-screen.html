@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens - Action Detail #SA-4091</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-tint": "#006a63",
+            "tertiary-fixed-dim": "#ffb690",
+            "surface-variant": "#d5e5f1",
+            "on-tertiary-fixed-variant": "#783200",
+            "secondary-container": "#5bb8fe",
+            "outline-variant": "#bdc9c6",
+            "inverse-surface": "#24323c",
+            "primary-container": "#0f766e",
+            "tertiary-container": "#af4c00",
+            "on-tertiary-fixed": "#341100",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "on-error": "#ffffff",
+            "inverse-primary": "#80d5cb",
+            "on-surface": "#0e1d26",
+            "on-primary-container": "#a3faef",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#cce5ff",
+            "surface-container-high": "#daeaf7",
+            "surface-container": "#e0f0fd",
+            "surface-dim": "#ccdce9",
+            "outline": "#6e7977",
+            "tertiary-fixed": "#ffdbca",
+            "on-tertiary-container": "#ffe6da",
+            "on-primary-fixed-variant": "#00504a",
+            "surface-container-low": "#eaf5ff",
+            "secondary": "#006398",
+            "primary": "#005c55",
+            "surface-bright": "#f5faff",
+            "on-primary-fixed": "#00201d",
+            "tertiary": "#893a00",
+            "surface-container-highest": "#d5e5f1",
+            "on-surface-variant": "#3e4947",
+            "on-secondary-fixed": "#001d31",
+            "on-secondary-fixed-variant": "#004b73",
+            "inverse-on-surface": "#e4f3ff",
+            "primary-fixed-dim": "#80d5cb",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#93ccff",
+            "primary-fixed": "#9cf2e8",
+            "background": "#f5faff",
+            "on-tertiary": "#ffffff",
+            "on-background": "#0e1d26",
+            "error": "#ba1a1a",
+            "surface": "#f5faff",
+            "on-secondary-container": "#00476e"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter-mobile": "1rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.25rem",
+            "space-3xl": "3rem",
+            "space-2xs": "0.125rem",
+            "space-xl": "1.5rem",
+            "gutter-desktop": "1.5rem",
+            "space-2xl": "2rem",
+            "space-base": "1rem",
+            "panel-padding-standard": "1.25rem",
+            "panel-padding-compact": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem"
+          },
+          fontFamily: {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"]
+          },
+          fontSize: {
+            "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-md": ["11px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
+            "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.005em", fontWeight: "500" }],
+            "label-lg": ["13px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "600" }],
+            "display-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.03em", fontWeight: "800" }],
+            "data-mono": ["13px", { lineHeight: "16px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "500" }],
+            "display-lg-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined[data-weight="fill"] {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    /* Custom subtle scrollbar for code and tables */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-on-surface antialiased font-body-md overflow-x-hidden min-h-screen flex flex-col">
+<!-- ================= TOP NAVIGATION BAR ================= -->
+<header class="flex justify-between items-center w-full px-space-lg py-2.5 bg-surface-container-lowest border-b border-[#E2E8F0] shadow-sm sticky top-0 z-40 h-14">
+<!-- Left Section: Logo & Context Switcher -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-white font-headline-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-white text-[20px]" data-icon="explore">explore</span>
+</div>
+<span class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight">GeoLens</span>
+</div>
+<div class="h-4 w-px bg-[#E2E8F0]"></div>
+<!-- Workspace Switcher -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#F1F5F9] border border-[#E2E8F0] hover:bg-[#E2E8F0] transition cursor-pointer text-body-sm font-body-sm text-on-surface font-semibold">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="domain">domain</span>
+<span>nike.com (Global)</span>
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="unfold_more">unfold_more</span>
+</div>
+<!-- Breadcrumbs -->
+<div class="hidden lg:flex items-center gap-2 text-body-sm font-body-sm text-[#64748B]">
+<span class="text-[#94A3B8]">/</span>
+<span class="hover:text-primary transition cursor-pointer">Boost &amp; Monitor</span>
+<span class="text-[#94A3B8]">/</span>
+<span class="hover:text-primary transition cursor-pointer">Actions &amp; Fixes</span>
+<span class="text-[#94A3B8]">/</span>
+<span class="text-primary font-semibold bg-[#F0FDFA] border border-[#CCFBF1] px-2 py-0.5 rounded text-data-mono">Deficit #SA-4091</span>
+</div>
+</div>
+<!-- Center Section: System Status Pill -->
+<div class="hidden md:flex items-center gap-2 px-3 py-1 bg-[#F0FDFA] border border-[#A7F3D0] rounded-full">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0F766E] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-[#0F766E]"></span>
+</span>
+<span class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Telemetry Engine: Active</span>
+<span class="text-[#94A3B8] text-[10px]">·</span>
+<span class="font-data-mono text-body-sm text-primary">Latency 142ms</span>
+</div>
+<!-- Right Section: Actions & Profile -->
+<div class="flex items-center gap-3">
+<!-- Search Mini -->
+<div class="relative hidden sm:block">
+<input class="w-56 h-8 pl-8 pr-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-body-sm font-body-sm placeholder:text-[#94A3B8] focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container" placeholder="Jump to query or URL..." type="text"/>
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[#94A3B8] text-[16px]" data-icon="search">search</span>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#64748B] hover:text-on-surface hover:bg-[#F1F5F9] border border-[#E2E8F0] transition" title="Notifications">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#64748B] hover:text-on-surface hover:bg-[#F1F5F9] border border-[#E2E8F0] transition" title="Help &amp; Documentation">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="h-4 w-px bg-[#E2E8F0]"></div>
+<!-- User Avatar -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<div class="w-7 h-7 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs ring-2 ring-[#CCFBF1]">
+          NL
+        </div>
+<span class="material-symbols-outlined text-[#64748B] text-[16px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</header>
+<!-- ================= APP WRAPPER (DUAL RAIL + WORKSPACE) ================= -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- PRIMARY ICON RAIL (72px) -->
+<aside class="w-[72px] bg-surface-container-lowest border-r border-[#E2E8F0] flex flex-col items-center py-4 justify-between shrink-0 z-30">
+<div class="flex flex-col items-center gap-4 w-full">
+<!-- Dashboard Suite -->
+<button class="w-11 h-11 rounded-xl flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-primary transition group relative" title="Overview">
+<span class="material-symbols-outlined text-[22px]" data-icon="dashboard">dashboard</span>
+<span class="sr-only">Dashboard</span>
+</button>
+<!-- Monitor Suite (ACTIVE) -->
+<button class="w-11 h-11 rounded-xl flex items-center justify-center bg-primary-container text-white shadow-sm transition group relative" title="Monitor &amp; Boost">
+<span class="material-symbols-outlined text-[22px]" data-icon="monitoring" data-weight="fill">monitoring</span>
+<span class="sr-only">Monitor</span>
+</button>
+<!-- Visibility Inspector -->
+<button class="w-11 h-11 rounded-xl flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-primary transition group relative" title="Visibility">
+<span class="material-symbols-outlined text-[22px]" data-icon="visibility">visibility</span>
+<span class="sr-only">Visibility</span>
+</button>
+<!-- Prompt Engine -->
+<button class="w-11 h-11 rounded-xl flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-primary transition group relative" title="Prompt Engine">
+<span class="material-symbols-outlined text-[22px]" data-icon="chat">chat</span>
+<span class="sr-only">Prompts</span>
+</button>
+<!-- Synthetic Crawler -->
+<button class="w-11 h-11 rounded-xl flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-primary transition group relative" title="Webhooks &amp; Agents">
+<span class="material-symbols-outlined text-[22px]" data-icon="smart_toy">smart_toy</span>
+<span class="sr-only">Agents</span>
+</button>
+</div>
+<!-- Bottom Settings Group -->
+<div class="flex flex-col items-center gap-3 w-full">
+<button class="w-11 h-11 rounded-xl flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-primary transition" title="Documentation">
+<span class="material-symbols-outlined text-[20px]" data-icon="menu_book">menu_book</span>
+</button>
+<button class="w-11 h-11 rounded-xl flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-primary transition" title="Workspace Settings">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+</button>
+</div>
+</aside>
+<!-- SECONDARY NAVIGATION PANEL (240px) -->
+<aside class="w-60 bg-white border-r border-[#E2E8F0] flex flex-col justify-between shrink-0 z-20 overflow-y-auto">
+<div class="p-4">
+<!-- Suite Header -->
+<div class="flex items-center justify-between pb-3 mb-3 border-b border-[#F1F5F9]">
+<div>
+<h2 class="font-label-md text-label-md text-[#64748B] font-bold uppercase tracking-wider">Boost &amp; Monitor</h2>
+<p class="font-body-sm text-body-sm text-[#0B1218] font-semibold">Active Optimizations</p>
+</div>
+<span class="px-2 py-0.5 bg-[#F0FDFA] text-primary rounded-full text-[10px] font-bold border border-[#CCFBF1]">LIVE</span>
+</div>
+<!-- Sub-items List -->
+<nav class="space-y-1">
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body-sm font-body-sm text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0B1218] transition" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-[#64748B]" data-icon="query_stats">query_stats</span>
+<span>Prompt Tracking</span>
+</div>
+<span class="text-[11px] font-data-mono text-[#94A3B8]">42</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body-sm font-body-sm text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0B1218] transition" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-[#64748B]" data-icon="link">link</span>
+<span>Sources &amp; Citations</span>
+</div>
+<span class="text-[11px] font-data-mono text-[#94A3B8]">189</span>
+</a>
+<!-- ACTIVE ITEM -->
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body-sm font-body-sm bg-[#F0FDFA] text-primary font-bold border border-[#99F6E4] shadow-xs transition" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="task_alt" data-weight="fill">task_alt</span>
+<span>Actions &amp; Fixes</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-white text-[11px] font-bold font-data-mono">14</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body-sm font-body-sm text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0B1218] transition" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-[#64748B]" data-icon="difference">difference</span>
+<span>Knowledge Gaps</span>
+</div>
+<span class="text-[11px] font-data-mono text-[#94A3B8]">6</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body-sm font-body-sm text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0B1218] transition" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-[#64748B]" data-icon="psychology">psychology</span>
+<span>Hallucination Log</span>
+</div>
+<span class="text-[11px] font-data-mono text-[#E11D48] font-bold">2</span>
+</a>
+</nav>
+</div>
+<!-- Quota Widget at Bottom -->
+<div class="p-3.5 m-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-md text-[10px] text-[#64748B] font-bold uppercase tracking-wider">Telemetry Quota</span>
+<span class="font-data-mono text-[11px] text-primary font-bold">28.4%</span>
+</div>
+<div class="w-full bg-[#E2E8F0] h-1.5 rounded-full overflow-hidden mb-2">
+<div class="bg-primary-container h-full rounded-full" style="width: 28.4%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] font-body-sm text-[#64748B]">
+<span>1,420 / 5,000 runs</span>
+<span class="text-primary hover:underline cursor-pointer">Upgrade</span>
+</div>
+</div>
+</aside>
+<!-- ================= MAIN ACTION DETAIL WORKSPACE ================= -->
+<main class="flex-1 overflow-y-auto bg-[#F8FAFC]">
+<div class="max-w-[1440px] mx-auto p-6 space-y-6">
+<!-- 1. HEADER BAR -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+<div class="space-y-1">
+<a class="inline-flex items-center gap-1 text-body-sm font-body-sm text-primary hover:text-[#115E59] font-semibold group transition" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform" data-icon="arrow_back">arrow_back</span>
+<span>Back to Actions &amp; Fixes</span>
+</a>
+<div class="flex items-center gap-2 pt-1">
+<span class="font-data-mono text-label-md font-bold text-[#475569] uppercase tracking-wider bg-white px-2 py-0.5 rounded border border-[#CBD5E1]">
+                DEFICIT ID: #SA-4091
+              </span>
+<span class="text-[#CBD5E1]">·</span>
+<span class="font-data-mono text-label-md font-bold text-primary uppercase tracking-wider bg-[#F0FDFA] px-2 py-0.5 rounded border border-[#99F6E4]">
+                CATEGORY: SITE_AUDIT / STRUCTURED_DATA
+              </span>
+</div>
+</div>
+<!-- Top-right Workflow Actions -->
+<div class="flex items-center gap-2.5 flex-wrap">
+<button class="h-9 px-3 rounded-lg bg-white border border-[#E2E8F0] text-body-sm font-body-sm font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition flex items-center gap-1.5 shadow-xs">
+<span class="material-symbols-outlined text-[18px] text-[#64748B]" data-icon="file_download">file_download</span>
+<span>Export Spec (PDF/JSON)</span>
+</button>
+<button class="h-9 px-3 rounded-lg bg-white border border-[#E2E8F0] text-body-sm font-body-sm font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition flex items-center gap-1.5 shadow-xs">
+<span class="material-symbols-outlined text-[18px] text-[#64748B]" data-icon="person_add">person_add</span>
+<span>Assign to Engineering</span>
+</button>
+<button class="h-9 px-3.5 rounded-lg bg-[#0F766E] text-white text-body-sm font-body-sm font-bold hover:bg-[#115E59] transition flex items-center gap-2 shadow-sm active:scale-98">
+<span class="material-symbols-outlined text-[18px]" data-icon="merge">merge</span>
+<span>Push to Jira / GitHub PR</span>
+</button>
+</div>
+</div>
+<!-- 2. ACTION TITLE & STATUS COMMAND STRIP -->
+<div class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="space-y-1.5 max-w-3xl">
+<h1 class="font-headline-md text-headline-md font-bold text-[#0F172A] tracking-tight">
+                Inject missing JSON-LD Product &amp; Pricing Schema on /docs/pricing
+              </h1>
+<div class="flex flex-wrap items-center gap-3">
+<!-- Opportunity Score Badge -->
+<div class="flex items-center gap-2 bg-[#F0FDFA] border border-[#99F6E4] px-2.5 py-1 rounded-lg">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+<span class="font-label-lg text-label-lg font-bold text-primary">94 / 100 Opportunity Score</span>
+<div class="w-16 bg-[#CCFBF1] h-1.5 rounded-full overflow-hidden ml-1">
+<div class="bg-primary h-full rounded-full" style="width: 94%;"></div>
+</div>
+</div>
+<!-- Impact Projection pill -->
+<div class="flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-1 rounded-lg text-body-sm font-body-sm text-[#334155] font-semibold">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="trending_up">trending_up</span>
+<span>+6.2% Est. Citation Share Lift</span>
+<span class="text-[#94A3B8]">·</span>
+<span class="text-[#64748B]">Low Dev Effort (1-2h)</span>
+</div>
+</div>
+</div>
+<!-- Status Selector Control -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 self-start lg:self-center bg-[#F8FAFC] p-2 rounded-xl border border-[#E2E8F0]">
+<div class="inline-flex rounded-lg p-0.5 bg-white border border-[#E2E8F0] shadow-xs">
+<button class="px-2.5 py-1 rounded-md text-body-sm font-body-sm font-medium text-[#64748B] hover:text-[#0F172A] transition">New</button>
+<button class="px-2.5 py-1 rounded-md text-body-sm font-body-sm font-bold bg-[#0F766E] text-white shadow-xs transition flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="hourglass_top">hourglass_top</span>
+<span>In Progress</span>
+</button>
+<button class="px-2.5 py-1 rounded-md text-body-sm font-body-sm font-medium text-[#64748B] hover:text-[#0F172A] transition">Done</button>
+<button class="px-2.5 py-1 rounded-md text-body-sm font-body-sm font-medium text-[#64748B] hover:text-[#0F172A] transition">Declined</button>
+</div>
+<button class="h-8 px-3 rounded-lg bg-primary-container text-white text-body-sm font-body-sm font-bold hover:bg-[#115E59] transition shadow-xs">
+                Update Status
+              </button>
+</div>
+</div>
+<!-- Metadata Ribbon -->
+<div class="pt-3 border-t border-[#F1F5F9] grid grid-cols-1 sm:grid-cols-3 gap-4 text-body-sm font-body-sm text-[#475569]">
+<div class="flex items-center gap-2">
+<span class="text-[#94A3B8] font-label-md uppercase tracking-wider text-[10px]">Owner:</span>
+<span class="font-semibold text-[#0F172A] flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                Engineering (DevOps / Frontend)
+              </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[#94A3B8] font-label-md uppercase tracking-wider text-[10px]">Target Sprint:</span>
+<span class="font-semibold text-[#0F172A] bg-[#F1F5F9] px-2 py-0.5 rounded font-data-mono text-[12px]">Q4-Sprint-3</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[#94A3B8] font-label-md uppercase tracking-wider text-[10px]">Reported:</span>
+<span class="font-semibold text-[#0F172A]">Oct 24, 2025 (Automated Nightly Audit)</span>
+</div>
+</div>
+</div>
+<!-- 3. CORE INFORMATION ARCHITECTURE (12-COL GRID) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- ================= LEFT / MAIN COLUMN (8 COLS) ================= -->
+<div class="lg:col-span-8 space-y-6">
+<!-- SECTION A: WHY THIS MATTERS -->
+<section class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-primary flex items-center justify-center border border-[#99F6E4]">
+<span class="material-symbols-outlined text-[18px]" data-icon="lightbulb">lightbulb</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0F172A]">Why This Matters</h2>
+</div>
+<span class="text-label-md font-label-md font-bold text-primary bg-[#F0FDFA] border border-[#99F6E4] px-2 py-0.5 rounded">High Diagnostic Significance</span>
+</div>
+<!-- Narrative Explanation -->
+<p class="font-body-md text-body-md text-[#334155] leading-relaxed">
+                Modern generative search engines (specifically <strong class="text-[#0F172A]">ChatGPT-4o Search</strong>, <strong class="text-[#0F172A]">Perplexity Pro</strong>, and <strong class="text-[#0F172A]">Google AI Overviews</strong>) use headless retrieval workers with strict sub-second DOM execution timeouts. Because the current pricing matrix on <code class="bg-[#F1F5F9] text-primary px-1.5 py-0.5 rounded font-data-mono text-[12px]">/docs/pricing</code> renders pricing tiers dynamically via client-side React hooks without semantic schema tags, retrieval bots parse empty tabular cells.
+              </p>
+<!-- Algorithmic Weights Card -->
+<div class="p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-3">
+<div class="flex items-center justify-between text-body-sm font-body-sm font-bold text-[#0F172A]">
+<span>LLM Retrieval Weight Breakdown (Enterprise B2B Queries)</span>
+<span class="text-primary font-data-mono">Citation Confidence Algorithm v4.2</span>
+</div>
+<div class="space-y-2">
+<div>
+<div class="flex justify-between text-body-sm font-body-sm text-[#475569] mb-1">
+<span>Structured Schema.org (JSON-LD Product / Offer)</span>
+<span class="font-bold text-[#0F172A] font-data-mono">38% Influence</span>
+</div>
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 38%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-body-sm font-body-sm text-[#475569] mb-1">
+<span>Documentation Freshness &amp; Header Semantic Hierarchy</span>
+<span class="font-bold text-[#0F172A] font-data-mono">22% Influence</span>
+</div>
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#0284C7] h-full rounded-full" style="width: 22%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-body-sm font-body-sm text-[#475569] mb-1">
+<span>Domain Authority &amp; External Review Citations (G2, TrustRadius)</span>
+<span class="font-bold text-[#0F172A] font-data-mono">19% Influence</span>
+</div>
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#94A3B8] h-full rounded-full" style="width: 19%;"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<a class="inline-flex items-center gap-1.5 text-body-sm font-body-sm font-bold text-primary hover:text-[#115E59] group" href="#">
+<span>View full Impact Model &amp; Citation Conversion Forecast</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<span class="text-body-sm font-body-sm text-[#64748B]">Source: GeoLens Indexing Telemetry</span>
+</div>
+</section>
+<!-- SECTION B: COMPETITOR EVIDENCE & GROUNDING DATA -->
+<section class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-primary flex items-center justify-center border border-[#99F6E4]">
+<span class="material-symbols-outlined text-[18px]" data-icon="fact_check">fact_check</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0F172A]">Competitor Evidence &amp; Grounding Data</h2>
+</div>
+<span class="text-body-sm font-body-sm text-[#64748B] font-data-mono">Live Audit Timestamp: 08:24 UTC</span>
+</div>
+<p class="font-body-md text-body-md text-[#334155]">
+                Competitors utilizing validated <code class="text-primary font-bold">AggregateOffer</code> JSON-LD schemas capture over <strong class="text-[#0F172A]">71% of AI Overview answer citations</strong> for competitive queries such as <span class="italic text-[#0F172A]">"modern CRM seat pricing comparisons"</span>.
+              </p>
+<!-- Evidence Table -->
+<div class="border border-[#E2E8F0] rounded-lg overflow-hidden">
+<table class="w-full text-left text-body-sm font-body-sm">
+<thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-label-md uppercase tracking-wider">
+<tr>
+<th class="py-2.5 px-3.5 font-bold">Domain</th>
+<th class="py-2.5 px-3.5 font-bold">Schema Status</th>
+<th class="py-2.5 px-3.5 font-bold">Citation Share</th>
+<th class="py-2.5 px-3.5 font-bold">Bot Latency</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#E2E8F0] text-[#0F172A]">
+<tr class="hover:bg-[#F0FDFA] transition">
+<td class="py-2.5 px-3.5 font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#0284C7]"></span>
+<span>HubSpot.com</span>
+</td>
+<td class="py-2.5 px-3.5">
+<span class="text-primary bg-[#F0FDFA] border border-[#99F6E4] px-2 py-0.5 rounded text-[11px] font-bold">Valid AggregateOffer</span>
+</td>
+<td class="py-2.5 px-3.5 font-data-mono font-bold text-[#0F766E]">43.4%</td>
+<td class="py-2.5 px-3.5 font-data-mono text-[#64748B]">180ms</td>
+</tr>
+<tr class="hover:bg-[#F0FDFA] transition">
+<td class="py-2.5 px-3.5 font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#F97316]"></span>
+<span>Salesforce.com</span>
+</td>
+<td class="py-2.5 px-3.5">
+<span class="text-primary bg-[#F0FDFA] border border-[#99F6E4] px-2 py-0.5 rounded text-[11px] font-bold">Valid PriceSpecification</span>
+</td>
+<td class="py-2.5 px-3.5 font-data-mono font-bold text-[#0F766E]">27.8%</td>
+<td class="py-2.5 px-3.5 font-data-mono text-[#64748B]">240ms</td>
+</tr>
+<tr class="bg-[#FFF1F2] hover:bg-[#FFE4E6] transition">
+<td class="py-2.5 px-3.5 font-semibold flex items-center gap-1.5 text-[#BE123C]">
+<span class="w-2 h-2 rounded-full bg-[#E11D48]"></span>
+<span>Attio.com (Current)</span>
+</td>
+<td class="py-2.5 px-3.5">
+<span class="text-[#BE123C] bg-white border border-[#FECDD3] px-2 py-0.5 rounded text-[11px] font-bold">Missing / Unparsed Client JS</span>
+</td>
+<td class="py-2.5 px-3.5 font-data-mono font-bold text-[#BE123C]">4.1%</td>
+<td class="py-2.5 px-3.5 font-data-mono text-[#BE123C]">1,410ms (Timeout)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Synthetic Crawler Test Log Snippet -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="terminal">terminal</span>
+                    Synthetic Crawler Test Log Snippet
+                  </span>
+<span class="font-data-mono text-[11px] text-[#64748B]">CRAWL-ID: #PX-9428</span>
+</div>
+<div class="bg-[#0B1218] rounded-lg p-3 text-[#E2E8F0] font-data-mono text-body-sm space-y-1.5 overflow-x-auto border border-[#1E293B]">
+<div class="text-[#94A3B8] text-[11px] flex justify-between">
+<span>[2025-10-24 07:11:02 UTC] BOT: Perplexity-Bot/2.1 (Crawler Tier Alpha)</span>
+<span class="text-[#F87171]">STATUS: ANCHOR_DEFICIT</span>
+</div>
+<div class="text-[#38BDF8]">&gt; Target URL: https://attio.com/docs/pricing</div>
+<div class="text-[#CBD5E1]">&gt; Query: "How much does Attio enterprise cost per seat?"</div>
+<div class="text-[#FBBF24]">&gt; Extraction Warning: DOM element `.pricing-table-tier-enterprise` not rendered within 650ms deadline.</div>
+<div class="text-[#F87171]">&gt; Synthesized Response: "Attio charges approximately $1,200/mo flat fee with custom onboarding..." [CRITICAL FACTUAL HALLUCINATION]</div>
+</div>
+</div>
+<!-- Grounding Deficit Quote Box -->
+<div class="p-3.5 rounded-lg bg-[#FEF2F2] border border-[#FECDD3] flex items-start gap-3">
+<span class="material-symbols-outlined text-[#E11D48] text-[20px] shrink-0 mt-0.5" data-icon="warning">warning</span>
+<div class="space-y-1">
+<span class="font-label-md text-label-md font-bold uppercase text-[#991B1B] tracking-wider">Verbatim Flagged Hallucination in Perplexity Pro</span>
+<p class="font-body-sm text-body-sm text-[#7F1D1D] italic">
+                    "Attio Enterprise pricing requires a $1,200/mo flat license commitment according to community summaries, though official docs lack declared structured tier specifications."
+                  </p>
+<p class="text-[11px] font-body-sm text-[#991B1B]">
+                    Correct actual pricing: <span class="font-bold">$119/seat/month</span> billed annually. This inaccuracy accounts for 68% of lost evaluation conversions.
+                  </p>
+</div>
+</div>
+</section>
+<!-- SECTION C: ACTIONABLE BRIEF & TECHNICAL SPECIFICATION -->
+<section class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-primary flex items-center justify-center border border-[#99F6E4]">
+<span class="material-symbols-outlined text-[18px]" data-icon="code">code</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0F172A]">Actionable Brief &amp; Technical Specification</h2>
+</div>
+<button class="text-body-sm font-body-sm text-primary hover:underline font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="content_copy">content_copy</span>
+<span>Copy Payload</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-[#475569]">
+<span class="font-bold text-[#0F172A]">Canonical Target URLs:</span>
+<a class="text-primary hover:underline font-data-mono text-[12px]" href="#">https://attio.com/pricing</a>
+<span class="text-[#CBD5E1]">·</span>
+<a class="text-primary hover:underline font-data-mono text-[12px]" href="#">https://attio.com/docs/pricing</a>
+</div>
+<p class="font-body-sm text-body-sm text-[#334155]">
+                  Inject the following pre-validated JSON-LD schema directly within the server-rendered HTML <code class="bg-[#F1F5F9] px-1 py-0.5 rounded text-[#0F172A] font-data-mono">&lt;head&gt;</code> block to bypass headless crawler JS execution limits.
+                </p>
+</div>
+<!-- Code Block -->
+<div class="relative bg-[#0B1218] rounded-lg p-4 font-data-mono text-body-sm text-[#E2E8F0] overflow-x-auto border border-[#1E293B]">
+<div class="text-[#94A3B8] pb-2 border-b border-[#1E293B] mb-2 flex justify-between items-center text-xs">
+<span>schema-pricing-product.jsonld</span>
+<span class="text-[#2DD4BF]">Schema.org v24.0 Validated</span>
+</div>
+<pre class="leading-relaxed"><code><span class="text-[#F472B6]">&lt;script</span> <span class="text-[#38BDF8]">type</span>=<span class="text-[#A7F3D0]">"application/ld+json"</span><span class="text-[#F472B6]">&gt;</span>
+{
+  <span class="text-[#38BDF8]">"@context"</span>: <span class="text-[#A7F3D0]">"https://schema.org"</span>,
+  <span class="text-[#38BDF8]">"@type"</span>: <span class="text-[#A7F3D0]">"Product"</span>,
+  <span class="text-[#38BDF8]">"name"</span>: <span class="text-[#A7F3D0]">"Attio CRM Platform"</span>,
+  <span class="text-[#38BDF8]">"description"</span>: <span class="text-[#A7F3D0]">"AI-native CRM with real-time data sync, dynamic models, and automated enrichment."</span>,
+  <span class="text-[#38BDF8]">"offers"</span>: {
+    <span class="text-[#38BDF8]">"@type"</span>: <span class="text-[#A7F3D0]">"AggregateOffer"</span>,
+    <span class="text-[#38BDF8]">"priceCurrency"</span>: <span class="text-[#A7F3D0]">"USD"</span>,
+    <span class="text-[#38BDF8]">"lowPrice"</span>: <span class="text-[#FBBF24]">"0"</span>,
+    <span class="text-[#38BDF8]">"highPrice"</span>: <span class="text-[#FBBF24]">"119"</span>,
+    <span class="text-[#38BDF8]">"offerCount"</span>: <span class="text-[#FBBF24]">"4"</span>,
+    <span class="text-[#38BDF8]">"priceSpecification"</span>: [
+      {
+        <span class="text-[#38BDF8]">"@type"</span>: <span class="text-[#A7F3D0]">"UnitPriceSpecification"</span>,
+        <span class="text-[#38BDF8]">"name"</span>: <span class="text-[#A7F3D0]">"Plus Tier"</span>,
+        <span class="text-[#38BDF8]">"price"</span>: <span class="text-[#FBBF24]">"34"</span>,
+        <span class="text-[#38BDF8]">"priceCurrency"</span>: <span class="text-[#A7F3D0]">"USD"</span>,
+        <span class="text-[#38BDF8]">"unitText"</span>: <span class="text-[#A7F3D0]">"per user / month billed annually"</span>
+      },
+      {
+        <span class="text-[#38BDF8]">"@type"</span>: <span class="text-[#A7F3D0]">"UnitPriceSpecification"</span>,
+        <span class="text-[#38BDF8]">"name"</span>: <span class="text-[#A7F3D0]">"Pro Tier"</span>,
+        <span class="text-[#38BDF8]">"price"</span>: <span class="text-[#FBBF24]">"69"</span>,
+        <span class="text-[#38BDF8]">"priceCurrency"</span>: <span class="text-[#A7F3D0]">"USD"</span>,
+        <span class="text-[#38BDF8]">"unitText"</span>: <span class="text-[#A7F3D0]">"per user / month billed annually"</span>
+      },
+      {
+        <span class="text-[#38BDF8]">"@type"</span>: <span class="text-[#A7F3D0]">"UnitPriceSpecification"</span>,
+        <span class="text-[#38BDF8]">"name"</span>: <span class="text-[#A7F3D0]">"Enterprise Tier"</span>,
+        <span class="text-[#38BDF8]">"price"</span>: <span class="text-[#FBBF24]">"119"</span>,
+        <span class="text-[#38BDF8]">"priceCurrency"</span>: <span class="text-[#A7F3D0]">"USD"</span>,
+        <span class="text-[#38BDF8]">"unitText"</span>: <span class="text-[#A7F3D0]">"per user / month billed annually"</span>
+      }
+    ]
+  }
+}
+<span class="text-[#F472B6]">&lt;/script&gt;</span></code></pre>
+</div>
+</section>
+<!-- SECTION D: IMPLEMENTATION CHECKLIST -->
+<section class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-primary flex items-center justify-center border border-[#99F6E4]">
+<span class="material-symbols-outlined text-[18px]" data-icon="checklist">checklist</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0F172A]">Implementation Checklist</h2>
+</div>
+<span class="text-body-sm font-body-sm font-data-mono text-[#64748B]">2 of 5 Complete (40%)</span>
+</div>
+<!-- Checklist Items -->
+<div class="space-y-2.5">
+<label class="flex items-start gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] cursor-pointer hover:bg-[#F0FDFA] transition">
+<input checked="" class="mt-0.5 w-4 h-4 text-primary rounded border-[#CBD5E1] focus:ring-primary" type="checkbox"/>
+<div class="flex-1 text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A] line-through text-[#64748B]">Step 1: Draft validated Schema.org Product &amp; AggregateOffer JSON-LD payload.</span>
+<p class="text-[#94A3B8] text-xs mt-0.5">Completed by Lead Dev · Verified in Google Rich Results Test</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] cursor-pointer hover:bg-[#F0FDFA] transition">
+<input checked="" class="mt-0.5 w-4 h-4 text-primary rounded border-[#CBD5E1] focus:ring-primary" type="checkbox"/>
+<div class="flex-1 text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A] line-through text-[#64748B]">Step 2: Implement server-side rendering for &lt;script type="application/ld+json"&gt; tag on /pricing.</span>
+<p class="text-[#94A3B8] text-xs mt-0.5">PR #482 merged into staging by @alexm</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle" data-weight="fill">check_circle</span>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-lg bg-white border border-[#E2E8F0] cursor-pointer hover:bg-[#F8FAFC] transition">
+<input class="mt-0.5 w-4 h-4 text-primary rounded border-[#CBD5E1] focus:ring-primary" type="checkbox"/>
+<div class="flex-1 text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">Step 3: Verify rich snippet eligibility using Google Rich Results &amp; Perplexity Bot Test.</span>
+<p class="text-[#64748B] text-xs mt-0.5">Awaiting production deploy tag v2.14.0</p>
+</div>
+<span class="text-xs font-data-mono text-[#F59E0B] bg-[#FEF3C7] px-2 py-0.5 rounded font-bold">Pending Deploy</span>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-lg bg-white border border-[#E2E8F0] cursor-pointer hover:bg-[#F8FAFC] transition">
+<input class="mt-0.5 w-4 h-4 text-primary rounded border-[#CBD5E1] focus:ring-primary" type="checkbox"/>
+<div class="flex-1 text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">Step 4: Submit recrawl request via GeoLens Synthetic Bot Webhook.</span>
+<p class="text-[#64748B] text-xs mt-0.5">Will trigger 12 synthetic agents across US, EU, and APAC endpoints</p>
+</div>
+<span class="text-xs font-data-mono text-[#94A3B8] bg-[#F1F5F9] px-2 py-0.5 rounded">Queued</span>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-lg bg-white border border-[#E2E8F0] cursor-pointer hover:bg-[#F8FAFC] transition">
+<input class="mt-0.5 w-4 h-4 text-primary rounded border-[#CBD5E1] focus:ring-primary" type="checkbox"/>
+<div class="flex-1 text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">Step 5: Run automated regression check across 280 prompt queries.</span>
+<p class="text-[#64748B] text-xs mt-0.5">Measures citation stability over a 48-hour continuous window</p>
+</div>
+<span class="text-xs font-data-mono text-[#94A3B8] bg-[#F1F5F9] px-2 py-0.5 rounded">Queued</span>
+</label>
+</div>
+</section>
+<!-- SECTION E: EXPECTED OUTCOME & VERIFICATION -->
+<section class="bg-gradient-to-br from-white to-[#F0FDFA] rounded-xl p-5 border border-[#CCFBF1] shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0F172A]">Expected Outcome &amp; Automated Verification</h2>
+</div>
+<span class="font-data-mono text-label-md font-bold text-primary bg-white border border-[#99F6E4] px-2 py-0.5 rounded">Confidence: 96%</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-2xs">
+<span class="font-label-md text-label-md uppercase text-[#64748B] font-bold">Citation Share Acceleration</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-headline-lg font-bold text-primary">+6.2%</span>
+<span class="text-body-sm font-body-sm text-[#64748B]">Across CRM Category queries</span>
+</div>
+<p class="text-xs text-[#64748B] mt-2">Elevates brand from 4th to 2nd position in AI Overview citation rankings.</p>
+</div>
+<div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-2xs">
+<span class="font-label-md text-label-md uppercase text-[#64748B] font-bold">Hallucination Risk Reduction</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-headline-lg font-bold text-[#0F766E]">100% Fix</span>
+<span class="text-body-sm font-body-sm text-[#64748B]">Eliminates $1.2k false anchor</span>
+</div>
+<p class="text-xs text-[#64748B] mt-2">Guarantees precise $119/seat retrieval across all evaluated models.</p>
+</div>
+</div>
+<!-- Verification Trigger Action -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 bg-white p-3.5 rounded-xl border border-[#CCFBF1]">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="published_with_changes">published_with_changes</span>
+<div class="text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">Continuous Telemetry Auto-Verification</span>
+<p class="text-xs text-[#64748B]">GeoLens will automatically crawl &amp; evaluate 4 hours post-deployment.</p>
+</div>
+</div>
+<button class="h-9 px-4 rounded-lg bg-primary-container text-white text-body-sm font-body-sm font-bold hover:bg-[#115E59] transition flex items-center gap-2 shrink-0 shadow-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_circle">play_circle</span>
+<span>Run Verification Crawl Now</span>
+</button>
+</div>
+</section>
+</div>
+<!-- ================= RIGHT COLUMN / SIDEBAR (4 COLS) ================= -->
+<div class="lg:col-span-4 space-y-6">
+<!-- SIDEBAR CARD 1: OPPORTUNITY SCORE & METRICS -->
+<div class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-3 border-b border-[#F1F5F9]">
+<h3 class="font-headline-sm text-[16px] font-bold text-[#0F172A]">Opportunity Diagnostic</h3>
+<span class="text-xs font-data-mono text-[#64748B]">Score v3.1</span>
+</div>
+<!-- Radial-like Score representation -->
+<div class="flex items-center gap-4 bg-[#F0FDFA] p-3.5 rounded-xl border border-[#CCFBF1]">
+<div class="relative w-16 h-16 rounded-full bg-white border-4 border-primary flex items-center justify-center shrink-0 shadow-xs">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">94</span>
+</div>
+<div class="space-y-0.5">
+<span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wide">Critical Opportunity</span>
+<p class="text-body-sm font-body-sm text-[#334155] leading-snug">Top 5% highest return fixes in your workspace queue.</p>
+</div>
+</div>
+<!-- Effort vs Impact Trio -->
+<div class="grid grid-cols-3 gap-2 text-center pt-1">
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
+<span class="font-label-md text-[10px] text-[#64748B] font-bold uppercase block">Effort</span>
+<span class="font-data-mono text-body-sm font-bold text-[#0F172A] mt-0.5 block">Low (1-2h)</span>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
+<span class="font-label-md text-[10px] text-[#64748B] font-bold uppercase block">Impact</span>
+<span class="font-data-mono text-body-sm font-bold text-primary mt-0.5 block">+6.2% Lift</span>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
+<span class="font-label-md text-[10px] text-[#64748B] font-bold uppercase block">Confidence</span>
+<span class="font-data-mono text-body-sm font-bold text-[#0F172A] mt-0.5 block">96%</span>
+</div>
+</div>
+</div>
+<!-- SIDEBAR CARD 2: TARGETED AI ENGINES -->
+<div class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
+<h3 class="font-headline-sm text-[16px] font-bold text-[#0F172A]">Targeted AI Engines</h3>
+<span class="font-label-md text-[11px] text-primary font-bold">Projected Delta</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E2E8F0] flex items-center justify-center font-bold text-xs text-[#0F172A] shadow-2xs">
+                      GPT
+                    </div>
+<div>
+<span class="text-body-sm font-body-sm font-bold text-[#0F172A] block">ChatGPT-4o</span>
+<span class="text-[11px] text-[#64748B]">Search + Canvas Mode</span>
+</div>
+</div>
+<span class="font-data-mono text-body-sm font-bold text-primary bg-[#F0FDFA] px-2 py-0.5 rounded border border-[#CCFBF1]">+7.8%</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E2E8F0] flex items-center justify-center font-bold text-xs text-[#0F172A] shadow-2xs">
+                      GOO
+                    </div>
+<div>
+<span class="text-body-sm font-body-sm font-bold text-[#0F172A] block">Google AI Overviews</span>
+<span class="text-[11px] text-[#64748B]">Desktop + Mobile SGE</span>
+</div>
+</div>
+<span class="font-data-mono text-body-sm font-bold text-primary bg-[#F0FDFA] px-2 py-0.5 rounded border border-[#CCFBF1]">+6.4%</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E2E8F0] flex items-center justify-center font-bold text-xs text-[#0F172A] shadow-2xs">
+                      PPL
+                    </div>
+<div>
+<span class="text-body-sm font-body-sm font-bold text-[#0F172A] block">Perplexity Pro</span>
+<span class="text-[11px] text-[#64748B]">Sonar Large Online</span>
+</div>
+</div>
+<span class="font-data-mono text-body-sm font-bold text-primary bg-[#F0FDFA] px-2 py-0.5 rounded border border-[#CCFBF1]">+8.2%</span>
+</div>
+</div>
+</div>
+<!-- SIDEBAR CARD 3: LINKED PROMPTS -->
+<div class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
+<div class="flex items-center gap-1.5">
+<h3 class="font-headline-sm text-[16px] font-bold text-[#0F172A]">Directly Impacted Prompts</h3>
+<span class="font-data-mono text-xs text-[#64748B]">(5)</span>
+</div>
+<a class="text-xs text-primary hover:underline font-bold" href="#">View all</a>
+</div>
+<div class="space-y-2">
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+<p class="text-body-sm font-body-sm text-[#0F172A] font-semibold">"Attio CRM enterprise pricing per seat"</p>
+<div class="flex items-center justify-between text-xs">
+<span class="text-[#E11D48] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E11D48]"></span>
+                      Hallucinating $1.2k/mo
+                    </span>
+<span class="font-data-mono text-[#64748B]">Vol: 4.8k/mo</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+<p class="text-body-sm font-body-sm text-[#0F172A] font-semibold">"Best AI CRM pricing breakdown 2025"</p>
+<div class="flex items-center justify-between text-xs">
+<span class="text-[#D97706] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span>
+                      Omitted from AI matrix
+                    </span>
+<span class="font-data-mono text-[#64748B]">Vol: 12.2k/mo</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+<p class="text-body-sm font-body-sm text-[#0F172A] font-semibold">"Attio vs HubSpot pricing comparison"</p>
+<div class="flex items-center justify-between text-xs">
+<span class="text-[#E11D48] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E11D48]"></span>
+                      HubSpot cited exclusively
+                    </span>
+<span class="font-data-mono text-[#64748B]">Vol: 9.1k/mo</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+<p class="text-body-sm font-body-sm text-[#0F172A] font-semibold">"Attio annual discount rate"</p>
+<div class="flex items-center justify-between text-xs">
+<span class="text-[#64748B] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#94A3B8]"></span>
+                      Unindexed Tier
+                    </span>
+<span class="font-data-mono text-[#64748B]">Vol: 1.4k/mo</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+<p class="text-body-sm font-body-sm text-[#0F172A] font-semibold">"Attio startup program cost"</p>
+<div class="flex items-center justify-between text-xs">
+<span class="text-[#059669] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span>
+                      Partially Grounded
+                    </span>
+<span class="font-data-mono text-[#64748B]">Vol: 880/mo</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SIDEBAR CARD 4: ACTIVITY AUDIT TRAIL -->
+<div class="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
+<h3 class="font-headline-sm text-[16px] font-bold text-[#0F172A]">Activity &amp; Audit Trail</h3>
+<span class="material-symbols-outlined text-[#94A3B8] text-[18px]" data-icon="history">history</span>
+</div>
+<div class="relative pl-5 space-y-3.5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-[#E2E8F0]">
+<!-- Event 1 -->
+<div class="relative">
+<div class="absolute -left-5 top-1 w-2 h-2 rounded-full bg-primary ring-4 ring-[#F0FDFA]"></div>
+<div class="text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">PR #482 Linked</span>
+<p class="text-xs text-[#64748B]">alexm attached GitHub commit <span class="font-data-mono text-primary font-semibold">#7c91a0</span></p>
+<span class="text-[10px] text-[#94A3B8] font-data-mono">2 hours ago</span>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative">
+<div class="absolute -left-5 top-1 w-2 h-2 rounded-full bg-[#CBD5E1]"></div>
+<div class="text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">Status changed to In Progress</span>
+<p class="text-xs text-[#64748B]">Assigned to Engineering Sprint Q4-Sprint-3</p>
+<span class="text-[10px] text-[#94A3B8] font-data-mono">Yesterday, 14:15 UTC</span>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative">
+<div class="absolute -left-5 top-1 w-2 h-2 rounded-full bg-[#CBD5E1]"></div>
+<div class="text-body-sm font-body-sm">
+<span class="font-bold text-[#0F172A]">Deficit Detected by Telemetry</span>
+<p class="text-xs text-[#64748B]">Automated audit flagged 68% citation drop</p>
+<span class="text-[10px] text-[#94A3B8] font-data-mono">Oct 24, 2025 · 07:11 UTC</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

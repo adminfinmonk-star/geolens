@@ -1,0 +1,17 @@
+Design a DESKTOP light-theme SaaS SETTINGS HUB screen for GeoLens AI Visibility suite.
+
+Brand: teal #0F766E only — NO purple. Neutrals white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED. Plus Jakarta Sans. Soft mint wash. Light theme only.
+
+Chrome (Semrush-style dual rail, Settings suite ACTIVE on icon rail):
+- Far-left icon rail: Analysis, Brand, Monitor, Results, Settings (active soft tile), Collapse control
+- Secondary panel titled Settings with links: Profile (active teal), Brands, Topics & tags, Channels, Billing, API keys, SSO
+
+Main — Settings / Brand profile:
+- Title: Brand profile · Workspace settings badge
+- Subtitle: Identity AI uses when answering about your company
+- KPI strip optional: Domain, Industry, Markets count, Reviewed status
+- Form panels: Name, Industry, Tagline/description, Products, Personas, Target markets
+- Primary teal Save · ghost Cancel
+- Side note: honesty that offline extract is reviewable
+
+Professional B2B. No emoji. 1440px.

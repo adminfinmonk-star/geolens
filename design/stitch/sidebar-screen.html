@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoLens — Navigation Chrome</title>
+  <!-- Plus Jakarta Sans Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Material Symbols Outlined -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#0F766E',
+              dark: '#0d655e',
+              light: '#E6F4F2',
+              hover: '#0c5c56',
+            },
+            ink: {
+              DEFAULT: '#0B1218',
+              muted: '#5C6B76',
+              light: '#94A3B8',
+            },
+            borderui: '#E3E9ED',
+            pagebg: '#F2F8F6',
+            hoverbg: '#F5F7F8',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 22;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .material-symbols-outlined.fill-1 {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 22;
+    }
+    /* Custom scrollbar for secondary sidebar */
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: #D5DFE4;
+      border-radius: 4px;
+    }
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+      background: #B0C0C9;
+    }
+  </style>
+</head>
+<body class="h-full bg-pagebg font-sans text-ink antialiased flex overflow-hidden">
+
+  <!-- ======================================================== -->
+  <!-- 1) FAR-LEFT SLIM ICON RAIL (~64px)                      -->
+  <!-- ======================================================== -->
+  <aside class="w-16 min-w-[64px] max-w-[64px] h-full bg-white border-r border-borderui flex flex-col items-center justify-between py-4 z-30 select-none shadow-[1px_0_3px_rgba(0,0,0,0.02)]">
+    
+    <!-- Top GeoLens Logo Mark & Primary Suites -->
+    <div class="flex flex-col items-center gap-6 w-full">
+      <!-- Brand Logo / Hex Mark -->
+      <a href="#" class="group relative flex items-center justify-center w-10 h-10 rounded-xl bg-brand text-white shadow-md shadow-brand/25 transition-transform active:scale-95" title="GeoLens Platform">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 3a15.3 15.3 0 0 1 4 9 15.3 15.3 0 0 1-4 9 15.3 15.3 0 0 1-4-9 15.3 15.3 0 0 1 4-9z"/>
+          <path d="M3 12h18"/>
+        </svg>
+      </a>
+
+      <!-- Slim Rail Tool Icons -->
+      <nav class="flex flex-col items-center gap-2 w-full px-2">
+        
+        <!-- Home / Overview Root -->
+        <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl text-ink-muted hover:text-ink hover:bg-hoverbg transition-all group" title="Workspace Hub">
+          <span class="material-symbols-outlined">grid_view</span>
+          <!-- Micro-Tooltip -->
+          <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+            Hub
+          </div>
+        </a>
+
+        <!-- AI Visibility Suite (ACTIVE) -->
+        <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-brand-light text-brand font-semibold transition-all group shadow-sm" title="AI Visibility Suite">
+          <span class="material-symbols-outlined fill-1">visibility</span>
+          <!-- Active Indicator Pill on Rail -->
+          <span class="absolute -left-2 top-2 bottom-2 w-1 bg-brand rounded-r-full"></span>
+          <!-- Tooltip -->
+          <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+            AI Visibility Suite
+          </div>
+        </a>
+
+        <!-- Chats & Real-time Synthesis -->
+        <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl text-ink-muted hover:text-ink hover:bg-hoverbg transition-all group" title="Chat Audit Telemetry">
+          <span class="material-symbols-outlined">forum</span>
+          <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+            Chats Audit
+          </div>
+        </a>
+
+        <!-- SERP & Market Discovery -->
+        <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl text-ink-muted hover:text-ink hover:bg-hoverbg transition-all group" title="Market Discovery">
+          <span class="material-symbols-outlined">explore</span>
+          <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+            Discovery
+          </div>
+        </a>
+
+        <!-- Analytics & Reports -->
+        <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl text-ink-muted hover:text-ink hover:bg-hoverbg transition-all group" title="Executive Reports">
+          <span class="material-symbols-outlined">insert_chart</span>
+          <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+            Reports
+          </div>
+        </a>
+
+      </nav>
+    </div>
+
+    <!-- Bottom Utility Icons -->
+    <div class="flex flex-col items-center gap-2 w-full px-2">
+      
+      <!-- Help & Knowledge -->
+      <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl text-ink-muted hover:text-ink hover:bg-hoverbg transition-all group" title="Documentation & Help">
+        <span class="material-symbols-outlined">help</span>
+        <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+          Support & Docs
+        </div>
+      </a>
+
+      <!-- Workspace Settings -->
+      <a href="#" class="relative flex items-center justify-center w-11 h-11 rounded-xl text-ink-muted hover:text-ink hover:bg-hoverbg transition-all group" title="Settings">
+        <span class="material-symbols-outlined">settings</span>
+        <div class="absolute left-14 ml-2 px-2.5 py-1 bg-ink text-white text-[11px] font-semibold rounded-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-lg">
+          Settings
+        </div>
+      </a>
+
+      <div class="w-8 h-[1px] bg-borderui my-1"></div>
+
+      <!-- User Profile Avatar -->
+      <button class="relative w-9 h-9 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center text-brand font-bold text-xs hover:ring-2 hover:ring-brand/30 transition-all" title="Attio Workspace Account">
+        AL
+      </button>
+
+    </div>
+  </aside>
+
+
+  <!-- ======================================================== -->
+  <!-- 2) SECONDARY SIDEBAR (~256px)                            -->
+  <!-- ======================================================== -->
+  <aside class="w-64 min-w-[256px] max-w-[256px] h-full bg-white border-r border-borderui flex flex-col justify-between z-20 select-none shadow-[2px_0_8px_rgba(0,0,0,0.015)]">
+    
+    <!-- Top Header + Navigation Items (Scrollable) -->
+    <div class="flex flex-col flex-1 overflow-y-auto sidebar-scroll">
+      
+      <!-- Suite Title Bar with Live Pulse & Version Chip -->
+      <div class="px-5 pt-5 pb-4 border-b border-borderui/70 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
+          </span>
+          <h1 class="text-[15px] font-bold tracking-tight text-ink">AI Visibility</h1>
+        </div>
+        
+        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-brand-light text-brand border border-brand/20">
+          v2.4
+        </span>
+      </div>
+
+      <!-- Navigation Tree Accordion -->
+      <div class="py-3 px-3 space-y-4">
+
+        <!-- ================= GROUP 1: AI ANALYSIS (EXPANDED) ================= -->
+        <div class="space-y-1">
+          <!-- Accordion Header -->
+          <button class="w-full flex items-center justify-between px-2.5 py-1.5 text-[11px] font-bold tracking-wider uppercase text-ink-muted hover:text-ink transition-colors rounded-lg group">
+            <span class="group-hover:translate-x-0.5 transition-transform">AI Analysis</span>
+            <span class="material-symbols-outlined text-ink-muted/80 group-hover:text-ink transition-transform" style="font-size: 17px;">expand_less</span>
+          </button>
+
+          <!-- Group Links -->
+          <div class="space-y-0.5 pt-0.5">
+            <!-- Link 1: Visibility Overview -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">monitoring</span>
+                <span>Visibility Overview</span>
+              </div>
+            </a>
+
+            <!-- Link 2: Competitor Research -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">compare_arrows</span>
+                <span>Competitor Research</span>
+              </div>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-100 text-ink-muted group-hover:bg-slate-200">5</span>
+            </a>
+
+            <!-- Link 3: Prompt Research -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">manage_search</span>
+                <span>Prompt Research</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================= GROUP 2: BRAND PERFORMANCE (EXPANDED) ================= -->
+        <div class="space-y-1">
+          <!-- Accordion Header -->
+          <button class="w-full flex items-center justify-between px-2.5 py-1.5 text-[11px] font-bold tracking-wider uppercase text-ink-muted hover:text-ink transition-colors rounded-lg group">
+            <span class="group-hover:translate-x-0.5 transition-transform">Brand Performance</span>
+            <span class="material-symbols-outlined text-ink-muted/80 group-hover:text-ink transition-transform" style="font-size: 17px;">expand_less</span>
+          </button>
+
+          <!-- Group Links -->
+          <div class="space-y-0.5 pt-0.5">
+            <!-- Link 1: Brand Performance -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">pie_chart</span>
+                <span>Brand Performance</span>
+              </div>
+            </a>
+
+            <!-- Link 2: Perception & Sentiment -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">sentiment_satisfied</span>
+                <span>Perception &amp; Sentiment</span>
+              </div>
+            </a>
+
+            <!-- Link 3: Fact-checking -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">verified</span>
+                <span>Fact-checking</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================= GROUP 3: BOOST & MONITOR (EXPANDED) ================= -->
+        <div class="space-y-1">
+          <!-- Accordion Header -->
+          <button class="w-full flex items-center justify-between px-2.5 py-1.5 text-[11px] font-bold tracking-wider uppercase text-ink-muted hover:text-ink transition-colors rounded-lg group">
+            <span class="group-hover:translate-x-0.5 transition-transform">Boost &amp; Monitor</span>
+            <span class="material-symbols-outlined text-ink-muted/80 group-hover:text-ink transition-transform" style="font-size: 17px;">expand_less</span>
+          </button>
+
+          <!-- Group Links -->
+          <div class="space-y-0.5 pt-0.5">
+            <!-- Link 1: Prompt Tracking (ACTIVE STATE) -->
+            <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-[11px] text-[13px] font-semibold bg-brand text-white shadow-sm shadow-brand/20">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-white fill-1">track_changes</span>
+                <span>Prompt Tracking</span>
+              </div>
+              <!-- Live Badge (White / Teal reverse) -->
+              <span class="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-white/20 text-white border border-white/30 backdrop-blur-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+                LIVE
+              </span>
+            </a>
+
+            <!-- Link 2: Sources & Citations -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">link</span>
+                <span>Sources &amp; Citations</span>
+              </div>
+            </a>
+
+            <!-- Link 3: Actions & Fixes -->
+            <a href="#" class="group flex items-center justify-between px-3 py-2 rounded-[11px] text-[13px] font-medium text-ink-muted hover:text-ink hover:bg-hoverbg transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-ink-muted group-hover:text-ink transition-colors">checklist</span>
+                <span>Actions &amp; Fixes</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================= GROUP 4: RESULTS (COLLAPSED) ================= -->
+        <div class="pt-1">
+          <button class="w-full flex items-center justify-between px-2.5 py-2 text-[11px] font-bold tracking-wider uppercase text-ink-muted hover:text-ink hover:bg-hoverbg transition-all rounded-lg group">
+            <span class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-ink-muted group-hover:text-ink text-[17px]">fact_check</span>
+              <span>Results</span>
+            </span>
+            <span class="material-symbols-outlined text-ink-muted/70 group-hover:text-ink transition-transform" style="font-size: 17px;">expand_more</span>
+          </button>
+        </div>
+
+        <!-- ================= GROUP 5: SETTINGS (COLLAPSED) ================= -->
+        <div class="pt-0.5">
+          <button class="w-full flex items-center justify-between px-2.5 py-2 text-[11px] font-bold tracking-wider uppercase text-ink-muted hover:text-ink hover:bg-hoverbg transition-all rounded-lg group">
+            <span class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-ink-muted group-hover:text-ink text-[17px]">tune</span>
+              <span>Settings</span>
+            </span>
+            <span class="material-symbols-outlined text-ink-muted/70 group-hover:text-ink transition-transform" style="font-size: 17px;">expand_more</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Widget: Prompt Quota Usage Progress -->
+    <div class="p-3 border-t border-borderui bg-white">
+      <div class="p-3 rounded-xl bg-pagebg border border-borderui/80 flex flex-col gap-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-ink flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-brand text-[16px]">data_usage</span>
+            Prompt Quota
+          </span>
+          <span class="font-semibold text-brand text-[11px]">28.4%</span>
+        </div>
+
+        <!-- Progress Bar (Teal) -->
+        <div class="w-full h-2 rounded-full bg-borderui/80 overflow-hidden">
+          <div class="h-full bg-brand rounded-full transition-all duration-500" style="width: 28.4%;"></div>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-ink-muted pt-0.5">
+          <span>1,420 / 5,000 queries</span>
+          <a href="#" class="font-semibold text-brand hover:underline">Manage</a>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+
+  <!-- ======================================================== -->
+  <!-- 3) RIGHT CANVAS: EMPTY SOFT MINT WASH WORKSPACE          -->
+  <!-- ======================================================== -->
+  <main class="flex-1 h-full bg-pagebg flex flex-col overflow-hidden relative">
+    
+    <!-- Subtle Top Header Wash Bar to Ground the Interface -->
+    <header class="h-14 border-b border-borderui/60 bg-white/70 backdrop-blur-sm px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs text-ink-muted">
+        <span class="font-medium text-ink">GeoLens Platform</span>
+        <span class="text-borderui">/</span>
+        <span class="font-medium">AI Visibility Suite</span>
+        <span class="text-borderui">/</span>
+        <span class="font-semibold text-brand">Prompt Tracking</span>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
+        <span class="text-xs font-medium text-ink-muted">Telemetry Engine Online</span>
+      </div>
+    </header>
+
+    <!-- Empty Workspace Placeholder with Minimal Guide Grid -->
+    <div class="flex-1 flex flex-col items-center justify-center p-8 text-center select-none">
+      <div class="max-w-md p-8 rounded-2xl border-2 border-dashed border-borderui bg-white/40 flex flex-col items-center">
+        <div class="w-12 h-12 rounded-xl bg-brand-light flex items-center justify-center text-brand mb-3">
+          <span class="material-symbols-outlined" style="font-size: 26px;">space_dashboard</span>
+        </div>
+        <h3 class="text-sm font-bold text-ink mb-1">Main Content Workspace</h3>
+        <p class="text-xs text-ink-muted leading-relaxed">
+          The dual-rail left navigation chrome is ready and isolated. Active screen is set to <strong class="text-brand">Prompt Tracking</strong> with live telemetry state.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

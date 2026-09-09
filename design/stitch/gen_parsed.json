@@ -1,0 +1,552 @@
+{
+  "projectId": "8355541918828779128",
+  "sessionId": "307192463266233524",
+  "outputComponents": [
+    {
+      "designSystem": {
+        "name": "assets/0a31ee2fdafc44158154f29748eb80f6",
+        "designSystem": {
+          "displayName": "Precision Geospatial Analytics",
+          "styleGuidelines": "## Brand & Style\n\nThis design system establishes a high-density, analytical workspace engineered for spatial intelligence, enterprise location analysis, and competitive benchmarking. It targets enterprise strategists, data scientists, and operations executives who rely on swift pattern recognition across multi-layered geospatial datasets.\n\nThe aesthetic philosophy balances modern architectural restraint with high-functioning utilitarianism. By pairing crisp, structural neutrals with concentrated teal focal points, the interface creates an environment of calm focus and absolute precision. Every element communicates reliability, analytical rigor, and quiet confidence—deliberately avoiding decorative noise, gratuitous gradients, or dark-mode cognitive strain.\n\n## Layout & Spacing\n\nThe layout model utilizes a fluid 12-column analytical grid flanked by persistent floating control panels and interactive side inspectors. Spacing adheres to a strict 4px/8px modular cadence.\n\n### Breakpoints & Adaptability\n- **Desktop Wide (≥1440px)**: 12-column grid, fluid analytical viewport, 24px gutters, fixed-width tool rails (320px sidebar, 400px inspection pane).\n- **Desktop/Laptop (1024px – 1439px)**: 12-column grid, 16px gutters, collapsible secondary drawer, map/chart area claims dominant flex-basis.\n- **Tablet (768px – 1023px)**: 8-column layout, inspector panel converts into an absolute-positioned bottom sheet.\n- **Mobile (<768px)**: Single-column flow with full-width horizontal-scroll cards, stacked key performance tiles, 16px outer safety margins.\n\n## Elevation & Depth\n\nVisual hierarchy uses crisp, ambient low-blur drop shadows paired with fine boundary lines to maintain clarity across dense spatial layers. \n\n### Elevation Tiers\n- **Tier 0 (Base Surface)**: `#F5F7F8` flat canvas, no shadow.\n- **Tier 1 (Cards, Data Panels, Metrics)**: Pure `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 1px 3px rgba(11, 18, 24, 0.04), 0 1px 2px rgba(11, 18, 24, 0.02)`.\n- **Tier 2 (Hovered Cards, Dropdowns, Segment Popovers)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 4px 12px -2px rgba(11, 18, 24, 0.06), 0 2px 6px -1px rgba(11, 18, 24, 0.03)`.\n- **Tier 3 (Floating Map Controllers, Modals, Flyouts)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 12px 28px -4px rgba(11, 18, 24, 0.08), 0 4px 10px -2px rgba(11, 18, 24, 0.04)`.\n\n## Components\n\n### Buttons\n- **Primary Action**: Solid `#0F766E` background, `#FFFFFF` bold text, 8px border radius, 0 1px 2px shadow. Hover: `#115E59`. Active: `#134E4A`.\n- **Secondary Action**: `#FFFFFF` background, `#0B1218` text, 1px `#E3E9ED` border. Hover: `#F0FDF4` tint, border shifts to `#0F766E`.\n- **Tertiary / Utility**: Ghost button with `#5C6B76` text. Hover: `#F5F7F8` fill, `#0B1218` text.\n\n### Cards & Analytics Panels\n- Standardized with pure `#FFFFFF` background, 12px or 16px corner radius, and 1px `#E3E9ED` perimeter stroke. \n- Headers feature uppercase `#5C6B76` micro-labels (`label-md`) coupled with large `#0B1218` numeric readouts.\n\n### Chips & Filter Pills\n- **Neutral State**: `#FFFFFF` background, 1px `#E3E9ED` border, `#5C6B76` text, 6px radius.\n- **Active / Selected State**: `#ECFDF5` background, `#0F766E` text, 1px `#0F766E` border.\n\n### Inputs & Controls\n- **Text Inputs**: Height 36px/40px, pure `#FFFFFF` fill, 1px `#E3E9ED` border, 8px radius, `#0B1218` value text. Focus: 1px solid `#0F766E` with 2px `#ECFDF5` outer focus ring.\n- **Checkboxes & Radios**: 16px square/round with 1px `#E3E9ED` border. Checked: `#0F766E` fill with `#FFFFFF` check/dot indicator.\n\n### Data Tables & Geospatial Lists\n- Alternating row interaction: Pure `#FFFFFF` resting, transitioning to `#F0FDF4` on pointer hover.\n- Row separators: 1px solid `#E3E9ED`.\n- Table head: `#F5F7F8` background with uppercase `label-md` tracking in `#5C6B76`.\n\n### Domain-Specific Components\n- **Map Control Floating Cluster**: Vertical stack of 36x36px `#FFFFFF` utility squares (zoom, layer toggle, reset) with 8px radius, separated by 1px `#E3E9ED` dividers, elevated at Tier 2.\n- **Benchmark Legend Tag**: Compact 6px radius indicator with an inset color bullet mapping directly to Deep Teal (`#0F766E`), Sky Blue (`#0284C7`), Coral (`#F97316`), or Slate (`#94A3B8`).",
+          "theme": {
+            "colorMode": "LIGHT",
+            "font": "PLUS_JAKARTA_SANS",
+            "roundness": "ROUND_EIGHT",
+            "customColor": "#0f766e",
+            "headlineFont": "PLUS_JAKARTA_SANS",
+            "bodyFont": "PLUS_JAKARTA_SANS",
+            "labelFont": "PLUS_JAKARTA_SANS",
+            "namedColors": {
+              "surface_tint": "#006a63",
+              "surface_dim": "#ccdce9",
+              "on_error": "#ffffff",
+              "surface_container": "#e0f0fd",
+              "tertiary_fixed": "#ffdbca",
+              "primary_fixed": "#9cf2e8",
+              "surface": "#f5faff",
+              "error_container": "#ffdad6",
+              "tertiary_container": "#af4c00",
+              "surface_container_low": "#eaf5ff",
+              "on_secondary_fixed": "#001d31",
+              "surface_bright": "#f5faff",
+              "tertiary": "#893a00",
+              "on_secondary": "#ffffff",
+              "primary": "#005c55",
+              "on_error_container": "#93000a",
+              "on_primary_fixed_variant": "#00504a",
+              "inverse_primary": "#80d5cb",
+              "on_tertiary": "#ffffff",
+              "on_surface_variant": "#3e4947",
+              "outline": "#6e7977",
+              "on_tertiary_container": "#ffe6da",
+              "primary_fixed_dim": "#80d5cb",
+              "secondary": "#006398",
+              "on_tertiary_fixed": "#341100",
+              "inverse_surface": "#24323c",
+              "on_secondary_fixed_variant": "#004b73",
+              "on_background": "#0e1d26",
+              "secondary_fixed_dim": "#93ccff",
+              "surface_variant": "#d5e5f1",
+              "primary_container": "#0f766e",
+              "on_primary": "#ffffff",
+              "on_primary_fixed": "#00201d",
+              "tertiary_fixed_dim": "#ffb690",
+              "on_tertiary_fixed_variant": "#783200",
+              "on_primary_container": "#a3faef",
+              "background": "#f5faff",
+              "surface_container_lowest": "#ffffff",
+              "surface_container_highest": "#d5e5f1",
+              "error": "#ba1a1a",
+              "surface_container_high": "#daeaf7",
+              "inverse_on_surface": "#e4f3ff",
+              "secondary_container": "#5bb8fe",
+              "on_surface": "#0e1d26",
+              "on_secondary_container": "#00476e",
+              "secondary_fixed": "#cce5ff",
+              "outline_variant": "#bdc9c6"
+            },
+            "designMd": "---\nname: Precision Geospatial Analytics\ncolors:\n  surface: '#f5faff'\n  surface-dim: '#ccdce9'\n  surface-bright: '#f5faff'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#eaf5ff'\n  surface-container: '#e0f0fd'\n  surface-container-high: '#daeaf7'\n  surface-container-highest: '#d5e5f1'\n  on-surface: '#0e1d26'\n  on-surface-variant: '#3e4947'\n  inverse-surface: '#24323c'\n  inverse-on-surface: '#e4f3ff'\n  outline: '#6e7977'\n  outline-variant: '#bdc9c6'\n  surface-tint: '#006a63'\n  primary: '#005c55'\n  on-primary: '#ffffff'\n  primary-container: '#0f766e'\n  on-primary-container: '#a3faef'\n  inverse-primary: '#80d5cb'\n  secondary: '#006398'\n  on-secondary: '#ffffff'\n  secondary-container: '#5bb8fe'\n  on-secondary-container: '#00476e'\n  tertiary: '#893a00'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#af4c00'\n  on-tertiary-container: '#ffe6da'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#9cf2e8'\n  primary-fixed-dim: '#80d5cb'\n  on-primary-fixed: '#00201d'\n  on-primary-fixed-variant: '#00504a'\n  secondary-fixed: '#cce5ff'\n  secondary-fixed-dim: '#93ccff'\n  on-secondary-fixed: '#001d31'\n  on-secondary-fixed-variant: '#004b73'\n  tertiary-fixed: '#ffdbca'\n  tertiary-fixed-dim: '#ffb690'\n  on-tertiary-fixed: '#341100'\n  on-tertiary-fixed-variant: '#783200'\n  background: '#f5faff'\n  on-background: '#0e1d26'\n  surface-variant: '#d5e5f1'\ntypography:\n  display-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 36px\n    fontWeight: '800'\n    lineHeight: 44px\n    letterSpacing: -0.03em\n  display-lg-mobile:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 28px\n    fontWeight: '800'\n    lineHeight: 36px\n    letterSpacing: -0.02em\n  headline-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 28px\n    fontWeight: '700'\n    lineHeight: 36px\n    letterSpacing: -0.02em\n  headline-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 22px\n    fontWeight: '700'\n    lineHeight: 28px\n    letterSpacing: -0.015em\n  headline-sm:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 18px\n    fontWeight: '600'\n    lineHeight: 24px\n    letterSpacing: -0.01em\n  body-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 16px\n    fontWeight: '500'\n    lineHeight: 24px\n    letterSpacing: -0.005em\n  body-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 14px\n    fontWeight: '500'\n    lineHeight: 20px\n    letterSpacing: 0em\n  body-sm:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 12px\n    fontWeight: '500'\n    lineHeight: 16px\n    letterSpacing: 0.005em\n  label-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 13px\n    fontWeight: '600'\n    lineHeight: 18px\n    letterSpacing: 0.01em\n  label-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 11px\n    fontWeight: '600'\n    lineHeight: 16px\n    letterSpacing: 0.04em\n  data-mono:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 13px\n    fontWeight: '600'\n    lineHeight: 16px\n    letterSpacing: -0.01em\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  space-2xs: 0.125rem\n  space-xs: 0.25rem\n  space-sm: 0.5rem\n  space-md: 0.75rem\n  space-base: 1rem\n  space-lg: 1.25rem\n  space-xl: 1.5rem\n  space-2xl: 2rem\n  space-3xl: 3rem\n  gutter-mobile: 1rem\n  gutter-desktop: 1.5rem\n  panel-padding-compact: 0.75rem\n  panel-padding-standard: 1.25rem\n---\n\n## Brand & Style\n\nThis design system establishes a high-density, analytical workspace engineered for spatial intelligence, enterprise location analysis, and competitive benchmarking. It targets enterprise strategists, data scientists, and operations executives who rely on swift pattern recognition across multi-layered geospatial datasets.\n\nThe aesthetic philosophy balances modern architectural restraint with high-functioning utilitarianism. By pairing crisp, structural neutrals with concentrated teal focal points, the interface creates an environment of calm focus and absolute precision. Every element communicates reliability, analytical rigor, and quiet confidence—deliberately avoiding decorative noise, gratuitous gradients, or dark-mode cognitive strain.\n\n## Colors\n\nThe palette operates under a strict single-mode light paradigm, utilizing cool atmospheric tones to maintain visual comfort across prolonged analytical sessions. Purple and indigo spectrums are strictly excluded across all interface layers and chart series.\n\n### Semantic & Surface Structure\n- **Canvas Root**: `#F5F7F8` serves as the structural floor, giving subtle framing to elevated data panes.\n- **Surface Panels**: Pure `#FFFFFF` for primary cards, sidebars, floating inspectors, and modals.\n- **Surface Wash & States**: `#F0FDF4` and `#ECFDF5` provide ambient status washes, hover fills, and selection containers.\n- **Dividers & Structural Borders**: `#E3E9ED` delivers a crisp, low-weight separation layer.\n- **Typography & Icons**:\n  - Primary Ink: `#0B1218` (high-contrast, anti-aliased legibility).\n  - Muted Metadata: `#5C6B76` (secondary labels, axes, table metadata).\n  - Disabled/Ghost: `#94A3B8`.\n\n### Categorical & Data Visualization Engine\n- **Primary Metric / Core Entity**: Deep Teal (`#0F766E`)\n- **Benchmark / Competitor 1**: Sky Blue (`#0284C7`)\n- **Delta Alert / Competitor 2**: Vivid Coral (`#F97316`)\n- **Baseline / Competitor 3**: Slate Grey (`#94A3B8`)\n- **Secondary Status Anchors**: Error `#E11D48`, Success `#10B981`.\n\n## Typography\n\nPlus Jakarta Sans powers the entire typographic scale. Numeric figures and data density are prioritized through medium and semibold weights, ensuring clear scanning in tables, geo-inspectors, and summary metrics.\n\nDisplay and headline styles leverage tighter tracking (`-0.02em` to `-0.03em`) to anchor dashboards with executive authority. Body and label weights sit firmly at `500` and `600`, preventing light strokes from dissolving against tinted washes or light neutral backgrounds. Tabular numbers (`font-variant-numeric: tabular-nums`) must be activated globally for chart axes, spatial coordinates, and tabular metrics.\n\n## Layout & Spacing\n\nThe layout model utilizes a fluid 12-column analytical grid flanked by persistent floating control panels and interactive side inspectors. Spacing adheres to a strict 4px/8px modular cadence.\n\n### Breakpoints & Adaptability\n- **Desktop Wide (≥1440px)**: 12-column grid, fluid analytical viewport, 24px gutters, fixed-width tool rails (320px sidebar, 400px inspection pane).\n- **Desktop/Laptop (1024px – 1439px)**: 12-column grid, 16px gutters, collapsible secondary drawer, map/chart area claims dominant flex-basis.\n- **Tablet (768px – 1023px)**: 8-column layout, inspector panel converts into an absolute-positioned bottom sheet.\n- **Mobile (<768px)**: Single-column flow with full-width horizontal-scroll cards, stacked key performance tiles, 16px outer safety margins.\n\n## Elevation & Depth\n\nVisual hierarchy uses crisp, ambient low-blur drop shadows paired with fine boundary lines to maintain clarity across dense spatial layers. \n\n### Elevation Tiers\n- **Tier 0 (Base Surface)**: `#F5F7F8` flat canvas, no shadow.\n- **Tier 1 (Cards, Data Panels, Metrics)**: Pure `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 1px 3px rgba(11, 18, 24, 0.04), 0 1px 2px rgba(11, 18, 24, 0.02)`.\n- **Tier 2 (Hovered Cards, Dropdowns, Segment Popovers)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 4px 12px -2px rgba(11, 18, 24, 0.06), 0 2px 6px -1px rgba(11, 18, 24, 0.03)`.\n- **Tier 3 (Floating Map Controllers, Modals, Flyouts)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 12px 28px -4px rgba(11, 18, 24, 0.08), 0 4px 10px -2px rgba(11, 18, 24, 0.04)`.\n\n## Shapes\n\nThe geometric personality features smooth, balanced curvature. Structural containers and analytics panels use an intentional 10px to 16px radius (`rounded-lg` to `rounded-xl`), which softens dense tables and coordinate data while maintaining a clean, professional profile.\n\nInner controls, tags, and inputs standardise on a proportional 8px radius (`rounded-md`), ensuring harmony between child elements and their parent panels.\n\n## Components\n\n### Buttons\n- **Primary Action**: Solid `#0F766E` background, `#FFFFFF` bold text, 8px border radius, 0 1px 2px shadow. Hover: `#115E59`. Active: `#134E4A`.\n- **Secondary Action**: `#FFFFFF` background, `#0B1218` text, 1px `#E3E9ED` border. Hover: `#F0FDF4` tint, border shifts to `#0F766E`.\n- **Tertiary / Utility**: Ghost button with `#5C6B76` text. Hover: `#F5F7F8` fill, `#0B1218` text.\n\n### Cards & Analytics Panels\n- Standardized with pure `#FFFFFF` background, 12px or 16px corner radius, and 1px `#E3E9ED` perimeter stroke. \n- Headers feature uppercase `#5C6B76` micro-labels (`label-md`) coupled with large `#0B1218` numeric readouts.\n\n### Chips & Filter Pills\n- **Neutral State**: `#FFFFFF` background, 1px `#E3E9ED` border, `#5C6B76` text, 6px radius.\n- **Active / Selected State**: `#ECFDF5` background, `#0F766E` text, 1px `#0F766E` border.\n\n### Inputs & Controls\n- **Text Inputs**: Height 36px/40px, pure `#FFFFFF` fill, 1px `#E3E9ED` border, 8px radius, `#0B1218` value text. Focus: 1px solid `#0F766E` with 2px `#ECFDF5` outer focus ring.\n- **Checkboxes & Radios**: 16px square/round with 1px `#E3E9ED` border. Checked: `#0F766E` fill with `#FFFFFF` check/dot indicator.\n\n### Data Tables & Geospatial Lists\n- Alternating row interaction: Pure `#FFFFFF` resting, transitioning to `#F0FDF4` on pointer hover.\n- Row separators: 1px solid `#E3E9ED`.\n- Table head: `#F5F7F8` background with uppercase `label-md` tracking in `#5C6B76`.\n\n### Domain-Specific Components\n- **Map Control Floating Cluster**: Vertical stack of 36x36px `#FFFFFF` utility squares (zoom, layer toggle, reset) with 8px radius, separated by 1px `#E3E9ED` dividers, elevated at Tier 2.\n- **Benchmark Legend Tag**: Compact 6px radius indicator with an inset color bullet mapping directly to Deep Teal (`#0F766E`), Sky Blue (`#0284C7`), Coral (`#F97316`), or Slate (`#94A3B8`).",
+            "colorVariant": "FIDELITY",
+            "overridePrimaryColor": "#0f766e",
+            "overrideSecondaryColor": "#0284c7",
+            "overrideTertiaryColor": "#f97316",
+            "overrideNeutralColor": "#5c6b76",
+            "spacingScale": 2,
+            "typography": {
+              "body-sm": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "12px",
+                "fontWeight": "500",
+                "lineHeight": "16px",
+                "letterSpacing": "0.005em"
+              },
+              "body-lg": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "16px",
+                "fontWeight": "500",
+                "lineHeight": "24px",
+                "letterSpacing": "-0.005em"
+              },
+              "headline-sm": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "18px",
+                "fontWeight": "600",
+                "lineHeight": "24px",
+                "letterSpacing": "-0.01em"
+              },
+              "display-lg": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "36px",
+                "fontWeight": "800",
+                "lineHeight": "44px",
+                "letterSpacing": "-0.03em"
+              },
+              "headline-md": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "22px",
+                "fontWeight": "700",
+                "lineHeight": "28px",
+                "letterSpacing": "-0.015em"
+              },
+              "body-md": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "lineHeight": "20px",
+                "letterSpacing": "0em"
+              },
+              "label-md": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "11px",
+                "fontWeight": "600",
+                "lineHeight": "16px",
+                "letterSpacing": "0.04em"
+              },
+              "display-lg-mobile": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "28px",
+                "fontWeight": "800",
+                "lineHeight": "36px",
+                "letterSpacing": "-0.02em"
+              },
+              "headline-lg": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "28px",
+                "fontWeight": "700",
+                "lineHeight": "36px",
+                "letterSpacing": "-0.02em"
+              },
+              "label-lg": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "13px",
+                "fontWeight": "600",
+                "lineHeight": "18px",
+                "letterSpacing": "0.01em"
+              },
+              "data-mono": {
+                "fontFamily": "Plus Jakarta Sans",
+                "fontSize": "13px",
+                "fontWeight": "600",
+                "lineHeight": "16px",
+                "letterSpacing": "-0.01em"
+              }
+            },
+            "spacing": {
+              "space-base": "1rem",
+              "space-xl": "1.5rem",
+              "space-sm": "0.5rem",
+              "space-3xl": "3rem",
+              "panel-padding-standard": "1.25rem",
+              "gutter-desktop": "1.5rem",
+              "gutter-mobile": "1rem",
+              "space-md": "0.75rem",
+              "space-2xl": "2rem",
+              "space-2xs": "0.125rem",
+              "space-xs": "0.25rem",
+              "space-lg": "1.25rem",
+              "panel-padding-compact": "0.75rem"
+            },
+            "headlineFontFamily": "Plus Jakarta Sans",
+            "bodyFontFamily": "Plus Jakarta Sans",
+            "labelFontFamily": "Plus Jakarta Sans"
+          }
+        },
+        "version": "1"
+      }
+    },
+    {
+      "design": {
+        "screens": [
+          {
+            "screenshot": {
+              "name": "projects/8355541918828779128/files/e7631a23992444efb24a1977fb822703",
+              "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1UjkL1eEOOHTutTfGV8VbJuTUqAtRoEgOaRpcBDTGXHJVB8yTbgxURdpWloRsuyPd-DtKIgsB4dg-pSEUwwT69atXI0TK24QuuSLKMAeztgbrL0nj6hAcUN2zmNJZ7LYtr2y_Mh0ncxkAtk1DCQK_5yLUe_tgE-W37DvxvL3wMJkVo7dxPjla_ZhvJ9dfzAT83TwQldM3ddFTiN3iBvJ96YtEMS1LqoyoGy8LuSrGVVq2Y44CjJDz5NWw"
+            },
+            "htmlCode": {
+              "name": "projects/8355541918828779128/files/0f93341c481945d5ac0f3beb6263f4c3",
+              "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ6Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpZCiVodG1sX2E4YjQzZmVkOWQ3OTRjMWNiZTIzMTc1ZmMwNTlkZjE1EgoSBhDioPqSDRgBkgEjCgpwcm9qZWN0X2lkEhVCEzgzNTU1NDE5MTg4Mjg3NzkxMjg&filename=&opi=96797242",
+              "mimeType": "text/html"
+            },
+            "id": "653e584393014046b1c581d61d0db4ca",
+            "generatedBy": "figaro_agent",
+            "width": "2560",
+            "height": "2568",
+            "title": "GeoLens — AI Visibility Overview Dashboard",
+            "prompt": "Design the complete desktop SaaS product interface for GeoLens — AI search visibility analytics at 1440px resolution.\n\nSTRICT DESIGN SYSTEM RULES:\n- LIGHT THEME ONLY. Pure white #FFFFFF panels, #F5F7F8 background surface with soft mint atmosphere wash.\n- Accent: Teal #0F766E exclusively.\n- NO purple, NO violet, NO indigo, NO dark mode.\n- Ink text: #0B1218, Muted text: #5C6B76, Border: #E3E9ED.\n- Font: Plus Jakarta Sans (bold headings, crisp medium body).\n- No emojis anywhere. Use crisp geometric SVG icons or standard UI icon glyphs.\n- 10px-16px radius cards with soft subtle shadows.\n\nLAYOUT STRUCTURE:\n1. NARROW ICON RAIL (Leftmost, ~64px wide, bg-white border-r border-[#E3E9ED]):\n   - Brand glyph icon at top with GeoLens lens/radar motif in #0F766E.\n   - Icon navigation list:\n     * Home (inactive)\n     * AI Visibility (active: teal background pill/indicator with #0F766E icon)\n     * Content (inactive)\n     * Reports (inactive)\n     * Settings (at bottom, inactive)\n   - User status or help indicator at bottom.\n\n2. SECONDARY SIDEBAR (240px wide, bg-[#FAFCFC] border-r border-[#E3E9ED]):\n   - Header with bold 'AI Visibility' and brand subtext 'GeoLens Suite'.\n   - Group 1: AI ANALYSIS\n     * Visibility Overview (Active, bold with teal #0F766E text and subtle soft mint #F0FDF4 background badge)\n     * Competitor Research\n     * Prompt Research\n   - Group 2: BRAND PERFORMANCE\n     * Brand Performance\n     * Perception & Sentiment\n   - Group 3: BOOST & MONITOR\n     * Prompt Tracking\n     * Sources & Citations\n     * Actions & Fixes\n   - Bottom storage / plan usage widget (e.g. '1,420 / 5,000 Prompts Analyzed' with neat teal progress bar).\n\n3. TOP BAR (bg-white border-b border-[#E3E9ED], px-8 py-3.5 flex items-center justify-between):\n   - Project selector dropdown: 'Attio · Demo' with company favicon and chevron.\n   - Date range selector: 'Last 7 days' (active pill) / '30 days' / '90 days'.\n   - Model filter dropdown: 'All models (ChatGPT, Perplexity, Gemini, AI Overviews)'.\n   - Right side actions: 'Export' button, Free Trial badge/button in crisp teal #0F766E ('14 days left in trial' or 'Upgrade Plan'), and clean user profile avatar.\n\n4. MAIN DASHBOARD CONTENT (Visibility Overview):\n   - Header:\n     * Title: 'Visibility Overview' (text-2xl font-bold text-[#0B1218])\n     * Subtitle: 'How often ChatGPT, Perplexity, Gemini, and AI Overviews mention your brand'\n     * Quick action buttons on right: 'Schedule Report' and 'Share View'.\n   - 4 CORE KPIS (Row of 4 clean white cards with #E3E9ED borders):\n     1. Visibility: 47% (+4.2% vs last 7d, green delta pill) with mini trend sparkline.\n     2. Avg Position: 2.4 (+0.3 improvement, green delta pill).\n     3. Share of Voice: 18% (+1.8% vs competitors).\n     4. Mentions: 114 (+16 new mentions across tested prompt clusters).\n   - MAIN DATA SECTION (Two-column layout):\n     * Left (approx 65% width): Multi-series line chart 'AI Visibility Over Time' comparing:\n       - Attio (Brand): Deep Teal #0F766E (bold line with data points)\n       - HubSpot: Sky Blue #0284C7\n       - Salesforce: Coral #F97316\n       - Pipedrive: Slate #94A3B8\n       Include interactive hover tooltip, legend with checkmarks, time markers (Mon to Sun).\n     * Right (approx 35% width): 'Who AI Recommends' ranked list card:\n       - #1 Attio (47% recommendation rate, teal badge, Top Pick in 52 prompts)\n       - #2 HubSpot (41% recommendation rate)\n       - #3 Salesforce (28% recommendation rate)\n       - #4 Pipedrive (19% recommendation rate)\n       - #5 Close CRM (12% recommendation rate)\n       Each with visual horizontal progress fill bars matching competitor colors.\n   - BOTTOM DATA SECTION (Two equal cards):\n     * Card 1: 'Visibility by AI Platform'\n       - ChatGPT-4o: 58% mention rate (deep teal bar)\n       - Perplexity Pro: 51% mention rate (teal bar)\n       - Google AI Overviews: 44% mention rate (teal bar)\n       - Gemini 1.5 Pro: 35% mention rate (teal bar)\n       With breakdown of citation types (Primary Source, Comparison Table, Direct Recommendation).\n     * Card 2: 'Mentions by Country'\n       - United States (52%), United Kingdom (21%), Germany (14%), France (8%), Canada (5%).\n       - Segmented horizontal stacked bar visualizer with legend and percentage breakdown.\n\nEnsure crisp B2B SaaS aesthetics, high data density, elegant micro-details, no dark mode elements, and strict adherence to the teal #0F766E palette.",
+            "name": "projects/8355541918828779128/screens/653e584393014046b1c581d61d0db4ca",
+            "theme": {
+              "colorMode": "LIGHT",
+              "font": "PLUS_JAKARTA_SANS",
+              "roundness": "ROUND_EIGHT",
+              "customColor": "#0f766e",
+              "headlineFont": "PLUS_JAKARTA_SANS",
+              "bodyFont": "PLUS_JAKARTA_SANS",
+              "labelFont": "PLUS_JAKARTA_SANS",
+              "namedColors": {
+                "on_primary_fixed_variant": "#00504a",
+                "on_primary_container": "#a3faef",
+                "on_error": "#ffffff",
+                "on_tertiary_fixed": "#341100",
+                "tertiary_container": "#af4c00",
+                "surface_tint": "#006a63",
+                "inverse_surface": "#24323c",
+                "primary_fixed": "#9cf2e8",
+                "tertiary_fixed": "#ffdbca",
+                "secondary_container": "#5bb8fe",
+                "error": "#ba1a1a",
+                "primary_container": "#0f766e",
+                "surface_variant": "#d5e5f1",
+                "on_primary_fixed": "#00201d",
+                "secondary": "#006398",
+                "tertiary": "#893a00",
+                "on_secondary": "#ffffff",
+                "secondary_fixed_dim": "#93ccff",
+                "secondary_fixed": "#cce5ff",
+                "outline_variant": "#bdc9c6",
+                "on_secondary_fixed": "#001d31",
+                "on_surface_variant": "#3e4947",
+                "on_error_container": "#93000a",
+                "surface_bright": "#f5faff",
+                "surface": "#f5faff",
+                "background": "#f5faff",
+                "surface_container": "#e0f0fd",
+                "on_tertiary_fixed_variant": "#783200",
+                "tertiary_fixed_dim": "#ffb690",
+                "on_background": "#0e1d26",
+                "surface_container_lowest": "#ffffff",
+                "on_surface": "#0e1d26",
+                "error_container": "#ffdad6",
+                "on_tertiary": "#ffffff",
+                "on_secondary_container": "#00476e",
+                "inverse_primary": "#80d5cb",
+                "surface_container_low": "#eaf5ff",
+                "on_tertiary_container": "#ffe6da",
+                "on_secondary_fixed_variant": "#004b73",
+                "primary": "#005c55",
+                "primary_fixed_dim": "#80d5cb",
+                "inverse_on_surface": "#e4f3ff",
+                "outline": "#6e7977",
+                "surface_container_high": "#daeaf7",
+                "surface_dim": "#ccdce9",
+                "on_primary": "#ffffff",
+                "surface_container_highest": "#d5e5f1"
+              },
+              "colorVariant": "FIDELITY",
+              "overridePrimaryColor": "#0f766e",
+              "overrideSecondaryColor": "#0284c7",
+              "overrideTertiaryColor": "#f97316",
+              "overrideNeutralColor": "#5c6b76",
+              "spacingScale": 2,
+              "typography": {
+                "headline-lg": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "28px",
+                  "fontWeight": "700",
+                  "lineHeight": "36px",
+                  "letterSpacing": "-0.02em"
+                },
+                "data-mono": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "13px",
+                  "fontWeight": "600",
+                  "lineHeight": "16px",
+                  "letterSpacing": "-0.01em"
+                },
+                "body-lg": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "16px",
+                  "fontWeight": "500",
+                  "lineHeight": "24px",
+                  "letterSpacing": "-0.005em"
+                },
+                "body-sm": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "12px",
+                  "fontWeight": "500",
+                  "lineHeight": "16px",
+                  "letterSpacing": "0.005em"
+                },
+                "label-md": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "11px",
+                  "fontWeight": "600",
+                  "lineHeight": "16px",
+                  "letterSpacing": "0.04em"
+                },
+                "label-lg": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "13px",
+                  "fontWeight": "600",
+                  "lineHeight": "18px",
+                  "letterSpacing": "0.01em"
+                },
+                "display-lg": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "36px",
+                  "fontWeight": "800",
+                  "lineHeight": "44px",
+                  "letterSpacing": "-0.03em"
+                },
+                "headline-sm": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "18px",
+                  "fontWeight": "600",
+                  "lineHeight": "24px",
+                  "letterSpacing": "-0.01em"
+                },
+                "body-md": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "14px",
+                  "fontWeight": "500",
+                  "lineHeight": "20px",
+                  "letterSpacing": "0em"
+                },
+                "headline-md": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "22px",
+                  "fontWeight": "700",
+                  "lineHeight": "28px",
+                  "letterSpacing": "-0.015em"
+                },
+                "display-lg-mobile": {
+                  "fontFamily": "Plus Jakarta Sans",
+                  "fontSize": "28px",
+                  "fontWeight": "800",
+                  "lineHeight": "36px",
+                  "letterSpacing": "-0.02em"
+                }
+              },
+              "spacing": {
+                "space-3xl": "3rem",
+                "space-base": "1rem",
+                "gutter-desktop": "1.5rem",
+                "gutter-mobile": "1rem",
+                "space-xl": "1.5rem",
+                "panel-padding-standard": "1.25rem",
+                "space-sm": "0.5rem",
+                "space-lg": "1.25rem",
+                "space-xs": "0.25rem",
+                "space-2xl": "2rem",
+                "space-2xs": "0.125rem",
+                "space-md": "0.75rem",
+                "panel-padding-compact": "0.75rem"
+              },
+              "headlineFontFamily": "Plus Jakarta Sans",
+              "bodyFontFamily": "Plus Jakarta Sans",
+              "labelFontFamily": "Plus Jakarta Sans"
+            },
+            "deviceType": "DESKTOP",
+            "screenType": "DESIGN",
+            "screenMetadata": {
+              "agentType": "PRO_AGENT",
+              "status": "COMPLETE"
+            },
+            "designSystem": {
+              "name": "assets/0a31ee2fdafc44158154f29748eb80f6",
+              "designSystem": {
+                "displayName": "Precision Geospatial Analytics",
+                "styleGuidelines": "## Brand & Style\n\nThis design system establishes a high-density, analytical workspace engineered for spatial intelligence, enterprise location analysis, and competitive benchmarking. It targets enterprise strategists, data scientists, and operations executives who rely on swift pattern recognition across multi-layered geospatial datasets.\n\nThe aesthetic philosophy balances modern architectural restraint with high-functioning utilitarianism. By pairing crisp, structural neutrals with concentrated teal focal points, the interface creates an environment of calm focus and absolute precision. Every element communicates reliability, analytical rigor, and quiet confidence—deliberately avoiding decorative noise, gratuitous gradients, or dark-mode cognitive strain.\n\n## Layout & Spacing\n\nThe layout model utilizes a fluid 12-column analytical grid flanked by persistent floating control panels and interactive side inspectors. Spacing adheres to a strict 4px/8px modular cadence.\n\n### Breakpoints & Adaptability\n- **Desktop Wide (≥1440px)**: 12-column grid, fluid analytical viewport, 24px gutters, fixed-width tool rails (320px sidebar, 400px inspection pane).\n- **Desktop/Laptop (1024px – 1439px)**: 12-column grid, 16px gutters, collapsible secondary drawer, map/chart area claims dominant flex-basis.\n- **Tablet (768px – 1023px)**: 8-column layout, inspector panel converts into an absolute-positioned bottom sheet.\n- **Mobile (<768px)**: Single-column flow with full-width horizontal-scroll cards, stacked key performance tiles, 16px outer safety margins.\n\n## Elevation & Depth\n\nVisual hierarchy uses crisp, ambient low-blur drop shadows paired with fine boundary lines to maintain clarity across dense spatial layers. \n\n### Elevation Tiers\n- **Tier 0 (Base Surface)**: `#F5F7F8` flat canvas, no shadow.\n- **Tier 1 (Cards, Data Panels, Metrics)**: Pure `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 1px 3px rgba(11, 18, 24, 0.04), 0 1px 2px rgba(11, 18, 24, 0.02)`.\n- **Tier 2 (Hovered Cards, Dropdowns, Segment Popovers)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 4px 12px -2px rgba(11, 18, 24, 0.06), 0 2px 6px -1px rgba(11, 18, 24, 0.03)`.\n- **Tier 3 (Floating Map Controllers, Modals, Flyouts)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 12px 28px -4px rgba(11, 18, 24, 0.08), 0 4px 10px -2px rgba(11, 18, 24, 0.04)`.\n\n## Components\n\n### Buttons\n- **Primary Action**: Solid `#0F766E` background, `#FFFFFF` bold text, 8px border radius, 0 1px 2px shadow. Hover: `#115E59`. Active: `#134E4A`.\n- **Secondary Action**: `#FFFFFF` background, `#0B1218` text, 1px `#E3E9ED` border. Hover: `#F0FDF4` tint, border shifts to `#0F766E`.\n- **Tertiary / Utility**: Ghost button with `#5C6B76` text. Hover: `#F5F7F8` fill, `#0B1218` text.\n\n### Cards & Analytics Panels\n- Standardized with pure `#FFFFFF` background, 12px or 16px corner radius, and 1px `#E3E9ED` perimeter stroke. \n- Headers feature uppercase `#5C6B76` micro-labels (`label-md`) coupled with large `#0B1218` numeric readouts.\n\n### Chips & Filter Pills\n- **Neutral State**: `#FFFFFF` background, 1px `#E3E9ED` border, `#5C6B76` text, 6px radius.\n- **Active / Selected State**: `#ECFDF5` background, `#0F766E` text, 1px `#0F766E` border.\n\n### Inputs & Controls\n- **Text Inputs**: Height 36px/40px, pure `#FFFFFF` fill, 1px `#E3E9ED` border, 8px radius, `#0B1218` value text. Focus: 1px solid `#0F766E` with 2px `#ECFDF5` outer focus ring.\n- **Checkboxes & Radios**: 16px square/round with 1px `#E3E9ED` border. Checked: `#0F766E` fill with `#FFFFFF` check/dot indicator.\n\n### Data Tables & Geospatial Lists\n- Alternating row interaction: Pure `#FFFFFF` resting, transitioning to `#F0FDF4` on pointer hover.\n- Row separators: 1px solid `#E3E9ED`.\n- Table head: `#F5F7F8` background with uppercase `label-md` tracking in `#5C6B76`.\n\n### Domain-Specific Components\n- **Map Control Floating Cluster**: Vertical stack of 36x36px `#FFFFFF` utility squares (zoom, layer toggle, reset) with 8px radius, separated by 1px `#E3E9ED` dividers, elevated at Tier 2.\n- **Benchmark Legend Tag**: Compact 6px radius indicator with an inset color bullet mapping directly to Deep Teal (`#0F766E`), Sky Blue (`#0284C7`), Coral (`#F97316`), or Slate (`#94A3B8`).",
+                "theme": {
+                  "colorMode": "LIGHT",
+                  "font": "PLUS_JAKARTA_SANS",
+                  "roundness": "ROUND_EIGHT",
+                  "customColor": "#0f766e",
+                  "headlineFont": "PLUS_JAKARTA_SANS",
+                  "bodyFont": "PLUS_JAKARTA_SANS",
+                  "labelFont": "PLUS_JAKARTA_SANS",
+                  "namedColors": {
+                    "on_primary_fixed": "#00201d",
+                    "inverse_on_surface": "#e4f3ff",
+                    "on_primary_container": "#a3faef",
+                    "surface_container": "#e0f0fd",
+                    "surface_container_lowest": "#ffffff",
+                    "surface_dim": "#ccdce9",
+                    "primary_fixed": "#9cf2e8",
+                    "tertiary": "#893a00",
+                    "error_container": "#ffdad6",
+                    "tertiary_fixed_dim": "#ffb690",
+                    "on_secondary_fixed_variant": "#004b73",
+                    "primary_fixed_dim": "#80d5cb",
+                    "inverse_primary": "#80d5cb",
+                    "surface_container_low": "#eaf5ff",
+                    "on_tertiary_container": "#ffe6da",
+                    "on_error": "#ffffff",
+                    "on_tertiary": "#ffffff",
+                    "inverse_surface": "#24323c",
+                    "error": "#ba1a1a",
+                    "background": "#f5faff",
+                    "on_background": "#0e1d26",
+                    "on_secondary_container": "#00476e",
+                    "primary_container": "#0f766e",
+                    "secondary": "#006398",
+                    "on_surface_variant": "#3e4947",
+                    "surface_container_highest": "#d5e5f1",
+                    "surface": "#f5faff",
+                    "surface_variant": "#d5e5f1",
+                    "on_error_container": "#93000a",
+                    "on_surface": "#0e1d26",
+                    "secondary_container": "#5bb8fe",
+                    "tertiary_fixed": "#ffdbca",
+                    "on_primary_fixed_variant": "#00504a",
+                    "surface_container_high": "#daeaf7",
+                    "on_secondary": "#ffffff",
+                    "on_tertiary_fixed": "#341100",
+                    "on_secondary_fixed": "#001d31",
+                    "primary": "#005c55",
+                    "tertiary_container": "#af4c00",
+                    "on_tertiary_fixed_variant": "#783200",
+                    "secondary_fixed_dim": "#93ccff",
+                    "outline": "#6e7977",
+                    "surface_bright": "#f5faff",
+                    "outline_variant": "#bdc9c6",
+                    "on_primary": "#ffffff",
+                    "surface_tint": "#006a63",
+                    "secondary_fixed": "#cce5ff"
+                  },
+                  "designMd": "---\nname: Precision Geospatial Analytics\ncolors:\n  surface: '#f5faff'\n  surface-dim: '#ccdce9'\n  surface-bright: '#f5faff'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#eaf5ff'\n  surface-container: '#e0f0fd'\n  surface-container-high: '#daeaf7'\n  surface-container-highest: '#d5e5f1'\n  on-surface: '#0e1d26'\n  on-surface-variant: '#3e4947'\n  inverse-surface: '#24323c'\n  inverse-on-surface: '#e4f3ff'\n  outline: '#6e7977'\n  outline-variant: '#bdc9c6'\n  surface-tint: '#006a63'\n  primary: '#005c55'\n  on-primary: '#ffffff'\n  primary-container: '#0f766e'\n  on-primary-container: '#a3faef'\n  inverse-primary: '#80d5cb'\n  secondary: '#006398'\n  on-secondary: '#ffffff'\n  secondary-container: '#5bb8fe'\n  on-secondary-container: '#00476e'\n  tertiary: '#893a00'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#af4c00'\n  on-tertiary-container: '#ffe6da'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#9cf2e8'\n  primary-fixed-dim: '#80d5cb'\n  on-primary-fixed: '#00201d'\n  on-primary-fixed-variant: '#00504a'\n  secondary-fixed: '#cce5ff'\n  secondary-fixed-dim: '#93ccff'\n  on-secondary-fixed: '#001d31'\n  on-secondary-fixed-variant: '#004b73'\n  tertiary-fixed: '#ffdbca'\n  tertiary-fixed-dim: '#ffb690'\n  on-tertiary-fixed: '#341100'\n  on-tertiary-fixed-variant: '#783200'\n  background: '#f5faff'\n  on-background: '#0e1d26'\n  surface-variant: '#d5e5f1'\ntypography:\n  display-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 36px\n    fontWeight: '800'\n    lineHeight: 44px\n    letterSpacing: -0.03em\n  display-lg-mobile:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 28px\n    fontWeight: '800'\n    lineHeight: 36px\n    letterSpacing: -0.02em\n  headline-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 28px\n    fontWeight: '700'\n    lineHeight: 36px\n    letterSpacing: -0.02em\n  headline-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 22px\n    fontWeight: '700'\n    lineHeight: 28px\n    letterSpacing: -0.015em\n  headline-sm:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 18px\n    fontWeight: '600'\n    lineHeight: 24px\n    letterSpacing: -0.01em\n  body-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 16px\n    fontWeight: '500'\n    lineHeight: 24px\n    letterSpacing: -0.005em\n  body-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 14px\n    fontWeight: '500'\n    lineHeight: 20px\n    letterSpacing: 0em\n  body-sm:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 12px\n    fontWeight: '500'\n    lineHeight: 16px\n    letterSpacing: 0.005em\n  label-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 13px\n    fontWeight: '600'\n    lineHeight: 18px\n    letterSpacing: 0.01em\n  label-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 11px\n    fontWeight: '600'\n    lineHeight: 16px\n    letterSpacing: 0.04em\n  data-mono:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 13px\n    fontWeight: '600'\n    lineHeight: 16px\n    letterSpacing: -0.01em\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  space-2xs: 0.125rem\n  space-xs: 0.25rem\n  space-sm: 0.5rem\n  space-md: 0.75rem\n  space-base: 1rem\n  space-lg: 1.25rem\n  space-xl: 1.5rem\n  space-2xl: 2rem\n  space-3xl: 3rem\n  gutter-mobile: 1rem\n  gutter-desktop: 1.5rem\n  panel-padding-compact: 0.75rem\n  panel-padding-standard: 1.25rem\n---\n\n## Brand & Style\n\nThis design system establishes a high-density, analytical workspace engineered for spatial intelligence, enterprise location analysis, and competitive benchmarking. It targets enterprise strategists, data scientists, and operations executives who rely on swift pattern recognition across multi-layered geospatial datasets.\n\nThe aesthetic philosophy balances modern architectural restraint with high-functioning utilitarianism. By pairing crisp, structural neutrals with concentrated teal focal points, the interface creates an environment of calm focus and absolute precision. Every element communicates reliability, analytical rigor, and quiet confidence—deliberately avoiding decorative noise, gratuitous gradients, or dark-mode cognitive strain.\n\n## Colors\n\nThe palette operates under a strict single-mode light paradigm, utilizing cool atmospheric tones to maintain visual comfort across prolonged analytical sessions. Purple and indigo spectrums are strictly excluded across all interface layers and chart series.\n\n### Semantic & Surface Structure\n- **Canvas Root**: `#F5F7F8` serves as the structural floor, giving subtle framing to elevated data panes.\n- **Surface Panels**: Pure `#FFFFFF` for primary cards, sidebars, floating inspectors, and modals.\n- **Surface Wash & States**: `#F0FDF4` and `#ECFDF5` provide ambient status washes, hover fills, and selection containers.\n- **Dividers & Structural Borders**: `#E3E9ED` delivers a crisp, low-weight separation layer.\n- **Typography & Icons**:\n  - Primary Ink: `#0B1218` (high-contrast, anti-aliased legibility).\n  - Muted Metadata: `#5C6B76` (secondary labels, axes, table metadata).\n  - Disabled/Ghost: `#94A3B8`.\n\n### Categorical & Data Visualization Engine\n- **Primary Metric / Core Entity**: Deep Teal (`#0F766E`)\n- **Benchmark / Competitor 1**: Sky Blue (`#0284C7`)\n- **Delta Alert / Competitor 2**: Vivid Coral (`#F97316`)\n- **Baseline / Competitor 3**: Slate Grey (`#94A3B8`)\n- **Secondary Status Anchors**: Error `#E11D48`, Success `#10B981`.\n\n## Typography\n\nPlus Jakarta Sans powers the entire typographic scale. Numeric figures and data density are prioritized through medium and semibold weights, ensuring clear scanning in tables, geo-inspectors, and summary metrics.\n\nDisplay and headline styles leverage tighter tracking (`-0.02em` to `-0.03em`) to anchor dashboards with executive authority. Body and label weights sit firmly at `500` and `600`, preventing light strokes from dissolving against tinted washes or light neutral backgrounds. Tabular numbers (`font-variant-numeric: tabular-nums`) must be activated globally for chart axes, spatial coordinates, and tabular metrics.\n\n## Layout & Spacing\n\nThe layout model utilizes a fluid 12-column analytical grid flanked by persistent floating control panels and interactive side inspectors. Spacing adheres to a strict 4px/8px modular cadence.\n\n### Breakpoints & Adaptability\n- **Desktop Wide (≥1440px)**: 12-column grid, fluid analytical viewport, 24px gutters, fixed-width tool rails (320px sidebar, 400px inspection pane).\n- **Desktop/Laptop (1024px – 1439px)**: 12-column grid, 16px gutters, collapsible secondary drawer, map/chart area claims dominant flex-basis.\n- **Tablet (768px – 1023px)**: 8-column layout, inspector panel converts into an absolute-positioned bottom sheet.\n- **Mobile (<768px)**: Single-column flow with full-width horizontal-scroll cards, stacked key performance tiles, 16px outer safety margins.\n\n## Elevation & Depth\n\nVisual hierarchy uses crisp, ambient low-blur drop shadows paired with fine boundary lines to maintain clarity across dense spatial layers. \n\n### Elevation Tiers\n- **Tier 0 (Base Surface)**: `#F5F7F8` flat canvas, no shadow.\n- **Tier 1 (Cards, Data Panels, Metrics)**: Pure `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 1px 3px rgba(11, 18, 24, 0.04), 0 1px 2px rgba(11, 18, 24, 0.02)`.\n- **Tier 2 (Hovered Cards, Dropdowns, Segment Popovers)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 4px 12px -2px rgba(11, 18, 24, 0.06), 0 2px 6px -1px rgba(11, 18, 24, 0.03)`.\n- **Tier 3 (Floating Map Controllers, Modals, Flyouts)**: `#FFFFFF`, `border: 1px solid #E3E9ED`, `box-shadow: 0 12px 28px -4px rgba(11, 18, 24, 0.08), 0 4px 10px -2px rgba(11, 18, 24, 0.04)`.\n\n## Shapes\n\nThe geometric personality features smooth, balanced curvature. Structural containers and analytics panels use an intentional 10px to 16px radius (`rounded-lg` to `rounded-xl`), which softens dense tables and coordinate data while maintaining a clean, professional profile.\n\nInner controls, tags, and inputs standardise on a proportional 8px radius (`rounded-md`), ensuring harmony between child elements and their parent panels.\n\n## Components\n\n### Buttons\n- **Primary Action**: Solid `#0F766E` background, `#FFFFFF` bold text, 8px border radius, 0 1px 2px shadow. Hover: `#115E59`. Active: `#134E4A`.\n- **Secondary Action**: `#FFFFFF` background, `#0B1218` text, 1px `#E3E9ED` border. Hover: `#F0FDF4` tint, border shifts to `#0F766E`.\n- **Tertiary / Utility**: Ghost button with `#5C6B76` text. Hover: `#F5F7F8` fill, `#0B1218` text.\n\n### Cards & Analytics Panels\n- Standardized with pure `#FFFFFF` background, 12px or 16px corner radius, and 1px `#E3E9ED` perimeter stroke. \n- Headers feature uppercase `#5C6B76` micro-labels (`label-md`) coupled with large `#0B1218` numeric readouts.\n\n### Chips & Filter Pills\n- **Neutral State**: `#FFFFFF` background, 1px `#E3E9ED` border, `#5C6B76` text, 6px radius.\n- **Active / Selected State**: `#ECFDF5` background, `#0F766E` text, 1px `#0F766E` border.\n\n### Inputs & Controls\n- **Text Inputs**: Height 36px/40px, pure `#FFFFFF` fill, 1px `#E3E9ED` border, 8px radius, `#0B1218` value text. Focus: 1px solid `#0F766E` with 2px `#ECFDF5` outer focus ring.\n- **Checkboxes & Radios**: 16px square/round with 1px `#E3E9ED` border. Checked: `#0F766E` fill with `#FFFFFF` check/dot indicator.\n\n### Data Tables & Geospatial Lists\n- Alternating row interaction: Pure `#FFFFFF` resting, transitioning to `#F0FDF4` on pointer hover.\n- Row separators: 1px solid `#E3E9ED`.\n- Table head: `#F5F7F8` background with uppercase `label-md` tracking in `#5C6B76`.\n\n### Domain-Specific Components\n- **Map Control Floating Cluster**: Vertical stack of 36x36px `#FFFFFF` utility squares (zoom, layer toggle, reset) with 8px radius, separated by 1px `#E3E9ED` dividers, elevated at Tier 2.\n- **Benchmark Legend Tag**: Compact 6px radius indicator with an inset color bullet mapping directly to Deep Teal (`#0F766E`), Sky Blue (`#0284C7`), Coral (`#F97316`), or Slate (`#94A3B8`).",
+                  "colorVariant": "FIDELITY",
+                  "overridePrimaryColor": "#0f766e",
+                  "overrideSecondaryColor": "#0284c7",
+                  "overrideTertiaryColor": "#f97316",
+                  "overrideNeutralColor": "#5c6b76",
+                  "spacingScale": 2,
+                  "typography": {
+                    "body-md": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "14px",
+                      "fontWeight": "500",
+                      "lineHeight": "20px",
+                      "letterSpacing": "0em"
+                    },
+                    "headline-lg": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "28px",
+                      "fontWeight": "700",
+                      "lineHeight": "36px",
+                      "letterSpacing": "-0.02em"
+                    },
+                    "body-sm": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "12px",
+                      "fontWeight": "500",
+                      "lineHeight": "16px",
+                      "letterSpacing": "0.005em"
+                    },
+                    "headline-sm": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "18px",
+                      "fontWeight": "600",
+                      "lineHeight": "24px",
+                      "letterSpacing": "-0.01em"
+                    },
+                    "label-lg": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "13px",
+                      "fontWeight": "600",
+                      "lineHeight": "18px",
+                      "letterSpacing": "0.01em"
+                    },
+                    "body-lg": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "16px",
+                      "fontWeight": "500",
+                      "lineHeight": "24px",
+                      "letterSpacing": "-0.005em"
+                    },
+                    "headline-md": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "22px",
+                      "fontWeight": "700",
+                      "lineHeight": "28px",
+                      "letterSpacing": "-0.015em"
+                    },
+                    "data-mono": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "13px",
+                      "fontWeight": "600",
+                      "lineHeight": "16px",
+                      "letterSpacing": "-0.01em"
+                    },
+                    "display-lg": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "36px",
+                      "fontWeight": "800",
+                      "lineHeight": "44px",
+                      "letterSpacing": "-0.03em"
+                    },
+                    "label-md": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "11px",
+                      "fontWeight": "600",
+                      "lineHeight": "16px",
+                      "letterSpacing": "0.04em"
+                    },
+                    "display-lg-mobile": {
+                      "fontFamily": "Plus Jakarta Sans",
+                      "fontSize": "28px",
+                      "fontWeight": "800",
+                      "lineHeight": "36px",
+                      "letterSpacing": "-0.02em"
+                    }
+                  },
+                  "spacing": {
+                    "panel-padding-compact": "0.75rem",
+                    "space-2xs": "0.125rem",
+                    "space-md": "0.75rem",
+                    "space-2xl": "2rem",
+                    "gutter-desktop": "1.5rem",
+                    "space-lg": "1.25rem",
+                    "space-xs": "0.25rem",
+                    "space-sm": "0.5rem",
+                    "space-xl": "1.5rem",
+                    "gutter-mobile": "1rem",
+                    "space-base": "1rem",
+                    "panel-padding-standard": "1.25rem",
+                    "space-3xl": "3rem"
+                  },
+                  "headlineFontFamily": "Plus Jakarta Sans",
+                  "bodyFontFamily": "Plus Jakarta Sans",
+                  "labelFontFamily": "Plus Jakarta Sans"
+                }
+              },
+              "version": "1"
+            }
+          }
+        ],
+        "theme": {}
+      }
+    },
+    {
+      "text": "I have designed and built the desktop SaaS product interface for **GeoLens — AI Visibility Overview Dashboard** (`GeoLens — AI Visibility Overview Dashboard`), crafted specifically around your exact brand constraints, clean light aesthetic, and data-dense B2B analytics layout.\n\n### Architectural & Visual Highlights:\n\n1. **Brand & Color Palette (Precision Geospatial & Search Analytics):**\n   - **Strict Palette Adherence:** Zero purple, violet, or dark-mode surfaces. Anchored strictly in deep teal (`#0F766E`), subtle soft mint atmosphere washes (`#ECFDF5` / `#F0FDF4`), pure white panels (`#FFFFFF`), neutral light backdrop (`#F5F7F8`), ink typography (`#0B1218`), muted cues (`#5C6B76`), and crisp architectural borders (`#E3E9ED`).\n   - **Typography:** Set in **Plus Jakarta Sans** with clean letter-spacing, bold metric headlines, and legible medium body text.\n   - **Component Radii & Elevation:** 10px–16px radiused containers with soft, restrained shadows.\n\n2. **Dual-Sidebar Navigation Architecture:**\n   - **Narrow Icon Rail (Far Left):** Minimalist primary app rail containing the GeoLens glyph mark, Home, **AI Visibility** (active indicator state), Content, Reports, and bottom utility actions (Settings, Help).\n   - **Secondary Sidebar (\"AI Visibility\"):** Nested tool navigation grouped into:\n     - **AI Analysis:** *Visibility Overview* (active pill), *Competitor Research* (with notification count), *Prompt Research*.\n     - **Brand Performance:** *Brand Performance*, *Perception & Sentiment*.\n     - **Boost & Monitor:** *Prompt Tracking* (live status), *Sources & Citations*, *Actions & Fixes*.\n     - Bottom plan quota widget tracking prompt analysis capacity (*1,420 / 5,000 Prompts Analyzed*).\n\n3. **Contextual Top Control Bar:**\n   - Active workspace selector (`Attio · Demo`), multi-engine filter (`All Models · 4 AI Engines`), date range toggles (`Last 7 Days`, `Last 30 Days`, `90 Days`), trial status pill (`14 days left in trial`), report export, and primary `+ New Analysis` action button.\n\n4. **Visibility Overview Dashboard Body:**\n   - **Header & Telemetry Badges:** Section title with subtitle defining brand citation tracking across ChatGPT, Perplexity, Gemini, and AI Overviews, alongside quick schedule and view-sharing utilities.\n   - **Top 4 KPI Scorecards:**\n     - **AI Visibility:** `47%` (+4.2% delta) with inline trend sparkline.\n     - **Avg Position:** `2.4` (+0.3 rank improvement).\n     - **Share of Voice:** `18%` (+1.8% vs rivals).\n     - **Total Mentions:** `114` (+16 new tested clusters).\n   - **Comparative Benchmark Area (Split Grid):**\n     - **Multi-Series Trend Line Chart:** 7-day comparative presence charting **Attio (Brand in deep teal)** vs. **HubSpot (sky blue)**, **Salesforce (coral)**, and **Pipedrive (slate)** with peak callout points and interactive log references.\n     - **Who AI Recommends (Ranked Leaderboard):** Ordered list of category leaders with percentage recommendation share, top-pick markers, and proportional fill bars.\n   - **Deep Distribution Analytics (Bottom Row):**\n     - **Visibility by AI Platform:** Granular breakdown across ChatGPT-4o (58%), Perplexity Pro (51%), Google AI Overviews (44%), and Gemini 1.5 Pro (35%) with citation type classification (Primary Citation vs Incidental).\n     - **Mentions by Country:** Multi-segment normalized bar visualizer with regional share breakdown for the United States, UK, Germany, France, and Canada."
+    },
+    {
+      "suggestion": "Design the Competitor Research screen for GeoLens comparing prompt-by-prompt win/loss rates"
+    },
+    {
+      "suggestion": "Design the Prompt Research & Query Matrix view for discovering missing topics"
+    },
+    {
+      "suggestion": "Create the Sources & Citations inspection drawer for drilled-down LLM references"
+    }
+  ]
+}

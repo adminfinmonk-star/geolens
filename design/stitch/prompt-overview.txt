@@ -1,0 +1,25 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — AI search visibility analytics (similar to Semrush AI Visibility, but original GeoLens brand).
+
+Brand:
+- Name: GeoLens in sidebar logo
+- Accent teal #0F766E only — NO purple, NO indigo, NO dark mode
+- Neutrals: white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED
+- Font: Plus Jakarta Sans (bold headings, medium body)
+- Soft mint atmosphere wash; white content panels; 10–16px radius; soft shadows
+
+Layout:
+1) Narrow icon rail: Home, AI Visibility (active), Content, Reports, Settings
+2) Secondary sidebar "AI Visibility" with groups AI Analysis (Visibility Overview active, Competitor Research, Prompt Research), Brand Performance (Brand Performance, Perception), Boost & Monitor (Prompt Tracking, Sources, Actions)
+3) Main: Visibility Overview dashboard
+
+Top bar: project "Attio · Demo", filters Last 7 days / All models, teal button free trial or avatar
+
+Main content:
+- Title Visibility Overview
+- Subtitle: How often ChatGPT, Perplexity, Gemini, and AI Overviews mention your brand
+- KPIs: Visibility 47%, Avg position 2.4, Share of voice 18%, Mentions 114
+- Multi-series line chart brand vs competitors (teal/sky/coral)
+- Right: Who AI recommends ranked list with %
+- Bottom: platform bars + Mentions by country segmented bar
+
+Professional B2B SaaS, calm, data-forward. No emoji. No purple AI look. 1440px desktop.

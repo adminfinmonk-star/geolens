@@ -1,0 +1,9 @@
+{
+  "name": "geolens-product-manual-builder",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "docx": "^9.5.0",
+    "sharp": "^0.34.2"
+  }
+}

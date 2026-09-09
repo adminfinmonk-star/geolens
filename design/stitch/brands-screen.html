@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoLens — Settings / Brands (Multi-Entity)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            teal: {
+              brand: '#0F766E',
+              hover: '#115E59',
+              light: '#E6F4F2',
+              border: '#99F6E4',
+              surface: '#F0FDFA',
+            },
+            ink: {
+              main: '#0B1218',
+              muted: '#5C6B76',
+              subtle: '#8898A4',
+            },
+            neutral: {
+              surface: '#F5F7F8',
+              card: '#FFFFFF',
+              border: '#E3E9ED',
+              alt: '#EDF2F5',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #0B1218;
+      background-color: #F5F7F8;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F5F7F8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="min-w-[1440px] antialiased text-[13px] bg-[#F5F7F8]">
+
+  <!-- Top Utility Header -->
+  <header class="h-14 bg-white border-b border-neutral-border sticky top-0 z-30 flex items-center justify-between px-5">
+    <div class="flex items-center gap-6">
+      <!-- Logo -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-teal-brand flex items-center justify-center text-white shadow-sm">
+          <span class="material-symbols-outlined text-[20px] font-bold">radar</span>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-base font-extrabold tracking-tight text-ink-main">GeoLens</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-alt text-ink-muted border border-neutral-border">v2.4</span>
+        </div>
+      </div>
+
+      <!-- Domain / Project Switcher -->
+      <div class="flex items-center gap-2 bg-neutral-surface border border-neutral-border rounded-lg px-2.5 py-1.5 hover:border-teal-brand/50 cursor-pointer transition">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="text-xs font-semibold text-ink-main">nike.com (Global)</span>
+        <span class="material-symbols-outlined text-[16px] text-ink-muted">unfold_more</span>
+      </div>
+
+      <!-- Breadcrumbs -->
+      <nav class="flex items-center gap-2 text-xs text-ink-muted">
+        <span>Settings</span>
+        <span class="text-neutral-border text-[10px]">/</span>
+        <span class="text-ink-main font-semibold">Brands</span>
+        <span class="text-[11px] font-bold text-teal-brand bg-teal-light px-2 py-0.5 rounded-full border border-teal-border/50">Multi-Entity</span>
+      </nav>
+    </div>
+
+    <!-- Right Header Controls -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-teal-surface border border-teal-border/60 text-teal-brand text-xs font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-teal-brand animate-pulse"></span>
+        <span>Telemetry Active (4 Engines)</span>
+      </div>
+
+      <div class="h-4 w-[1px] bg-neutral-border"></div>
+
+      <!-- Quick Search -->
+      <div class="relative w-64">
+        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-muted text-[16px]">search</span>
+        <input type="text" placeholder="Search brands, entities, domains..." class="w-full pl-8 pr-3 py-1.5 bg-neutral-surface border border-neutral-border rounded-lg text-xs text-ink-main placeholder:text-ink-subtle focus:outline-none focus:border-teal-brand focus:bg-white transition" />
+      </div>
+
+      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition border border-neutral-border">
+        <span class="material-symbols-outlined text-[18px]">notifications</span>
+      </button>
+
+      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition border border-neutral-border">
+        <span class="material-symbols-outlined text-[18px]">help</span>
+      </button>
+
+      <!-- Account Avatar -->
+      <div class="w-8 h-8 rounded-lg bg-teal-light border border-teal-border text-teal-brand font-bold text-xs flex items-center justify-center cursor-pointer hover:bg-teal-brand hover:text-white transition">
+        GL
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Container: Dual-Rail Nav + Main Content -->
+  <div class="flex min-h-[calc(100vh-56px)]">
+
+    <!-- RAIL 1: Primary Icon Rail (Semrush Style) -->
+    <aside class="w-16 bg-white border-r border-neutral-border flex flex-col justify-between items-center py-4 flex-shrink-0 z-20">
+      <div class="flex flex-col items-center gap-3 w-full">
+        <!-- Analysis -->
+        <button class="group flex flex-col items-center gap-1 w-12 py-2 rounded-xl text-ink-muted hover:text-teal-brand hover:bg-teal-surface transition" title="Analysis Suite">
+          <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition">analytics</span>
+          <span class="text-[9px] font-semibold tracking-tight">Analysis</span>
+        </button>
+
+        <!-- Brand -->
+        <button class="group flex flex-col items-center gap-1 w-12 py-2 rounded-xl text-ink-muted hover:text-teal-brand hover:bg-teal-surface transition" title="Brand Performance">
+          <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition">verified</span>
+          <span class="text-[9px] font-semibold tracking-tight">Brand</span>
+        </button>
+
+        <!-- Monitor -->
+        <button class="group flex flex-col items-center gap-1 w-12 py-2 rounded-xl text-ink-muted hover:text-teal-brand hover:bg-teal-surface transition" title="Monitor & Tracking">
+          <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition">monitoring</span>
+          <span class="text-[9px] font-semibold tracking-tight">Monitor</span>
+        </button>
+
+        <!-- Results -->
+        <button class="group flex flex-col items-center gap-1 w-12 py-2 rounded-xl text-ink-muted hover:text-teal-brand hover:bg-teal-surface transition" title="Crawl Results">
+          <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition">quick_reference_all</span>
+          <span class="text-[9px] font-semibold tracking-tight">Results</span>
+        </button>
+
+        <div class="w-8 h-[1px] bg-neutral-border my-1"></div>
+
+        <!-- Settings (ACTIVE SOFT TILE) -->
+        <button class="flex flex-col items-center gap-1 w-12 py-2 rounded-xl text-teal-brand bg-teal-surface border border-teal-border/70 shadow-sm relative" title="Settings">
+          <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-teal-brand"></div>
+          <span class="material-symbols-outlined text-[20px] fill font-bold">settings</span>
+          <span class="text-[9px] font-bold tracking-tight">Settings</span>
+        </button>
+      </div>
+
+      <!-- Rail Footer -->
+      <div class="flex flex-col items-center gap-2 w-full">
+        <button class="flex flex-col items-center gap-1 w-12 py-2 rounded-xl text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition" title="Collapse Navigation">
+          <span class="material-symbols-outlined text-[18px]">keyboard_double_arrow_left</span>
+          <span class="text-[9px] font-medium">Collapse</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- RAIL 2: Secondary Settings Navigation Panel (230px) -->
+    <aside class="w-[230px] bg-white border-r border-neutral-border flex flex-col justify-between py-5 flex-shrink-0 z-10">
+      <div class="px-4">
+        <!-- Panel Title -->
+        <div class="flex items-center justify-between mb-4 px-2">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-teal-brand text-[18px]">tune</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-ink-main">Settings</h2>
+          </div>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-neutral-alt text-ink-muted">Workspace</span>
+        </div>
+
+        <!-- Suite Category 1: Entity & Grounding -->
+        <div class="mb-5">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle px-2 mb-1 block">Entity &amp; Setup</span>
+          <nav class="space-y-0.5">
+            <!-- Profile -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg text-ink-muted hover:text-ink-main hover:bg-neutral-surface transition group">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-ink-muted group-hover:text-teal-brand transition">id_card</span>
+                <span class="text-xs font-medium">Profile</span>
+              </div>
+            </a>
+
+            <!-- Brands (ACTIVE TEAL) -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-teal-brand text-white font-semibold shadow-sm transition">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-white">corporate_fare</span>
+                <span class="text-xs">Brands</span>
+              </div>
+              <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-teal-hover text-teal-border">5</span>
+            </a>
+
+            <!-- Topics & tags -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg text-ink-muted hover:text-ink-main hover:bg-neutral-surface transition group">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-ink-muted group-hover:text-teal-brand transition">label</span>
+                <span class="text-xs font-medium">Topics &amp; tags</span>
+              </div>
+              <span class="text-[10px] text-ink-subtle font-medium">18</span>
+            </a>
+
+            <!-- Channels -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg text-ink-muted hover:text-ink-main hover:bg-neutral-surface transition group">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-ink-muted group-hover:text-teal-brand transition">hub</span>
+                <span class="text-xs font-medium">Channels</span>
+              </div>
+              <span class="text-[10px] text-teal-brand bg-teal-light px-1.5 py-0.2 rounded font-bold">4 LLMs</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Suite Category 2: Workspace & Governance -->
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle px-2 mb-1 block">Security &amp; Billing</span>
+          <nav class="space-y-0.5">
+            <!-- Billing -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg text-ink-muted hover:text-ink-main hover:bg-neutral-surface transition group">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-ink-muted group-hover:text-teal-brand transition">credit_card</span>
+                <span class="text-xs font-medium">Billing</span>
+              </div>
+              <span class="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Pro</span>
+            </a>
+
+            <!-- API Keys -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg text-ink-muted hover:text-ink-main hover:bg-neutral-surface transition group">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-ink-muted group-hover:text-teal-brand transition">key</span>
+                <span class="text-xs font-medium">API keys</span>
+              </div>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            </a>
+
+            <!-- SSO -->
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 rounded-lg text-ink-muted hover:text-ink-main hover:bg-neutral-surface transition group">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-ink-muted group-hover:text-teal-brand transition">shield_lock</span>
+                <span class="text-xs font-medium">SSO &amp; SAML</span>
+              </div>
+              <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-neutral-alt text-ink-muted">SAML 2.0</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Quota Mini-card at bottom of secondary nav -->
+      <div class="px-4">
+        <div class="p-3 rounded-xl bg-neutral-surface border border-neutral-border">
+          <div class="flex items-center justify-between text-[11px] mb-1.5">
+            <span class="font-semibold text-ink-main">Brand Entity Slots</span>
+            <span class="font-bold text-teal-brand">5 / 10 used</span>
+          </div>
+          <div class="w-full bg-neutral-border h-1.5 rounded-full overflow-hidden mb-2">
+            <div class="bg-teal-brand h-full rounded-full" style="width: 50%"></div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-ink-muted">
+            <span>5 slots remaining</span>
+            <a href="#" class="text-teal-brand font-bold hover:underline">Add slots</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-7 flex gap-7 overflow-y-auto">
+
+      <!-- Left Column: Title, KPIs, Toolbar, Dense Table -->
+      <div class="flex-1 space-y-6 min-w-0">
+
+        <!-- Header Section -->
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center gap-2.5 mb-1">
+              <h1 class="text-2xl font-extrabold text-ink-main tracking-tight">Brands</h1>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-teal-light text-teal-brand text-xs font-bold border border-teal-border/70">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-brand"></span>
+                Multi-entity active
+              </span>
+            </div>
+            <p class="text-xs text-ink-muted font-medium">Own brand and competitors you monitor for AI visibility across ChatGPT, Perplexity, Gemini, and Google AI Overviews.</p>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="flex items-center gap-2">
+            <button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-neutral-border text-xs font-semibold text-ink-main hover:bg-neutral-surface hover:border-ink-muted/30 transition shadow-sm">
+              <span class="material-symbols-outlined text-[16px] text-ink-muted">file_download</span>
+              Export Entity Manifest
+            </button>
+            <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-teal-brand text-white text-xs font-bold hover:bg-teal-hover transition shadow-sm">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span>
+              Add Brand
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Cards Grid -->
+        <div class="grid grid-cols-4 gap-4">
+          <!-- KPI 1: Own Brands -->
+          <div class="p-4 rounded-xl bg-white border border-neutral-border shadow-sm hover:border-teal-brand/40 transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-ink-muted">Own Brands</span>
+              <div class="w-7 h-7 rounded-lg bg-teal-light text-teal-brand flex items-center justify-center">
+                <span class="material-symbols-outlined text-[16px]">domain</span>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-ink-main tracking-tight">1</span>
+              <span class="text-[11px] font-semibold text-teal-brand bg-teal-surface px-1.5 py-0.5 rounded border border-teal-border/50">Primary entity</span>
+            </div>
+            <p class="text-[11px] text-ink-muted mt-1.5 truncate">nike.com · 18 geos active</p>
+          </div>
+
+          <!-- KPI 2: Tracked Competitors -->
+          <div class="p-4 rounded-xl bg-white border border-neutral-border shadow-sm hover:border-teal-brand/40 transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-ink-muted">Tracked Competitors</span>
+              <div class="w-7 h-7 rounded-lg bg-neutral-alt text-ink-main flex items-center justify-center">
+                <span class="material-symbols-outlined text-[16px]">monitoring</span>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-ink-main tracking-tight">4</span>
+              <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Active monitoring</span>
+            </div>
+            <p class="text-[11px] text-ink-muted mt-1.5 truncate">Adidas, Puma, Under Armour, Brooks</p>
+          </div>
+
+          <!-- KPI 3: Rejected -->
+          <div class="p-4 rounded-xl bg-white border border-neutral-border shadow-sm hover:border-teal-brand/40 transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-ink-muted">Rejected</span>
+              <div class="w-7 h-7 rounded-lg bg-neutral-alt text-ink-muted flex items-center justify-center">
+                <span class="material-symbols-outlined text-[16px]">block</span>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-ink-main tracking-tight">12</span>
+              <span class="text-[11px] font-semibold text-ink-muted bg-neutral-alt px-1.5 py-0.5 rounded">Excluded entities</span>
+            </div>
+            <p class="text-[11px] text-ink-muted mt-1.5 truncate">Filtered from crawl attribution</p>
+          </div>
+
+          <!-- KPI 4: Pending Review -->
+          <div class="p-4 rounded-xl bg-white border border-teal-border/70 bg-teal-surface/30 shadow-sm transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-teal-brand">Pending Review</span>
+              <div class="w-7 h-7 rounded-lg bg-teal-brand text-white flex items-center justify-center shadow-xs">
+                <span class="material-symbols-outlined text-[16px]">notifications_active</span>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-teal-brand tracking-tight">3</span>
+              <span class="text-[11px] font-bold text-teal-brand bg-teal-light px-1.5 py-0.5 rounded border border-teal-border animate-pulse">Needs triage</span>
+            </div>
+            <p class="text-[11px] text-ink-muted mt-1.5 truncate">LLM co-citations detected recently</p>
+          </div>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="p-3 bg-white border border-neutral-border rounded-xl shadow-sm flex items-center justify-between gap-4">
+          <!-- Left: Filter Pills + Search -->
+          <div class="flex items-center gap-3 flex-1">
+            <!-- Search -->
+            <div class="relative w-72">
+              <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-muted text-[16px]">search</span>
+              <input type="text" placeholder="Filter by brand name or domain..." class="w-full pl-8 pr-3 py-1.5 bg-neutral-surface border border-neutral-border rounded-lg text-xs text-ink-main placeholder:text-ink-subtle focus:outline-none focus:border-teal-brand focus:bg-white transition" />
+            </div>
+
+            <div class="h-4 w-[1px] bg-neutral-border"></div>
+
+            <!-- Role Tabs: All, Own, Competitor -->
+            <div class="flex items-center p-0.5 bg-neutral-surface border border-neutral-border rounded-lg">
+              <button class="px-3 py-1 text-xs font-bold rounded-md bg-white text-teal-brand shadow-xs">All (8)</button>
+              <button class="px-3 py-1 text-xs font-medium text-ink-muted hover:text-ink-main transition">Own (1)</button>
+              <button class="px-3 py-1 text-xs font-medium text-ink-muted hover:text-ink-main transition">Competitor (4)</button>
+              <button class="px-3 py-1 text-xs font-medium text-ink-muted hover:text-ink-main transition">Pending (3)</button>
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-surface border border-neutral-border rounded-lg text-xs text-ink-muted cursor-pointer hover:border-ink-muted/40 transition">
+              <span>Status: <strong class="text-ink-main font-semibold">Active &amp; Pending</strong></span>
+              <span class="material-symbols-outlined text-[14px]">expand_more</span>
+            </div>
+          </div>
+
+          <!-- Right: Add Brand Teal Primary Button -->
+          <div class="flex items-center gap-2">
+            <button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-neutral-border bg-neutral-surface text-xs font-semibold text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition">
+              <span class="material-symbols-outlined text-[15px]">filter_list</span>
+              More Filters
+            </button>
+            <button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-brand text-white text-xs font-bold hover:bg-teal-hover transition shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">add</span>
+              Add Brand
+            </button>
+          </div>
+        </div>
+
+        <!-- Dense Brand Management Table -->
+        <div class="bg-white border border-neutral-border rounded-xl shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-neutral-surface border-b border-neutral-border text-[11px] font-bold text-ink-muted uppercase tracking-wider">
+                  <th class="py-3 px-4 w-10 text-center">
+                    <input type="checkbox" class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </th>
+                  <th class="py-3 px-4">Brand</th>
+                  <th class="py-3 px-4">Canonical Domain</th>
+                  <th class="py-3 px-3">Role</th>
+                  <th class="py-3 px-4 text-right">LLM Mentions</th>
+                  <th class="py-3 px-4">AI Visibility</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-neutral-border text-xs">
+                
+                <!-- ROW 1: Nike (Own Brand) -->
+                <tr class="hover:bg-teal-surface/40 transition group bg-teal-surface/10">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" checked class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-teal-brand text-white font-black text-xs flex items-center justify-center shadow-xs">
+                        NK
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Nike, Inc.</span>
+                          <span class="px-1.5 py-0.2 text-[10px] font-extrabold uppercase rounded bg-teal-brand text-white">Primary</span>
+                        </div>
+                        <span class="text-[11px] text-ink-muted">Athletic footwear, apparel &amp; equipment</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://nike.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      nike.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-light text-teal-brand border border-teal-border">
+                      <span class="w-1.5 h-1.5 rounded-full bg-teal-brand"></span>
+                      Own Brand
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-extrabold text-ink-main">1,642</div>
+                    <div class="text-[10px] font-semibold text-emerald-700">+14.2% MoM</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-bold mb-1">
+                        <span class="text-teal-brand">68.4%</span>
+                        <span class="text-ink-subtle text-[10px]">#1 in GEO</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-teal-brand h-full rounded-full" style="width: 68.4%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      Monitoring
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-white border border-neutral-border text-[11px] font-semibold text-ink-main hover:bg-neutral-alt transition">
+                        Edit Profile
+                      </button>
+                      <button class="w-7 h-7 rounded flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition">
+                        <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 2: Adidas (Competitor) -->
+                <tr class="hover:bg-neutral-surface transition group">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" checked class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-neutral-alt text-ink-main font-bold text-xs flex items-center justify-center border border-neutral-border">
+                        AD
+                      </div>
+                      <div>
+                        <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Adidas</span>
+                        <div class="text-[11px] text-ink-muted">Tier 1 Direct Rival</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://adidas.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      adidas.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-alt text-ink-main border border-neutral-border">
+                      Competitor
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">1,210</div>
+                    <div class="text-[10px] text-ink-muted">42.5% share</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-ink-main">48.2%</span>
+                        <span class="text-ink-subtle text-[10px]">#2 in GEO</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-slate-400 h-full rounded-full" style="width: 48.2%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      Monitoring
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                      <button class="w-7 h-7 rounded flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition">
+                        <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 3: Puma (Competitor) -->
+                <tr class="hover:bg-neutral-surface transition group">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" checked class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-neutral-alt text-ink-main font-bold text-xs flex items-center justify-center border border-neutral-border">
+                        PM
+                      </div>
+                      <div>
+                        <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Puma</span>
+                        <div class="text-[11px] text-ink-muted">Lifestyle &amp; Track Category</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://puma.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      puma.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-alt text-ink-main border border-neutral-border">
+                      Competitor
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">640</div>
+                    <div class="text-[10px] text-ink-muted">21.8% share</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-ink-main">29.1%</span>
+                        <span class="text-ink-subtle text-[10px]">#3 in GEO</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-slate-400 h-full rounded-full" style="width: 29.1%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      Monitoring
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                      <button class="w-7 h-7 rounded flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition">
+                        <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 4: Under Armour (Competitor) -->
+                <tr class="hover:bg-neutral-surface transition group">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" checked class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-neutral-alt text-ink-main font-bold text-xs flex items-center justify-center border border-neutral-border">
+                        UA
+                      </div>
+                      <div>
+                        <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Under Armour</span>
+                        <div class="text-[11px] text-ink-muted">Training &amp; Baselayer</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://underarmour.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      underarmour.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-alt text-ink-main border border-neutral-border">
+                      Competitor
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">418</div>
+                    <div class="text-[10px] text-ink-muted">16.4% share</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-ink-main">19.5%</span>
+                        <span class="text-ink-subtle text-[10px]">#4 in GEO</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-slate-400 h-full rounded-full" style="width: 19.5%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      Monitoring
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                      <button class="w-7 h-7 rounded flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition">
+                        <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 5: Brooks Running (Competitor) -->
+                <tr class="hover:bg-neutral-surface transition group">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" checked class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-neutral-alt text-ink-main font-bold text-xs flex items-center justify-center border border-neutral-border">
+                        BR
+                      </div>
+                      <div>
+                        <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Brooks Running</span>
+                        <div class="text-[11px] text-ink-muted">Marathon &amp; Daily Cushion</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://brooksrunning.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      brooksrunning.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-alt text-ink-main border border-neutral-border">
+                      Competitor
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">389</div>
+                    <div class="text-[10px] text-ink-muted">14.1% share</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-ink-main">18.0%</span>
+                        <span class="text-ink-subtle text-[10px]">#5 in GEO</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-slate-400 h-full rounded-full" style="width: 18.0%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      Monitoring
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                      <button class="w-7 h-7 rounded flex items-center justify-center text-ink-muted hover:text-ink-main hover:bg-neutral-alt transition">
+                        <span class="material-symbols-outlined text-[16px]">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 6: Hoka One One (PENDING REVIEW) -->
+                <tr class="hover:bg-teal-surface/30 transition group bg-teal-surface/20">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-teal-light text-teal-brand font-bold text-xs flex items-center justify-center border border-teal-border">
+                        HK
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Hoka</span>
+                          <span class="px-1.5 py-0.2 text-[9px] font-bold rounded bg-teal-light text-teal-brand border border-teal-border">Auto-Discovered</span>
+                        </div>
+                        <div class="text-[11px] text-ink-muted">Detected in 128 max-cushion queries</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://hoka.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      hoka.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-neutral-alt text-ink-muted border border-neutral-border">
+                      Candidate
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">294</div>
+                    <div class="text-[10px] text-teal-brand font-semibold">+38% surge</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-teal-brand font-bold">16.4%</span>
+                        <span class="text-ink-subtle text-[10px]">Perplexity peak</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-teal-brand/70 h-full rounded-full" style="width: 16.4%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      Pending Review
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-teal-brand text-white text-[11px] font-bold hover:bg-teal-hover transition shadow-xs">
+                        Track
+                      </button>
+                      <button class="px-2 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 7: On Running (PENDING REVIEW) -->
+                <tr class="hover:bg-teal-surface/30 transition group bg-teal-surface/20">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-teal-light text-teal-brand font-bold text-xs flex items-center justify-center border border-teal-border">
+                        ON
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-bold text-ink-main group-hover:text-teal-brand transition">On Running</span>
+                          <span class="px-1.5 py-0.2 text-[9px] font-bold rounded bg-teal-light text-teal-brand border border-teal-border">Auto-Discovered</span>
+                        </div>
+                        <div class="text-[11px] text-ink-muted">Detected in CloudTec &amp; lifestyle queries</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://on.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      on.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-neutral-alt text-ink-muted border border-neutral-border">
+                      Candidate
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">246</div>
+                    <div class="text-[10px] text-teal-brand font-semibold">+24% surge</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-teal-brand font-bold">12.8%</span>
+                        <span class="text-ink-subtle text-[10px]">ChatGPT 4o</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-teal-brand/70 h-full rounded-full" style="width: 12.8%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      Pending Review
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-teal-brand text-white text-[11px] font-bold hover:bg-teal-hover transition shadow-xs">
+                        Track
+                      </button>
+                      <button class="px-2 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- ROW 8: Saucony (PENDING REVIEW) -->
+                <tr class="hover:bg-teal-surface/30 transition group bg-teal-surface/20">
+                  <td class="py-3.5 px-4 text-center">
+                    <input type="checkbox" class="rounded border-neutral-border text-teal-brand focus:ring-teal-brand cursor-pointer" />
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-7 h-7 rounded-md bg-teal-light text-teal-brand font-bold text-xs flex items-center justify-center border border-teal-border">
+                        SC
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-bold text-ink-main group-hover:text-teal-brand transition">Saucony</span>
+                          <span class="px-1.5 py-0.2 text-[9px] font-bold rounded bg-teal-light text-teal-brand border border-teal-border">Auto-Discovered</span>
+                        </div>
+                        <div class="text-[11px] text-ink-muted">Detected in carbon plate comparisons</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <a href="https://saucony.com" target="_blank" class="font-mono text-xs text-ink-main hover:text-teal-brand hover:underline flex items-center gap-1">
+                      saucony.com
+                      <span class="material-symbols-outlined text-[13px] text-ink-subtle">open_in_new</span>
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-neutral-alt text-ink-muted border border-neutral-border">
+                      Candidate
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="font-bold text-ink-main">182</div>
+                    <div class="text-[10px] text-ink-muted">9.5% share</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="w-32">
+                      <div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+                        <span class="text-teal-brand font-bold">10.2%</span>
+                        <span class="text-ink-subtle text-[10px]">Endorphin Pro</span>
+                      </div>
+                      <div class="w-full bg-neutral-alt h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-teal-brand/70 h-full rounded-full" style="width: 10.2%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      Pending Review
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button class="px-2.5 py-1 rounded bg-teal-brand text-white text-[11px] font-bold hover:bg-teal-hover transition shadow-xs">
+                        Track
+                      </button>
+                      <button class="px-2 py-1 rounded bg-white border border-neutral-border text-[11px] font-medium text-ink-muted hover:text-rose-600 hover:border-rose-200 transition">
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Pagination / Footer -->
+          <div class="p-3 bg-neutral-surface border-t border-neutral-border flex items-center justify-between text-xs text-ink-muted">
+            <div class="flex items-center gap-3">
+              <span>Showing <strong class="text-ink-main font-semibold">1–8</strong> of 8 brand entities</span>
+              <span class="text-neutral-border">|</span>
+              <div class="flex items-center gap-1.5">
+                <span>Rows per page:</span>
+                <select class="bg-white border border-neutral-border rounded px-2 py-0.5 text-xs text-ink-main focus:outline-none">
+                  <option>10</option>
+                  <option selected>25</option>
+                  <option>50</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button disabled class="px-2 py-1 rounded border border-neutral-border bg-white text-ink-subtle cursor-not-allowed text-[11px]">Previous</button>
+              <button class="px-2.5 py-1 rounded bg-teal-brand text-white font-bold text-[11px]">1</button>
+              <button disabled class="px-2 py-1 rounded border border-neutral-border bg-white text-ink-subtle cursor-not-allowed text-[11px]">Next</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Side Panel (Why Track Rivals + Suggested Gaps) (340px) -->
+      <aside class="w-[340px] flex-shrink-0 space-y-5">
+
+        <!-- Card 1: Why track rivals (Educational Note) -->
+        <div class="bg-white border border-neutral-border rounded-xl p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-md bg-teal-light text-teal-brand flex items-center justify-center">
+              <span class="material-symbols-outlined text-[16px]">psychology</span>
+            </div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink-main">Why Track Rivals in AI</h3>
+          </div>
+          <p class="text-xs text-ink-muted leading-relaxed mb-3">
+            LLMs synthesize buyer recommendations through comparative context. When a prospect queries <em class="text-ink-main font-medium">"best marathon shoes with carbon plate"</em>, engines evaluate your entity weight against rival citations.
+          </p>
+          
+          <div class="p-3 rounded-lg bg-teal-surface border border-teal-border/70 mb-3">
+            <div class="text-[11px] font-bold text-teal-brand mb-1">Key AI Engine Vector:</div>
+            <p class="text-[11px] text-teal-hover leading-normal">
+              Monitoring competitors allows GeoLens to identify when an LLM drops your domain in favor of a competitor's structured schema or review table.
+            </p>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-teal-brand text-[16px] mt-0.5">check_circle</span>
+              <span class="text-ink-main font-medium">Prevent Hallucinated Substitutions</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-teal-brand text-[16px] mt-0.5">check_circle</span>
+              <span class="text-ink-main font-medium">Benchmark Citation Share vs Category</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-teal-brand text-[16px] mt-0.5">check_circle</span>
+              <span class="text-ink-main font-medium">Auto-Discover Unindexed Gaps</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Suggested Citation Gaps (Actionable Intelligence) -->
+        <div class="bg-white border border-neutral-border rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-md bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
+                <span class="material-symbols-outlined text-[16px]">crisis_alert</span>
+              </div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-ink-main">Suggested Gaps</h3>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">3 Detected</span>
+          </div>
+
+          <p class="text-xs text-ink-muted mb-4">
+            Queries where competitors are cited by ChatGPT or Perplexity, but Nike is currently absent:
+          </p>
+
+          <div class="space-y-3">
+            
+            <!-- Gap Item 1 -->
+            <div class="p-3 rounded-lg bg-neutral-surface border border-neutral-border hover:border-teal-brand/40 transition">
+              <div class="flex items-center justify-between text-[10px] font-bold mb-1">
+                <span class="text-teal-brand uppercase">Footwear · Marathon</span>
+                <span class="text-ink-subtle">8.4k queries/mo</span>
+              </div>
+              <p class="text-xs font-semibold text-ink-main mb-2">"best carbon plate marathon shoes for wide feet"</p>
+              <div class="flex items-center justify-between text-[11px] pt-1.5 border-t border-neutral-border/60">
+                <span class="text-ink-muted">Cited: <strong class="text-ink-main font-semibold">Hoka, Brooks</strong></span>
+                <button class="text-teal-brand font-bold hover:underline flex items-center gap-0.5 text-[11px]">
+                  Add Track
+                  <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Gap Item 2 -->
+            <div class="p-3 rounded-lg bg-neutral-surface border border-neutral-border hover:border-teal-brand/40 transition">
+              <div class="flex items-center justify-between text-[10px] font-bold mb-1">
+                <span class="text-teal-brand uppercase">Sustainability</span>
+                <span class="text-ink-subtle">5.1k queries/mo</span>
+              </div>
+              <p class="text-xs font-semibold text-ink-main mb-2">"eco friendly recycled running shoes 2025"</p>
+              <div class="flex items-center justify-between text-[11px] pt-1.5 border-t border-neutral-border/60">
+                <span class="text-ink-muted">Cited: <strong class="text-ink-main font-semibold">Adidas, On</strong></span>
+                <button class="text-teal-brand font-bold hover:underline flex items-center gap-0.5 text-[11px]">
+                  Add Track
+                  <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Gap Item 3 -->
+            <div class="p-3 rounded-lg bg-neutral-surface border border-neutral-border hover:border-teal-brand/40 transition">
+              <div class="flex items-center justify-between text-[10px] font-bold mb-1">
+                <span class="text-teal-brand uppercase">Recovery</span>
+                <span class="text-ink-subtle">3.8k queries/mo</span>
+              </div>
+              <p class="text-xs font-semibold text-ink-main mb-2">"best max-cushion recovery slip-on runners"</p>
+              <div class="flex items-center justify-between text-[11px] pt-1.5 border-t border-neutral-border/60">
+                <span class="text-ink-muted">Cited: <strong class="text-ink-main font-semibold">Hoka, Saucony</strong></span>
+                <button class="text-teal-brand font-bold hover:underline flex items-center gap-0.5 text-[11px]">
+                  Add Track
+                  <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <button class="w-full mt-3 py-2 text-center text-xs font-bold text-teal-brand bg-teal-surface hover:bg-teal-light rounded-lg border border-teal-border/70 transition">
+            View All Competitor Gaps in Research →
+          </button>
+        </div>
+
+        <!-- Card 3: Enterprise Entity Discovery Webhook -->
+        <div class="p-4 rounded-xl bg-white border border-neutral-border shadow-sm flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-neutral-alt flex items-center justify-center text-ink-muted flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">webhook</span>
+          </div>
+          <div class="min-w-0">
+            <h4 class="text-xs font-bold text-ink-main">Autonomous Entity Discovery</h4>
+            <p class="text-[11px] text-ink-muted truncate">Detects new rival brands entering AI answers</p>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 ml-auto">Active</span>
+        </div>
+
+      </aside>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

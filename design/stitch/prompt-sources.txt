@@ -1,0 +1,21 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — Sources & Citations page inside the AI Visibility suite.
+
+Brand:
+- Accent teal #0F766E only — NO purple, light theme default
+- Neutrals: white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED
+- Font: Plus Jakarta Sans
+
+Chrome:
+- Left nav: Sources & Citations ACTIVE under Boost & Monitor
+- Top: Attio · Demo, Last 7 days / All models, Export, teal New Analysis
+
+Main — Sources & Citations:
+- Title: Sources & Citations
+- Subtitle: Domains AI retrieves and cites when answering buyer questions
+- KPIs: Domains retrieved, Citation rate, Own-domain share, Gap domains
+- Table: Domain | Retrieved % | Citation rate | Classification | Mentions | Gap vs you
+- Filters: search, Own / Competitor / Other, Cited only
+- Side: Top cited domains bars + CTA Classify domains
+- Honesty labels for demo mixes OK
+
+Professional B2B. No emoji. Light theme. 1440px desktop.

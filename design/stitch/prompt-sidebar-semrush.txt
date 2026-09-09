@@ -1,0 +1,29 @@
+Design DESKTOP light-theme GeoLens app chrome — Semrush-style dual-rail left navigation ONLY (empty mint canvas on the right).
+
+Brand: teal #0F766E accent, white/#F5F7F8 surfaces, ink #0B1218, muted #5C6B76, borders #E3E9ED, Plus Jakarta Sans. NO purple. NO dark mode. Soft mint wash.
+
+CRITICAL interaction model (show this clearly in the mock with annotations or visible states):
+
+1) PRIMARY ICON RAIL (~72px wide, always visible):
+   - Top: GeoLens teal mark
+   - Vertical stack of suite icons WITH short labels under each icon (like Semrush): Analysis, Brand, Monitor, Results, Settings
+   - Active suite: soft gray/mint rounded tile behind icon+label
+   - BOTTOM of rail: a clear "<< Collapse" control (double chevron left) to hide the secondary panel
+
+2) SECONDARY PANEL (~240px, white):
+   - Shows ONLY when a suite is hovered OR clicked/pinned
+   - Header = suite name e.g. "Boost & Monitor"
+   - Sectioned links matching GeoLens IA:
+     Analysis → Visibility Overview, Competitor Research, Prompt Research
+     Brand → Brand Performance, Perception & Sentiment, Fact-checking
+     Monitor → Prompt Tracking (ACTIVE teal filled + Live badge), Sources & Citations, Actions & Fixes
+     Results → Chats, Fanouts, Ads
+     Settings → Profile, Brands, Topics, Channels, Billing, API keys, SSO
+   - Soft gray active sub-item OR teal filled for current page
+
+3) SHOW THREE VISUAL CALLOUTS in the empty canvas (small caption cards):
+   - "Hover icon → secondary panel peeks"
+   - "Click icon → secondary stays pinned"
+   - "<< Collapse → hide secondary, rail remains"
+
+Show state: Monitor suite pinned open, Prompt Tracking active. Light theme. Professional B2B. 1440px. No emoji.

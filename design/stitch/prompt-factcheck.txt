@@ -1,0 +1,13 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — Fact-checking page.
+
+Brand: teal #0F766E only, Plus Jakarta Sans, light theme. No purple. Soft mint wash.
+
+Chrome: left nav Fact-checking ACTIVE under Brand Performance. Top: Attio · Demo filters.
+
+Main — Fact-checking:
+- Title: Fact-checking · Claims audit badge
+- Subtitle: Claims from AI chats judged against your asserted facts
+- KPIs: Claims reviewed, Contradictions, Supported, Unverified
+- Toolbar: search, severity filter, Add asserted fact
+- Split: left asserted facts list; right claim feed with Supported / Contradicts / Unverified badges linking to chats
+- Professional B2B. No emoji. Light. 1440px.

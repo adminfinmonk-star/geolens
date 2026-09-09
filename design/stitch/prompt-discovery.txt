@@ -1,0 +1,23 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — Prompt Research page inside the AI Visibility suite.
+
+Brand (must match existing GeoLens system):
+- Accent teal #0F766E only — NO purple
+- Neutrals: white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED
+- Font: Plus Jakarta Sans
+- Soft mint wash background; white panels; 12–16px radius
+
+Chrome (same as Visibility Overview / Competitor Research):
+- Left: AI Visibility secondary nav with Prompt Research ACTIVE
+  Groups: AI Analysis (Visibility Overview, Competitor Research, Prompt Research active), Brand Performance, Boost & Monitor
+- Top bar: Attio · Demo, filters Last 7 days / All models, Export, teal New Analysis
+
+Main content — Prompt Research (discovery / research workspace, not a multi-step wizard):
+- Title: Prompt Research
+- Subtitle: Discover high-intent questions buyers ask AI — then activate them for tracking
+- Toolbar: search prompts, topic filter chips, Volume / Intent / Branding filters, teal Generate prompts
+- Table or dense list: Prompt text | Topic | Intent | Branding | Volume score (1–5) | Coverage status
+- Right or bottom panel: Coverage overview — accepted vs suggested by topic / persona / market
+- Empty-state friendly: suggested starter prompts for CRM category (Attio demo)
+- CTA: Activate selected · Export CSV
+
+Professional B2B analytics. No emoji. No dark mode. 1440px desktop.

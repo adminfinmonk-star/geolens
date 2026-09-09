@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens — Perception &amp; Sentiment | Attio</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed-variant": "#783200",
+            "background": "#f5faff",
+            "tertiary": "#893a00",
+            "on-error": "#ffffff",
+            "on-primary-container": "#a3faef",
+            "secondary-fixed": "#cce5ff",
+            "on-primary-fixed-variant": "#00504a",
+            "on-primary": "#ffffff",
+            "surface-container-low": "#eaf5ff",
+            "secondary-fixed-dim": "#93ccff",
+            "on-error-container": "#93000a",
+            "inverse-surface": "#24323c",
+            "surface-container-highest": "#d5e5f1",
+            "inverse-on-surface": "#e4f3ff",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed-dim": "#80d5cb",
+            "primary-container": "#0f766e",
+            "tertiary-container": "#af4c00",
+            "on-tertiary-fixed": "#341100",
+            "surface-tint": "#006a63",
+            "secondary-container": "#5bb8fe",
+            "surface": "#f5faff",
+            "outline": "#6e7977",
+            "error": "#ba1a1a",
+            "tertiary-fixed": "#ffdbca",
+            "surface-container": "#e0f0fd",
+            "on-primary-fixed": "#00201d",
+            "surface-dim": "#ccdce9",
+            "on-secondary-fixed": "#001d31",
+            "surface-variant": "#d5e5f1",
+            "outline-variant": "#bdc9c6",
+            "surface-container-high": "#daeaf7",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#80d5cb",
+            "on-secondary-fixed-variant": "#004b73",
+            "tertiary-fixed-dim": "#ffb690",
+            "on-background": "#0e1d26",
+            "secondary": "#006398",
+            "on-secondary-container": "#00476e",
+            "on-surface": "#0e1d26",
+            "surface-bright": "#f5faff",
+            "primary": "#005c55",
+            "on-surface-variant": "#3e4947",
+            "on-secondary": "#ffffff",
+            "on-tertiary-container": "#ffe6da",
+            "primary-fixed": "#9cf2e8"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "panel-padding-standard": "1.25rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "1rem",
+            "space-xl": "1.5rem",
+            "space-3xl": "3rem",
+            "space-2xs": "0.125rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.25rem",
+            "space-md": "0.75rem",
+            "gutter-desktop": "1.5rem",
+            "panel-padding-compact": "0.75rem",
+            "space-base": "1rem",
+            "space-2xl": "2rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "500" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "500" }],
+            "data-mono": ["13px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body class="bg-[#F5F7F8] text-[#0B1218] font-body-md text-body-md antialiased min-h-screen flex selection:bg-[#ECFDF5] selection:text-[#0F766E]">
+<!-- Fixed Left Sidebar (SideNavBar Shell) -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-surface-container-lowest border-r border-[#E3E9ED] flex flex-col justify-between p-space-md z-30 shadow-sm">
+<div class="flex flex-col gap-y-4">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 py-2">
+<div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-white shadow-sm">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-[#0B1218] tracking-tight">GeoLens</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#F0FDF4] text-[#0F766E] border border-[#A7F3D0]">v2.4</span>
+</div>
+<p class="text-[11px] text-[#5C6B76] font-medium leading-none mt-0.5">Spatial &amp; Search AI</p>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full flex items-center justify-center gap-2 bg-primary-container text-white hover:bg-[#115E59] active:bg-[#134E4A] font-label-lg text-label-lg py-2 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+<span>New Analysis</span>
+</button>
+<!-- Navigation Hierarchy -->
+<nav class="flex flex-col gap-4 mt-1">
+<!-- Group: AI ANALYSIS -->
+<div>
+<div class="px-2 mb-1.5 text-[10px] font-bold text-[#5C6B76] tracking-wider uppercase">AI Analysis</div>
+<ul class="space-y-0.5">
+<li>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span>Visibility Overview</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined">monitoring</span>
+<span>Competitor Research</span>
+</div>
+<span class="text-[10px] font-semibold bg-[#EAF5FF] text-[#006398] px-1.5 py-0.2 rounded border border-[#CCE5FF]">5</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span>Prompt Research</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Group: BRAND PERFORMANCE -->
+<div>
+<div class="px-2 mb-1.5 text-[10px] font-bold text-[#5C6B76] tracking-wider uppercase">Brand Performance</div>
+<ul class="space-y-0.5">
+<li>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span>Brand Performance</span>
+</a>
+</li>
+<!-- ACTIVE TAB: Perception & Sentiment -->
+<li>
+<a class="flex items-center justify-between px-space-md py-1.5 bg-primary-container text-white rounded-lg font-semibold text-body-sm shadow-sm" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined fill-icon text-on-primary-container">psychology</span>
+<span>Perception &amp; Sentiment</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-[#A3FAEF]"></span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span>Fact-checking</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Group: BOOST & MONITOR -->
+<div>
+<div class="px-2 mb-1.5 text-[10px] font-bold text-[#5C6B76] tracking-wider uppercase">Boost &amp; Monitor</div>
+<ul class="space-y-0.5">
+<li>
+<a class="flex items-center justify-between px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined">radar</span>
+<span>Prompt Tracking</span>
+</div>
+<span class="text-[9px] font-bold tracking-wide uppercase px-1.5 py-0.5 rounded bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse"></span>LIVE
+                </span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">link</span>
+<span>Sources &amp; Citations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-lg font-medium text-body-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">bolt</span>
+<span>Actions &amp; Fixes</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+</div>
+<!-- Bottom Quota Widget & Sub-footer -->
+<div class="pt-3 border-t border-[#E3E9ED] flex flex-col gap-3">
+<!-- Quota card -->
+<div class="bg-[#F8FAFC] border border-[#E3E9ED] rounded-xl p-2.5">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<span class="text-xs font-semibold text-[#0B1218]">Prompt Quota</span>
+<span class="text-xs font-bold text-[#0F766E]">28.4%</span>
+</div>
+<div class="w-full bg-[#E2E8F0] h-1.5 rounded-full overflow-hidden mb-1.5">
+<div class="bg-primary-container h-1.5 rounded-full" style="width: 28.4%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>1,420 / 5,000 queries</span>
+<a class="text-[#0F766E] font-semibold hover:underline" href="#">Manage</a>
+</div>
+</div>
+<!-- Static Footer Links -->
+<div class="flex items-center justify-between text-body-sm text-[#5C6B76] px-1">
+<a class="flex items-center gap-1 hover:text-[#0B1218]" href="#">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span class="text-xs">Docs</span>
+</a>
+<a class="flex items-center gap-1 hover:text-[#0B1218]" href="#">
+<span class="material-symbols-outlined text-[16px]">support_agent</span>
+<span class="text-xs">Support</span>
+</a>
+<a class="flex items-center gap-1 hover:text-[#0B1218]" href="#">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+<span class="text-xs">Settings</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Application Canvas -->
+<div class="ml-64 flex-1 flex flex-col min-w-0">
+<!-- Top Navigation Bar (Shared Component: TopNavBar) -->
+<header class="h-14 bg-surface-container-lowest border-b border-[#E3E9ED] flex items-center justify-between px-space-lg sticky top-0 z-20 shadow-sm">
+<!-- Left Context & Selectors -->
+<div class="flex items-center gap-4">
+<!-- Workspace dropdown -->
+<div class="relative">
+<button class="flex items-center gap-2 px-2.5 py-1.5 bg-[#F5F7F8] hover:bg-[#EAF5FF] border border-[#E3E9ED] rounded-lg text-body-sm font-semibold text-[#0B1218] transition-colors">
+<span class="w-5 h-5 rounded bg-[#0F766E] text-white flex items-center justify-center text-[11px] font-extrabold">A</span>
+<span>Attio · Demo</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">unfold_more</span>
+</button>
+</div>
+<div class="h-5 w-px bg-[#E3E9ED]"></div>
+<!-- Model Filter Dropdown -->
+<button class="flex items-center gap-1.5 text-body-sm text-[#0B1218] hover:text-[#0F766E] font-medium px-2 py-1 rounded-md hover:bg-[#F5F7F8]">
+<span class="material-symbols-outlined text-[17px] text-[#0F766E]">neurology</span>
+<span>All Models (4 AI Engines)</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">expand_more</span>
+</button>
+<!-- Time Range Selector Pills -->
+<div class="flex items-center bg-[#F5F7F8] border border-[#E3E9ED] rounded-lg p-0.5">
+<button class="px-2.5 py-1 rounded-md bg-white text-[#0F766E] font-label-md text-label-md font-bold shadow-xs border border-[#E3E9ED]">Last 7 days</button>
+<button class="px-2.5 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-label-md text-label-md transition-colors">Last 30 days</button>
+<button class="px-2.5 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-label-md text-label-md transition-colors">90 days</button>
+</div>
+</div>
+<!-- Right Trailing Controls & User Profile -->
+<div class="flex items-center gap-3">
+<!-- Trial Alert Pill -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 bg-[#FFF7ED] border border-[#FFEDD5] text-[#C2410C] rounded-full text-xs font-semibold">
+<span class="material-symbols-outlined text-[15px] text-[#EA580C]">timer</span>
+<span>14 days left in trial</span>
+<span class="text-[#9A3412] font-bold underline cursor-pointer ml-0.5">Upgrade</span>
+</div>
+<!-- Secondary Action: Export Report -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E3E9ED] text-[#0B1218] hover:border-[#0F766E] hover:bg-[#F0FDF4] rounded-lg font-label-md text-label-md transition-all active:scale-95">
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">download</span>
+<span>Export Report</span>
+</button>
+<!-- Primary Action: + New Analysis -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container text-white hover:bg-[#115E59] active:bg-[#134E4A] rounded-lg font-label-md text-label-md font-semibold shadow-xs transition-all active:scale-95">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>New Analysis</span>
+</button>
+<div class="h-5 w-px bg-[#E3E9ED]"></div>
+<!-- Quick Icon Utilities -->
+<div class="flex items-center gap-1 text-[#5C6B76]">
+<button class="p-1.5 rounded-lg hover:bg-[#F5F7F8] hover:text-[#0B1218] relative transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EF4444] ring-2 ring-white"></span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-[#F5F7F8] hover:text-[#0B1218] transition-colors" title="Settings / Workspace Tuning">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+<!-- User Profile Avatar -->
+<div class="flex items-center gap-2 pl-1">
+<div class="w-8 h-8 rounded-full bg-[#006398] text-white flex items-center justify-center text-xs font-bold ring-2 ring-[#E3E9ED] cursor-pointer" title="Alex Lindquist (Workspace Admin)">
+            AL
+          </div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Content Area -->
+<main class="p-space-xl flex flex-col gap-6 max-w-[1440px] w-full mx-auto">
+<!-- Breadcrumbs & Page Title Section -->
+<section class="flex items-start justify-between">
+<div>
+<!-- Breadcrumb string -->
+<div class="flex items-center gap-2 text-label-md font-label-md text-[#5C6B76] mb-1 tracking-wider uppercase">
+<span>AI Visibility Suite</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span>Brand Performance</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-[#0F766E] font-bold">Perception &amp; Sentiment</span>
+</div>
+<!-- Page Heading with badge -->
+<div class="flex items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-[#0B1218] tracking-tight font-bold">Perception &amp; Sentiment</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#ECFDF5] text-[#0F766E] border border-[#A7F3D0]">
+<span class="w-2 h-2 rounded-full bg-[#0F766E] animate-ping"></span>
+              Live Qualitative Audit
+            </span>
+</div>
+<p class="text-body-md text-[#5C6B76] mt-1">
+            How AI describes your brand — tone, attributes, and risk themes across foundation models.
+          </p>
+</div>
+<!-- Action cluster -->
+<div class="flex items-center gap-2.5 pt-1">
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E3E9ED] text-[#0B1218] hover:border-[#0F766E] rounded-lg text-body-sm font-medium transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">bookmark</span>
+<span>Saved Views</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E3E9ED] text-[#0B1218] hover:border-[#0F766E] rounded-lg text-body-sm font-medium transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">share</span>
+<span>Share Report</span>
+</button>
+<button class="flex items-center gap-2 px-3.5 py-1.5 bg-primary-container text-white hover:bg-[#115E59] rounded-lg text-body-sm font-semibold shadow-sm transition-all active:scale-95">
+<span class="material-symbols-outlined text-[17px]">refresh</span>
+<span>Run Sentiment Re-crawl</span>
+</button>
+</div>
+</section>
+<!-- KPI Summary Cards (4-column grid) -->
+<section class="grid grid-cols-4 gap-4">
+<!-- Card 1: Average Sentiment -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-space-lg shadow-xs hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-xs uppercase tracking-wider font-bold">Average Sentiment</span>
+<span class="material-symbols-outlined text-[#0F766E] text-[18px]">sentiment_very_satisfied</span>
+</div>
+<div class="flex items-baseline gap-2 mb-1">
+<span class="text-[28px] font-extrabold text-[#0B1218] tracking-tight leading-none">+72</span>
+<span class="text-xs font-semibold text-[#5C6B76]">Net Score</span>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-[#F1F5F9]">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-[#0F766E]">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +4.8 pts vs prior
+            </span>
+<span class="text-[11px] font-semibold text-[#0F766E] bg-[#ECFDF5] px-2 py-0.5 rounded border border-[#A7F3D0]">Highly Favorable</span>
+</div>
+</div>
+<!-- Card 2: Positive Share -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-space-lg shadow-xs hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-xs uppercase tracking-wider font-bold">Positive Share</span>
+<span class="material-symbols-outlined text-[#006398] text-[18px]">thumb_up</span>
+</div>
+<div class="flex items-baseline gap-2 mb-1">
+<span class="text-[28px] font-extrabold text-[#0B1218] tracking-tight leading-none">78.4%</span>
+<span class="text-xs font-semibold text-[#5C6B76]">of citations</span>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-[#F1F5F9]">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-[#0F766E]">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> +3.2%
+            </span>
+<span class="text-[11px] text-[#5C6B76]">280 prompt evaluations</span>
+</div>
+</div>
+<!-- Card 3: Neutral / Objective Share -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-space-lg shadow-xs hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-xs uppercase tracking-wider font-bold">Neutral / Objective</span>
+<span class="material-symbols-outlined text-[#64748B] text-[18px]">balance</span>
+</div>
+<div class="flex items-baseline gap-2 mb-1">
+<span class="text-[28px] font-extrabold text-[#0B1218] tracking-tight leading-none">16.1%</span>
+<span class="text-xs font-semibold text-[#5C6B76]">of mentions</span>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-[#F1F5F9]">
+<span class="text-xs text-[#5C6B76]">Neutral drift: 0.8%</span>
+<span class="text-[11px] text-[#5C6B76]">Technical comparisons</span>
+</div>
+</div>
+<!-- Card 4: Active Risk Themes -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-space-lg shadow-xs hover:shadow-md transition-shadow border-l-4 border-l-[#F97316]">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-xs uppercase tracking-wider font-bold">Active Risk Themes</span>
+<span class="material-symbols-outlined text-[#EA580C] text-[18px]">warning</span>
+</div>
+<div class="flex items-baseline gap-2 mb-1">
+<span class="text-[28px] font-extrabold text-[#0B1218] tracking-tight leading-none">3</span>
+<span class="text-xs font-semibold text-[#EA580C]">Identified in LLMs</span>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-[#F1F5F9]">
+<span class="text-[11px] font-bold text-[#EA580C] bg-[#FFF7ED] px-2 py-0.5 rounded border border-[#FFEDD5]">Review Required</span>
+<span class="text-[11px] text-[#5C6B76] truncate max-w-[140px]" title="Enterprise pricing opacity">Pricing &amp; Migration</span>
+</div>
+</div>
+</section>
+<!-- Main Content Layout (2-Column Grid: 8-col analytical, 4-col benchmark & risk) -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- Left/Main Column (8-col) -->
+<div class="col-span-8 flex flex-col gap-6">
+<!-- 1. Chart Panel: Sentiment Velocity & Polarity Over Time -->
+<div class="bg-white border border-[#E3E9ED] rounded-2xl p-space-lg shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-[#0B1218] font-bold tracking-tight">Sentiment Velocity &amp; Polarity Over Time</h2>
+<p class="text-xs text-[#5C6B76]">Daily calculated Net Sentiment Score across all tracked foundation models</p>
+</div>
+<!-- Model Filter Toggle Chips -->
+<div class="flex items-center gap-1.5 bg-[#F5F7F8] p-1 rounded-lg border border-[#E3E9ED]">
+<button class="px-2.5 py-1 text-xs font-bold rounded-md bg-white text-[#0F766E] shadow-xs border border-[#E3E9ED]">All Models</button>
+<button class="px-2 py-1 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218]">ChatGPT-4o</button>
+<button class="px-2 py-1 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218]">Perplexity Pro</button>
+<button class="px-2 py-1 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218]">Google AI</button>
+<button class="px-2 py-1 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218]">Gemini 1.5</button>
+</div>
+</div>
+<!-- Custom Vector Timeline Graph -->
+<div class="relative w-full h-56 mt-2 mb-3 bg-[#FBFDFB] rounded-xl border border-[#EEF2F6] p-4 flex flex-col justify-between">
+<!-- Y-axis Guides -->
+<div class="absolute inset-x-4 top-4 border-b border-dashed border-[#E2E8F0] flex justify-between">
+<span class="text-[10px] font-mono text-[#94A3B8] -mt-2.5 bg-[#FBFDFB] pr-1">+100 Max</span>
+</div>
+<div class="absolute inset-x-4 top-1/2 border-b border-dashed border-[#CBD5E1] flex justify-between">
+<span class="text-[10px] font-mono text-[#64748B] -mt-2.5 bg-[#FBFDFB] pr-1">+50 Baseline</span>
+</div>
+<div class="absolute inset-x-4 bottom-8 border-b border-[#E2E8F0]">
+<span class="text-[10px] font-mono text-[#94A3B8] -mt-2 bg-[#FBFDFB] pr-1">0 Neutral</span>
+</div>
+<!-- SVG Curve & Area -->
+<div class="relative w-full h-40 mt-3">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 700 140">
+<defs>
+<lineargradient id="tealGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0F766E" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#0F766E" stop-opacity="0.00"></stop>
+</lineargradient>
+</defs>
+<!-- Shaded Area -->
+<path d="M 0,95 Q 110,80 230,55 T 460,40 T 580,24 T 700,32 L 700,140 L 0,140 Z" fill="url(#tealGradient)"></path>
+<!-- Line Stroke -->
+<path d="M 0,95 Q 110,80 230,55 T 460,40 T 580,24 T 700,32" fill="none" stroke="#0F766E" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="0" cy="95" fill="#FFFFFF" r="4" stroke="#0F766E" stroke-width="2.5"></circle>
+<circle cx="116" cy="82" fill="#FFFFFF" r="4" stroke="#0F766E" stroke-width="2.5"></circle>
+<circle cx="233" cy="55" fill="#FFFFFF" r="4" stroke="#0F766E" stroke-width="2.5"></circle>
+<circle cx="350" cy="48" fill="#FFFFFF" r="4" stroke="#0F766E" stroke-width="2.5"></circle>
+<circle cx="466" cy="40" fill="#FFFFFF" r="4" stroke="#0F766E" stroke-width="2.5"></circle>
+<circle class="cursor-pointer" cx="583" cy="24" fill="#0F766E" r="5" stroke="#FFFFFF" stroke-width="2"></circle>
+<circle cx="700" cy="32" fill="#FFFFFF" r="4" stroke="#0F766E" stroke-width="2.5"></circle>
+</svg>
+<!-- Floating Inspection Tooltip at Peak (Oct 24) -->
+<div class="absolute left-[80%] top-[8%] -translate-x-1/2 -translate-y-full mb-1 z-10">
+<div class="bg-[#0B1218] text-white rounded-lg px-3 py-1.5 shadow-xl text-center text-xs">
+<div class="font-bold text-[#5EEAD4] flex items-center gap-1 justify-center">
+<span class="w-1.5 h-1.5 rounded-full bg-[#5EEAD4]"></span> +76 Net Sentiment
+                    </div>
+<div class="text-[10px] text-gray-300">Oct 24 · 42 evaluations</div>
+</div>
+<div class="w-2 h-2 bg-[#0B1218] rotate-45 mx-auto -mt-1"></div>
+</div>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between items-center text-[11px] font-mono text-[#64748B] pt-1 z-10 border-t border-[#E2E8F0]">
+<span>Oct 19 (+64)</span>
+<span>Oct 20 (+67)</span>
+<span>Oct 21 (+71)</span>
+<span>Oct 22 (+73)</span>
+<span>Oct 23 (+74)</span>
+<span class="font-bold text-[#0F766E]">Oct 24 (+76)</span>
+<span>Oct 25 (+72)</span>
+</div>
+</div>
+<!-- Callout finding banner -->
+<div class="flex items-start gap-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-3 text-xs">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] shrink-0 mt-0.5">auto_awesome</span>
+<div>
+<span class="font-bold text-[#065F46]">Key AI Engine Finding: </span>
+<span class="text-[#166534]">Perplexity Pro and ChatGPT-4o exhibit the strongest advocacy (84% positive), heavily indexed on Attio’s relational object schema and GraphQL customizability for fast engineering teams.</span>
+</div>
+</div>
+</div>
+<!-- 2. Perceived Brand Attributes & Polarity Breakdown -->
+<div class="bg-white border border-[#E3E9ED] rounded-2xl p-space-lg shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-[#0B1218] font-bold tracking-tight">Perceived Brand Attributes &amp; Polarity Breakdown</h2>
+<p class="text-xs text-[#5C6B76]">How AI engines classify specific capabilities and evaluate competitive strengths</p>
+</div>
+<div class="flex items-center gap-3 text-xs">
+<span class="flex items-center gap-1 text-[#0F766E] font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-[#0F766E]"></span> Positive</span>
+<span class="flex items-center gap-1 text-[#64748B] font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-[#94A3B8]"></span> Neutral</span>
+<span class="flex items-center gap-1 text-[#EA580C] font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-[#F97316]"></span> Risk / Negative</span>
+</div>
+</div>
+<!-- Attribute Rows -->
+<div class="space-y-3.5">
+<!-- Item 1 -->
+<div class="p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors border border-transparent hover:border-[#E3E9ED]">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#0B1218]">Innovative Data Model</span>
+<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#ECFDF5] text-[#0F766E]">High Advocacy</span>
+</div>
+<div class="font-mono text-xs font-bold text-[#0F766E]">+92 Polarity</div>
+</div>
+<!-- Stacked Progress Bar -->
+<div class="w-full h-3 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0F766E] h-full" style="width: 94%;" title="94% Positive"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 4%;" title="4% Neutral"></div>
+<div class="bg-[#F97316] h-full" style="width: 2%;" title="2% Risk"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#5C6B76] mt-1 font-mono">
+<span>94% Pos</span>
+<span>4% Neu</span>
+<span>2% Neg</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors border border-transparent hover:border-[#E3E9ED]">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#0B1218]">Fast &amp; Modern UI</span>
+<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#ECFDF5] text-[#0F766E]">High Advocacy</span>
+</div>
+<div class="font-mono text-xs font-bold text-[#0F766E]">+86 Polarity</div>
+</div>
+<div class="w-full h-3 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0F766E] h-full" style="width: 89%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 8%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 3%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#5C6B76] mt-1 font-mono">
+<span>89% Pos</span>
+<span>8% Neu</span>
+<span>3% Neg</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors border border-transparent hover:border-[#E3E9ED]">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#0B1218]">Flexible API &amp; GraphQL</span>
+<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#ECFDF5] text-[#0F766E]">High Advocacy</span>
+</div>
+<div class="font-mono text-xs font-bold text-[#0F766E]">+84 Polarity</div>
+</div>
+<div class="w-full h-3 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0F766E] h-full" style="width: 86%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 12%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 2%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#5C6B76] mt-1 font-mono">
+<span>86% Pos</span>
+<span>12% Neu</span>
+<span>2% Neg</span>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors border border-transparent hover:border-[#E3E9ED]">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#0B1218]">Easy Email Sync &amp; Enrichment</span>
+<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#F0FDF4] text-[#0F766E]">Favorable</span>
+</div>
+<div class="font-mono text-xs font-bold text-[#0F766E]">+68 Polarity</div>
+</div>
+<div class="w-full h-3 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0F766E] h-full" style="width: 74%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 20%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 6%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#5C6B76] mt-1 font-mono">
+<span>74% Pos</span>
+<span>20% Neu</span>
+<span>6% Neg</span>
+</div>
+</div>
+<!-- Item 5: Risk Theme -->
+<div class="p-2.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A]">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#92400E]">Enterprise Pricing &amp; Licensing</span>
+<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]">Risk Theme / Mixed</span>
+</div>
+<div class="font-mono text-xs font-bold text-[#B45309]">+10 Polarity</div>
+</div>
+<div class="w-full h-3 bg-[#E2E8F0] rounded-full overflow-hidden flex">
+<div class="bg-[#0F766E] h-full" style="width: 38%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 34%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 28%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#78350F] mt-1 font-mono font-medium">
+<span>38% Pos</span>
+<span>34% Neu</span>
+<span class="text-[#DC2626] font-bold">28% Risk &amp; Criticism</span>
+</div>
+</div>
+<!-- Item 6: Contested Scalability -->
+<div class="p-2.5 rounded-xl hover:bg-[#F8FAFC] transition-colors border border-transparent hover:border-[#E3E9ED]">
+<div class="flex items-center justify-between text-body-sm mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#0B1218]">Large Enterprise Scalability</span>
+<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[#475569]">Contested</span>
+</div>
+<div class="font-mono text-xs font-bold text-[#64748B]">+24 Polarity</div>
+</div>
+<div class="w-full h-3 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0F766E] h-full" style="width: 42%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 40%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 18%;"></div>
+</div>
+<div class="flex justify-between text-[11px] text-[#5C6B76] mt-1 font-mono">
+<span>42% Pos</span>
+<span>40% Neu</span>
+<span>18% Neg</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Synthesized AI Excerpt & Claim Feed -->
+<div class="bg-white border border-[#E3E9ED] rounded-2xl p-space-lg shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-[#0B1218] font-bold tracking-tight">Synthesized AI Excerpt &amp; Claim Feed</h2>
+<p class="text-xs text-[#5C6B76]">Verbatim model responses sampled directly from verified evaluation prompt runs</p>
+</div>
+<!-- Excerpt Category Tabs -->
+<div class="flex items-center bg-[#F5F7F8] border border-[#E3E9ED] rounded-lg p-0.5">
+<button class="px-2.5 py-1 text-xs font-bold rounded bg-white text-[#0F766E] shadow-xs">All Excerpts (142)</button>
+<button class="px-2.5 py-1 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218]">Positive (111)</button>
+<button class="px-2.5 py-1 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218]">Neutral (23)</button>
+<button class="px-2.5 py-1 text-xs font-medium text-[#EA580C] hover:text-[#DC2626]">Risk Themes (8)</button>
+</div>
+</div>
+<!-- Feed List -->
+<div class="space-y-4">
+<!-- Excerpt 1 -->
+<div class="border border-[#E3E9ED] rounded-xl p-4 hover:border-[#0F766E] transition-colors bg-[#FAFCFD]">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-[#EAF5FF] text-[#006398] border border-[#BAE6FD]">
+<span class="material-symbols-outlined text-[13px]">smart_toy</span> ChatGPT-4o
+                    </span>
+<span class="text-xs text-[#5C6B76]">Query: “Best modern CRM for high-growth tech teams”</span>
+</div>
+<span class="text-[11px] font-bold text-[#0F766E] bg-[#ECFDF5] px-2 py-0.5 rounded border border-[#A7F3D0]">Positive / High Advocacy</span>
+</div>
+<blockquote class="text-body-md text-[#0B1218] font-medium leading-relaxed italic border-l-2 border-[#0F766E] pl-3 my-2 bg-white py-1">
+                  “Attio represents the next generation of CRMs with its true relational database architecture and real-time multiplayer feel, making it significantly faster than legacy platforms like Salesforce.”
+                </blockquote>
+<div class="flex items-center justify-between text-xs text-[#5C6B76] pt-2 border-t border-[#F1F5F9]">
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-[#006398]"><span class="material-symbols-outlined text-[14px]">link</span> 4 Source Citations</span>
+<span>Confidence Score: 0.96</span>
+</div>
+<button class="text-[#0F766E] font-semibold hover:underline flex items-center gap-1">
+<span>Inspect Prompt in Telemetry</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Excerpt 2 (Risk Theme) -->
+<div class="border border-[#FDE68A] rounded-xl p-4 hover:border-[#F59E0B] transition-colors bg-[#FFFDF5]">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-[#F3E8FF] text-[#7E22CE] border border-[#E9D5FF]">
+<span class="material-symbols-outlined text-[13px]">travel_explore</span> Perplexity Pro
+                    </span>
+<span class="text-xs text-[#5C6B76]">Query: “Attio CRM enterprise pricing and hidden costs”</span>
+</div>
+<span class="text-[11px] font-bold text-[#EA580C] bg-[#FFF7ED] px-2 py-0.5 rounded border border-[#FFEDD5]">Risk Theme / Price Sensitivity</span>
+</div>
+<blockquote class="text-body-md text-[#92400E] font-medium leading-relaxed italic border-l-2 border-[#F59E0B] pl-3 my-2 bg-white py-1">
+                  “While Attio is praised for developer flexibility and custom objects, enterprise buyers occasionally note pricing tier transitions become steep when scaling past 50 seats.”
+                </blockquote>
+<div class="flex items-center justify-between text-xs text-[#5C6B76] pt-2 border-t border-[#FEF3C7]">
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-[#EA580C]"><span class="material-symbols-outlined text-[14px]">link</span> 3 Source Citations (Reddit, G2)</span>
+<span>Citation Age: &lt; 14 days</span>
+</div>
+<button class="text-[#0F766E] font-semibold hover:underline flex items-center gap-1">
+<span>Inspect Prompt in Telemetry</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Excerpt 3 -->
+<div class="border border-[#E3E9ED] rounded-xl p-4 hover:border-[#0F766E] transition-colors bg-[#FAFCFD]">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
+<span class="material-symbols-outlined text-[13px]">search</span> Google AI Overviews
+                    </span>
+<span class="text-xs text-[#5C6B76]">Query: “Which CRM automatically enriches contact profiles?”</span>
+</div>
+<span class="text-[11px] font-bold text-[#0F766E] bg-[#ECFDF5] px-2 py-0.5 rounded border border-[#A7F3D0]">Positive / Feature Win</span>
+</div>
+<blockquote class="text-body-md text-[#0B1218] font-medium leading-relaxed italic border-l-2 border-[#0F766E] pl-3 my-2 bg-white py-1">
+                  “Attio provides native bidirectional email enrichment without external plugins, positioning it ahead of HubSpot for lean ops teams.”
+                </blockquote>
+<div class="flex items-center justify-between text-xs text-[#5C6B76] pt-2 border-t border-[#F1F5F9]">
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-[#006398]"><span class="material-symbols-outlined text-[14px]">link</span> 2 Source Citations</span>
+<span>Engine: Gemini SGE 1.5</span>
+</div>
+<button class="text-[#0F766E] font-semibold hover:underline flex items-center gap-1">
+<span>Inspect Prompt in Telemetry</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (4-col): Competitor Benchmark & Risk Mitigations -->
+<div class="col-span-4 flex flex-col gap-6">
+<!-- 1. Competitor Sentiment Benchmark Panel -->
+<div class="bg-white border border-[#E3E9ED] rounded-2xl p-space-lg shadow-xs">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-[#0B1218] font-bold tracking-tight">Competitor Benchmark</h3>
+<p class="text-xs text-[#5C6B76]">Relative AI sentiment distribution in category</p>
+</div>
+<span class="material-symbols-outlined text-[#5C6B76] text-[18px]">leaderboard</span>
+</div>
+<!-- Leaderboard Items -->
+<div class="space-y-3 mt-4">
+<!-- Attio (#1) -->
+<div class="bg-[#F0FDF4] border border-[#86EFAC] rounded-xl p-3 relative overflow-hidden">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-[#0F766E] text-white flex items-center justify-center text-[10px] font-bold">1</span>
+<span class="font-bold text-[#0B1218] text-body-sm">Attio (You)</span>
+</div>
+<span class="font-mono text-xs font-extrabold text-[#0F766E]">+72 Net Score</span>
+</div>
+<div class="w-full h-2 bg-white rounded-full overflow-hidden flex border border-[#BBF7D0]">
+<div class="bg-[#0F766E] h-full" style="width: 78%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 16%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 6%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-[#166534] font-medium mt-1">
+<span>78% Pos</span>
+<span>16% Neu</span>
+<span>6% Neg</span>
+</div>
+</div>
+<!-- HubSpot (#2) -->
+<div class="border border-[#E3E9ED] rounded-xl p-3 hover:bg-[#F8FAFC] transition-colors">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-[#F1F5F9] text-[#475569] flex items-center justify-center text-[10px] font-bold">2</span>
+<span class="font-semibold text-[#0B1218] text-body-sm">HubSpot</span>
+</div>
+<span class="font-mono text-xs font-bold text-[#006398]">+61 Net Score</span>
+</div>
+<div class="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0284C7] h-full" style="width: 69%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 22%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 9%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+<span>69% Pos</span>
+<span>22% Neu</span>
+<span>9% Neg</span>
+</div>
+</div>
+<!-- Folk CRM (#3) -->
+<div class="border border-[#E3E9ED] rounded-xl p-3 hover:bg-[#F8FAFC] transition-colors">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-[#F1F5F9] text-[#475569] flex items-center justify-center text-[10px] font-bold">3</span>
+<span class="font-semibold text-[#0B1218] text-body-sm">Folk CRM</span>
+</div>
+<span class="font-mono text-xs font-bold text-[#475569]">+54 Net Score</span>
+</div>
+<div class="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0284C7] h-full" style="width: 62%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 30%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 8%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+<span>62% Pos</span>
+<span>30% Neu</span>
+<span>8% Neg</span>
+</div>
+</div>
+<!-- Pipedrive (#4) -->
+<div class="border border-[#E3E9ED] rounded-xl p-3 hover:bg-[#F8FAFC] transition-colors">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-[#F1F5F9] text-[#475569] flex items-center justify-center text-[10px] font-bold">4</span>
+<span class="font-semibold text-[#0B1218] text-body-sm">Pipedrive</span>
+</div>
+<span class="font-mono text-xs font-bold text-[#475569]">+49 Net Score</span>
+</div>
+<div class="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0284C7] h-full" style="width: 58%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 29%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 13%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+<span>58% Pos</span>
+<span>29% Neu</span>
+<span>13% Neg</span>
+</div>
+</div>
+<!-- Salesforce (#5) -->
+<div class="border border-[#E3E9ED] rounded-xl p-3 hover:bg-[#F8FAFC] transition-colors">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-[#F1F5F9] text-[#475569] flex items-center justify-center text-[10px] font-bold">5</span>
+<span class="font-semibold text-[#0B1218] text-body-sm">Salesforce</span>
+</div>
+<span class="font-mono text-xs font-bold text-[#EA580C]">+44 Net Score</span>
+</div>
+<div class="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden flex">
+<div class="bg-[#0284C7] h-full" style="width: 52%;"></div>
+<div class="bg-[#94A3B8] h-full" style="width: 28%;"></div>
+<div class="bg-[#F97316] h-full" style="width: 20%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+<span>52% Pos</span>
+<span>28% Neu</span>
+<span>20% Neg</span>
+</div>
+</div>
+</div>
+<!-- Benchmark Perception Takeaway -->
+<div class="mt-4 pt-3 border-t border-[#E3E9ED] text-xs text-[#5C6B76] leading-relaxed">
+<span class="font-bold text-[#0B1218]">Category Vector:</span> Attio dominates “Developer Speed” and “UI Innovation”. Salesforce maintains an edge in legacy RFP questions around compliance maturity.
+            </div>
+</div>
+<!-- 2. Identified Risk Themes & Hallucination Vectors -->
+<div class="bg-white border border-[#E3E9ED] rounded-2xl p-space-lg shadow-xs">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#F97316]"></span>
+<h3 class="font-headline-sm text-headline-sm text-[#0B1218] font-bold tracking-tight">Identified Risk Themes</h3>
+</div>
+<span class="text-[10px] font-bold uppercase bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA] px-1.5 py-0.5 rounded">2 Active</span>
+</div>
+<!-- Risk Item 1 -->
+<div class="bg-[#FFFDF7] border border-[#FDE68A] rounded-xl p-3 mb-3">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[#EA580C] text-[18px] shrink-0 mt-0.5">report_problem</span>
+<div>
+<h4 class="text-xs font-bold text-[#92400E]">Misconception: Lacks SOC2 Type II</h4>
+<p class="text-[11px] text-[#78350F] mt-0.5 leading-normal">
+                    Google AI Overviews cited an outdated 2023 tech blog claiming certification is pending.
+                  </p>
+<div class="flex items-center justify-between mt-2 pt-1.5 border-t border-[#FDE68A] text-[10px]">
+<span class="font-bold text-[#DC2626]">High Enterprise Friction</span>
+<span class="text-[#B45309]">Occurred in 14 prompts</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Risk Item 2 -->
+<div class="bg-[#FFFDF7] border border-[#FDE68A] rounded-xl p-3">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[#EA580C] text-[18px] shrink-0 mt-0.5">paid</span>
+<div>
+<h4 class="text-xs font-bold text-[#92400E]">Pricing Ambiguity in LLM Answers</h4>
+<p class="text-[11px] text-[#78350F] mt-0.5 leading-normal">
+                    LLMs frequently hallucinate that Attio requires bespoke annual contracts without publicly listed tier pricing.
+                  </p>
+<div class="flex items-center justify-between mt-2 pt-1.5 border-t border-[#FDE68A] text-[10px]">
+<span class="font-bold text-[#EA580C]">Mid Funnel Drop-off</span>
+<span class="text-[#B45309]">ChatGPT-4o, Claude 3.5</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Dedicated Action Card: Grounding & Fact-checking Bridge -->
+<div class="bg-gradient-to-br from-[#0F766E] to-[#115E59] text-white rounded-2xl p-space-lg shadow-md relative overflow-hidden">
+<!-- Background accent geometry -->
+<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[#A3FAEF] text-[20px]">fact_check</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-white tracking-tight">Fact-Checking &amp; Grounding</h3>
+</div>
+<p class="text-xs text-[#CCFBF1] leading-relaxed mb-4">
+              3 claims detected with factual discrepancies in foundation models. Publish authoritative schema corrections directly into the GeoLens Grounding Index to rectify hallucinated data.
+            </p>
+<a class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white text-[#0F766E] hover:bg-[#F0FDF4] font-label-lg text-label-lg font-bold rounded-xl shadow-sm transition-all active:scale-98" href="#">
+<span>Open Fact-Checking Workspace</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

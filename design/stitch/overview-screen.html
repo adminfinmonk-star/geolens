@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens — AI Search Visibility Analytics</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration matching the design tokens verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#5bb8fe",
+            "on-tertiary-fixed": "#341100",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary": "#ffffff",
+            "error": "#ba1a1a",
+            "secondary": "#006398",
+            "on-primary-fixed-variant": "#00504a",
+            "on-secondary-fixed-variant": "#004b73",
+            "primary-container": "#0f766e",
+            "surface-tint": "#006a63",
+            "surface-dim": "#ccdce9",
+            "inverse-primary": "#80d5cb",
+            "on-background": "#0e1d26",
+            "on-secondary-fixed": "#001d31",
+            "on-surface-variant": "#3e4947",
+            "outline": "#6e7977",
+            "surface-container": "#e0f0fd",
+            "surface-variant": "#d5e5f1",
+            "inverse-on-surface": "#e4f3ff",
+            "secondary-fixed-dim": "#93ccff",
+            "tertiary-fixed-dim": "#ffb690",
+            "tertiary-fixed": "#ffdbca",
+            "on-error-container": "#93000a",
+            "tertiary-container": "#af4c00",
+            "primary-fixed": "#9cf2e8",
+            "on-tertiary-container": "#ffe6da",
+            "surface-container-highest": "#d5e5f1",
+            "inverse-surface": "#24323c",
+            "primary-fixed-dim": "#80d5cb",
+            "surface-bright": "#f5faff",
+            "background": "#f5faff",
+            "on-primary": "#ffffff",
+            "tertiary": "#893a00",
+            "surface-container-high": "#daeaf7",
+            "surface": "#f5faff",
+            "outline-variant": "#bdc9c6",
+            "on-surface": "#0e1d26",
+            "error-container": "#ffdad6",
+            "secondary-fixed": "#cce5ff",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#eaf5ff",
+            "on-primary-fixed": "#00201d",
+            "on-error": "#ffffff",
+            "on-secondary-container": "#00476e",
+            "on-primary-container": "#a3faef",
+            "primary": "#005c55",
+            "on-tertiary-fixed-variant": "#783200"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "panel-padding-standard": "1.25rem",
+            "panel-padding-compact": "0.75rem",
+            "space-3xl": "3rem",
+            "space-base": "1rem",
+            "space-sm": "0.5rem",
+            "space-2xl": "2rem",
+            "gutter-desktop": "1.5rem",
+            "gutter-mobile": "1rem",
+            "space-2xs": "0.125rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.5rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "data-mono": ["13px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "500" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "500" }],
+            "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F5F7F8;
+      color: #0B1218;
+      overflow-x: hidden;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #E3E9ED;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-[#F5F7F8] min-h-screen text-[#0B1218] flex flex-col antialiased selection:bg-[#ECFDF5] selection:text-[#0F766E]">
+<!-- TOP SHELL: Persistent Full-Width Top Navigation Bar (JSON TopNavBar Anchor) -->
+<header class="w-full bg-white border-b border-[#E3E9ED] shadow-sm sticky top-0 z-50 flex items-center justify-between px-6 py-2.5 h-[58px]">
+<!-- Brand Anchor & Project Selector Cluster -->
+<div class="flex items-center gap-5">
+<div class="flex items-center gap-2.5 pr-4 border-r border-[#E3E9ED]">
+<div class="w-8 h-8 rounded-lg bg-[#0F766E] flex items-center justify-center text-white shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="radar">radar</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm font-extrabold text-[#0B1218] tracking-tight leading-none">GeoLens</span>
+<span class="text-[10px] text-[#5C6B76] font-medium tracking-wide">Spatial &amp; Search AI</span>
+</div>
+</div>
+<!-- Navigation Links from Shared Components JSON: Attio · Demo, All Models, Last 30 Days -->
+<div class="flex items-center gap-2">
+<!-- Project Context Dropdown -->
+<button class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[#E3E9ED] bg-white hover:bg-[#F5F7F8] transition-colors text-body-md font-body-md text-[#0B1218] shadow-sm">
+<span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>
+<span class="font-semibold text-body-sm font-body-sm">Attio · Demo</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]" data-icon="arrow_drop_down">arrow_drop_down</span>
+</button>
+<!-- Model Filter Dropdown -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3E9ED] bg-white hover:bg-[#F5F7F8] transition-colors text-body-sm font-body-sm text-[#0B1218]">
+<span class="material-symbols-outlined text-[17px] text-[#5C6B76]" data-icon="neurology">neurology</span>
+<span>All Models</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#ECFDF5] text-[#0F766E]">4 AI Engines</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Date Range Filter Pill -->
+<div class="flex items-center rounded-lg border border-[#E3E9ED] p-0.5 bg-[#F5F7F8]">
+<button class="px-2.5 py-1 rounded-md text-[12px] font-semibold text-[#5C6B76] hover:text-[#0B1218]">Last 7 Days</button>
+<button class="px-2.5 py-1 rounded-md text-[12px] font-bold text-[#0F766E] bg-white shadow-xs">Last 30 Days</button>
+<button class="px-2.5 py-1 rounded-md text-[12px] font-medium text-[#5C6B76] hover:text-[#0B1218]">90 Days</button>
+</div>
+</div>
+</div>
+<!-- Right Side Actions matching JSON & Requirements -->
+<div class="flex items-center gap-3">
+<!-- Trial Status Pill -->
+<div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 bg-[#ECFDF5] border border-[#0F766E]/20 rounded-md text-label-md font-label-md text-[#0F766E]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E] animate-pulse"></span>
+<span>14 days left in trial</span>
+<a class="underline font-bold hover:text-[#005c55] ml-1" href="#upgrade">Upgrade</a>
+</div>
+<!-- Export Action Button -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E3E9ED] hover:border-[#0F766E] hover:bg-[#F0FDF4] rounded-lg text-body-sm font-body-sm font-semibold text-[#0B1218] transition-all shadow-xs">
+<span class="material-symbols-outlined text-[17px] text-[#5C6B76]" data-icon="file_download">file_download</span>
+<span>Export Report</span>
+</button>
+<!-- Workspace Settings (Secondary Action) -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-[#0F766E] hover:bg-[#005c55] active:bg-[#00201d] text-white rounded-lg text-body-sm font-body-sm font-semibold transition-all shadow-sm">
+<span class="material-symbols-outlined text-[17px]" data-icon="add">add</span>
+<span>New Analysis</span>
+</button>
+<!-- Trailing Icon Actions from JSON: [notifications, help, tune] -->
+<div class="flex items-center gap-1 border-l border-[#E3E9ED] pl-3 ml-1 text-[#5C6B76]">
+<button class="p-1.5 hover:bg-[#F5F7F8] hover:text-[#0B1218] rounded-md transition-colors relative" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#0F766E] ring-2 ring-white"></span>
+</button>
+<button class="p-1.5 hover:bg-[#F5F7F8] hover:text-[#0B1218] rounded-md transition-colors" title="Workspace Settings / Tune">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+</button>
+<button class="p-1.5 hover:bg-[#F5F7F8] hover:text-[#0B1218] rounded-md transition-colors" title="Help &amp; Support">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="flex items-center pl-2">
+<div class="w-8 h-8 rounded-full ring-2 ring-[#0F766E]/20 bg-[#ECFDF5] text-[#0F766E] font-bold text-xs flex items-center justify-center cursor-pointer hover:ring-[#0F766E] transition-all" title="User profile avatar">
+          AL
+        </div>
+</div>
+</div>
+</header>
+<!-- WORKSPACE BODY: Multi-tier analytical layout -->
+<div class="flex flex-1 overflow-hidden">
+<!-- 1. NARROW ICON RAIL (64px wide, bg-white, border-r #E3E9ED) -->
+<aside class="w-16 bg-white border-r border-[#E3E9ED] flex flex-col items-center justify-between py-4 shrink-0 z-20 select-none">
+<div class="flex flex-col items-center gap-5 w-full">
+<!-- Brand Glyph motif in #0F766E -->
+<div class="w-10 h-10 rounded-xl bg-[#ECFDF5] border border-[#0F766E]/30 flex items-center justify-center text-[#0F766E] cursor-pointer hover:bg-[#0F766E] hover:text-white transition-all shadow-xs">
+<span class="material-symbols-outlined text-[22px]" data-icon="search_insights">search_insights</span>
+</div>
+<!-- Navigation Icon Rail Stack -->
+<div class="flex flex-col items-center gap-2 w-full px-2">
+<!-- Home (inactive) -->
+<button class="w-11 h-11 rounded-lg flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Dashboard">
+<span class="material-symbols-outlined text-[22px]" data-icon="dashboard">dashboard</span>
+</button>
+<!-- AI Visibility (ACTIVE: teal pill indicator with #0F766E icon) -->
+<div class="relative w-full flex justify-center">
+<span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#0F766E] rounded-r"></span>
+<button class="w-11 h-11 rounded-lg flex items-center justify-center bg-[#ECFDF5] text-[#0F766E] shadow-xs" title="AI Visibility (Active)">
+<span class="material-symbols-outlined text-[22px]" data-icon="visibility" data-weight="fill" style="font-variation-settings: 'FILL' 1;">visibility</span>
+</button>
+</div>
+<!-- Content (inactive) -->
+<button class="w-11 h-11 rounded-lg flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Prompts &amp; Content">
+<span class="material-symbols-outlined text-[22px]" data-icon="chat">chat</span>
+</button>
+<!-- Reports (inactive) -->
+<button class="w-11 h-11 rounded-lg flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Monitoring &amp; Competitors">
+<span class="material-symbols-outlined text-[22px]" data-icon="monitoring">monitoring</span>
+</button>
+<!-- Analytics (inactive) -->
+<button class="w-11 h-11 rounded-lg flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Spatial Engine">
+<span class="material-symbols-outlined text-[22px]" data-icon="travel_explore">travel_explore</span>
+</button>
+</div>
+</div>
+<!-- Bottom Utility Actions -->
+<div class="flex flex-col items-center gap-2.5 w-full px-2">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Documentation">
+<span class="material-symbols-outlined text-[20px]" data-icon="menu_book">menu_book</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-px bg-[#E3E9ED] my-1"></div>
+<button class="w-9 h-9 rounded-full bg-[#F5F7F8] border border-[#E3E9ED] flex items-center justify-center text-[#5C6B76] hover:text-[#0F766E] transition-colors text-xs font-bold" title="Help &amp; Support">
+          ?
+        </button>
+</div>
+</aside>
+<!-- 2. SECONDARY SIDEBAR (240px wide, bg-[#FAFCFC] border-r #E3E9ED) -->
+<aside class="w-60 bg-[#FAFCFC] border-r border-[#E3E9ED] flex flex-col justify-between py-4 shrink-0 overflow-y-auto custom-scrollbar select-none">
+<div class="px-3.5 space-y-5">
+<!-- Sidebar Header -->
+<div class="px-2 pt-1 pb-2 border-b border-[#E3E9ED]">
+<h2 class="text-headline-sm font-headline-sm font-bold text-[#0B1218] tracking-tight">AI Visibility</h2>
+<p class="text-label-md font-label-md text-[#5C6B76] font-medium tracking-wide">GeoLens Suite</p>
+</div>
+<!-- Group 1: AI ANALYSIS -->
+<div class="space-y-1">
+<p class="px-2 text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">AI Analysis</p>
+<div class="space-y-0.5 pt-1">
+<!-- Visibility Overview (ACTIVE) -->
+<a class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-[#F0FDF4] border border-[#0F766E]/20 text-[#0F766E] font-semibold text-body-sm font-body-sm shadow-xs transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="query_stats">query_stats</span>
+<span>Visibility Overview</span>
+</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span>
+</a>
+<!-- Competitor Research -->
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="compare_arrows">compare_arrows</span>
+<span>Competitor Research</span>
+</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-bold">5</span>
+</a>
+<!-- Prompt Research -->
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="manage_search">manage_search</span>
+<span>Prompt Research</span>
+</a>
+</div>
+</div>
+<!-- Group 2: BRAND PERFORMANCE -->
+<div class="space-y-1">
+<p class="px-2 text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">Brand Performance</p>
+<div class="space-y-0.5 pt-1">
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified">verified</span>
+<span>Brand Performance</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="sentiment_satisfied">sentiment_satisfied</span>
+<span>Perception &amp; Sentiment</span>
+</a>
+</div>
+</div>
+<!-- Group 3: BOOST & MONITOR -->
+<div class="space-y-1">
+<p class="px-2 text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">Boost &amp; Monitor</p>
+<div class="space-y-0.5 pt-1">
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="tune">tune</span>
+<span>Prompt Tracking</span>
+</span>
+<span class="text-[10px] px-1 py-0.2 rounded bg-[#ECFDF5] text-[#0F766E] font-bold">Live</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="link">link</span>
+<span>Sources &amp; Citations</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-white transition-colors text-body-sm font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="build_circle">build_circle</span>
+<span>Actions &amp; Fixes</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Bottom Storage / Plan Usage Widget -->
+<div class="px-3.5 pt-4">
+<div class="p-3 bg-white rounded-xl border border-[#E3E9ED] shadow-xs">
+<div class="flex items-center justify-between text-body-sm font-body-sm font-semibold mb-1.5">
+<span class="text-[#0B1218] text-xs">Prompt Quota</span>
+<span class="text-[#0F766E] text-xs font-bold">28.4%</span>
+</div>
+<div class="w-full h-1.5 bg-[#E3E9ED] rounded-full overflow-hidden mb-2">
+<div class="h-full bg-[#0F766E] rounded-full" style="width: 28.4%;"></div>
+</div>
+<p class="text-[11px] text-[#5C6B76] font-medium leading-tight">
+<strong class="text-[#0B1218] font-semibold">1,420</strong> / 5,000 Prompts Analyzed
+          </p>
+</div>
+</div>
+</aside>
+<!-- 3. MAIN DASHBOARD CANVAS -->
+<main class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-[#F5F7F8]">
+<div class="max-w-[1360px] mx-auto space-y-6">
+<!-- Header Section: Title & Analytical Controls -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2.5">
+<h1 class="text-headline-lg font-headline-lg font-extrabold text-[#0B1218] tracking-tight">Visibility Overview</h1>
+<span class="px-2 py-0.5 rounded-full text-label-md font-label-md bg-[#ECFDF5] text-[#0F766E] font-bold border border-[#0F766E]/20">
+                Live Spatial Index
+              </span>
+</div>
+<p class="text-body-md font-body-md text-[#5C6B76] mt-0.5">
+              How often ChatGPT, Perplexity, Gemini, and AI Overviews mention your brand
+            </p>
+</div>
+<!-- Quick Action Group -->
+<div class="flex items-center gap-2.5 shrink-0">
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E3E9ED] hover:border-[#0F766E] hover:bg-[#F0FDF4] rounded-lg text-body-sm font-body-sm font-semibold text-[#0B1218] shadow-xs transition-all">
+<span class="material-symbols-outlined text-[17px] text-[#5C6B76]" data-icon="schedule">schedule</span>
+<span>Schedule Report</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E3E9ED] hover:border-[#0F766E] hover:bg-[#F0FDF4] rounded-lg text-body-sm font-body-sm font-semibold text-[#0B1218] shadow-xs transition-all">
+<span class="material-symbols-outlined text-[17px] text-[#5C6B76]" data-icon="share">share</span>
+<span>Share View</span>
+</button>
+</div>
+</section>
+<!-- 4 CORE KPIS ROW -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- KPI 1: Visibility -->
+<div class="bg-white rounded-xl p-4 border border-[#E3E9ED] shadow-xs hover:border-[#0F766E]/40 transition-all">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">AI Visibility</span>
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="visibility">visibility</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div>
+<span class="text-display-lg font-display-lg font-extrabold text-[#0B1218] tracking-tight">47%</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="inline-flex items-center text-[11px] font-bold text-[#0F766E] bg-[#ECFDF5] px-1.5 py-0.5 rounded">
+                    ↑ +4.2%
+                  </span>
+<span class="text-[11px] text-[#5C6B76]">vs last 7d</span>
+</div>
+</div>
+<!-- Mini SVG Sparkline -->
+<div class="w-16 h-8">
+<svg class="w-full h-full" fill="none" viewbox="0 0 64 32">
+<path d="M2 26 L14 20 L26 24 L38 12 L50 16 L62 4" stroke="#0F766E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+<path d="M2 26 L14 20 L26 24 L38 12 L50 16 L62 4 V32 H2 Z" fill="url(#sparkline-gradient)" opacity="0.12"></path>
+<defs>
+<lineargradient id="sparkline-gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0F766E"></stop>
+<stop offset="100%" stop-color="#0F766E" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
+<!-- KPI 2: Avg Position -->
+<div class="bg-white rounded-xl p-4 border border-[#E3E9ED] shadow-xs hover:border-[#0F766E]/40 transition-all">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">Avg Position</span>
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="format_list_numbered">format_list_numbered</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div>
+<span class="text-display-lg font-display-lg font-extrabold text-[#0B1218] tracking-tight">2.4</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="inline-flex items-center text-[11px] font-bold text-[#0F766E] bg-[#ECFDF5] px-1.5 py-0.5 rounded">
+                    ↑ +0.3
+                  </span>
+<span class="text-[11px] text-[#5C6B76]">improvement</span>
+</div>
+</div>
+<div class="w-16 h-8">
+<svg class="w-full h-full" fill="none" viewbox="0 0 64 32">
+<path d="M2 18 L14 22 L28 14 L42 16 L54 8 L62 6" stroke="#0F766E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- KPI 3: Share of Voice -->
+<div class="bg-white rounded-xl p-4 border border-[#E3E9ED] shadow-xs hover:border-[#0F766E]/40 transition-all">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">Share of Voice</span>
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="pie_chart">pie_chart</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div>
+<span class="text-display-lg font-display-lg font-extrabold text-[#0B1218] tracking-tight">18%</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="inline-flex items-center text-[11px] font-bold text-[#0F766E] bg-[#ECFDF5] px-1.5 py-0.5 rounded">
+                    ↑ +1.8%
+                  </span>
+<span class="text-[11px] text-[#5C6B76]">vs competitors</span>
+</div>
+</div>
+<div class="w-16 h-8">
+<svg class="w-full h-full" fill="none" viewbox="0 0 64 32">
+<path d="M2 24 L16 18 L30 20 L44 10 L54 12 L62 4" stroke="#0F766E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- KPI 4: Mentions -->
+<div class="bg-white rounded-xl p-4 border border-[#E3E9ED] shadow-xs hover:border-[#0F766E]/40 transition-all">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-md font-label-md text-[#5C6B76] uppercase tracking-wider font-bold">Total Mentions</span>
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="chat_bubble">chat_bubble</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div>
+<span class="text-display-lg font-display-lg font-extrabold text-[#0B1218] tracking-tight">114</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="inline-flex items-center text-[11px] font-bold text-[#0F766E] bg-[#ECFDF5] px-1.5 py-0.5 rounded">
+                    +16 new
+                  </span>
+<span class="text-[11px] text-[#5C6B76]">tested clusters</span>
+</div>
+</div>
+<div class="w-16 h-8">
+<svg class="w-full h-full" fill="none" viewbox="0 0 64 32">
+<path d="M2 28 L14 24 L28 16 L40 18 L52 8 L62 2" stroke="#0F766E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- MAIN DATA SECTION (Two-Column Layout: Multi-Series Chart & Ranked List) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+<!-- LEFT: Multi-Series Line Chart 'AI Visibility Over Time' (approx 65% / 8 cols) -->
+<div class="lg:col-span-8 bg-white rounded-xl p-5 border border-[#E3E9ED] shadow-xs flex flex-col justify-between">
+<!-- Card Header & Benchmark Legends -->
+<div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#E3E9ED] gap-3">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-[#0B1218]">AI Visibility Over Time</h3>
+<p class="text-body-sm font-body-sm text-[#5C6B76]">Comparative presence across prompt executions</p>
+</div>
+<!-- Competitor Legend Toggle Badges -->
+<div class="flex flex-wrap items-center gap-2">
+<!-- Attio (Brand) - Deep Teal #0F766E -->
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#ECFDF5] border border-[#0F766E] text-[12px] font-bold text-[#0F766E]">
+<span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+<span>Attio (You)</span>
+</div>
+<!-- HubSpot - Sky Blue #0284C7 -->
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-[#E3E9ED] text-[12px] font-medium text-[#5C6B76]">
+<span class="w-2 h-2 rounded-full bg-[#0284C7]"></span>
+<span>HubSpot</span>
+</div>
+<!-- Salesforce - Coral #F97316 -->
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-[#E3E9ED] text-[12px] font-medium text-[#5C6B76]">
+<span class="w-2 h-2 rounded-full bg-[#F97316]"></span>
+<span>Salesforce</span>
+</div>
+<!-- Pipedrive - Slate #94A3B8 -->
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-[#E3E9ED] text-[12px] font-medium text-[#5C6B76]">
+<span class="w-2 h-2 rounded-full bg-[#94A3B8]"></span>
+<span>Pipedrive</span>
+</div>
+</div>
+</div>
+<!-- Main SVG Line Chart Viewport -->
+<div class="relative w-full h-[280px] mt-4 select-none">
+<!-- Grid Background Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+<div class="w-full border-b border-dashed border-[#E3E9ED] flex justify-between text-[11px] text-[#5C6B76]"><span>60%</span></div>
+<div class="w-full border-b border-dashed border-[#E3E9ED] flex justify-between text-[11px] text-[#5C6B76]"><span>45%</span></div>
+<div class="w-full border-b border-dashed border-[#E3E9ED] flex justify-between text-[11px] text-[#5C6B76]"><span>30%</span></div>
+<div class="w-full border-b border-dashed border-[#E3E9ED] flex justify-between text-[11px] text-[#5C6B76]"><span>15%</span></div>
+<div class="w-full border-b border-[#E3E9ED] flex justify-between text-[11px] text-[#5C6B76]"><span>0%</span></div>
+</div>
+<!-- Multi-series SVG Curves -->
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 700 240">
+<!-- Pipedrive (Slate #94A3B8) -->
+<path d="M 30 190 Q 140 180 250 170 T 470 175 T 670 160" fill="none" opacity="0.8" stroke="#94A3B8" stroke-dasharray="3,3" stroke-width="2"></path>
+<!-- Salesforce (Coral #F97316) -->
+<path d="M 30 160 Q 140 145 250 150 T 470 135 T 670 140" fill="none" opacity="0.85" stroke="#F97316" stroke-width="2"></path>
+<!-- HubSpot (Sky Blue #0284C7) -->
+<path d="M 30 110 Q 140 95 250 100 T 470 90 T 670 85" fill="none" opacity="0.9" stroke="#0284C7" stroke-width="2.2"></path>
+<!-- Attio Brand (Deep Teal #0F766E - Bold Leader) -->
+<path d="M 30 95 Q 140 85 250 65 T 470 50 T 670 30" fill="none" stroke="#0F766E" stroke-linecap="round" stroke-width="3.5"></path>
+<!-- Subtle gradient area fill for Attio -->
+<path d="M 30 95 Q 140 85 250 65 T 470 50 T 670 30 V 240 H 30 Z" fill="url(#attio-fill)" opacity="0.08"></path>
+<defs>
+<lineargradient id="attio-fill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0F766E"></stop>
+<stop offset="100%" stop-color="#0F766E" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Attio Key Milestone Nodes -->
+<circle cx="30" cy="95" fill="#0F766E" r="4" stroke="#FFFFFF" stroke-width="2"></circle>
+<circle cx="250" cy="65" fill="#0F766E" r="4" stroke="#FFFFFF" stroke-width="2"></circle>
+<circle cx="470" cy="50" fill="#0F766E" r="5" stroke="#FFFFFF" stroke-width="2.5"></circle>
+<circle cx="670" cy="30" fill="#0F766E" r="5" stroke="#FFFFFF" stroke-width="2.5"></circle>
+<!-- Interactive Active Guideline & Highlight on Friday -->
+<line opacity="0.5" stroke="#0F766E" stroke-dasharray="4,4" stroke-width="1.2" x1="470" x2="470" y1="10" y2="240"></line>
+</svg>
+<!-- Floating Precision Tooltip for Active State (Friday Node) -->
+<div class="absolute left-[64%] top-[12%] -translate-x-1/2 bg-white border border-[#E3E9ED] rounded-lg shadow-md p-2.5 pointer-events-none z-10 w-44">
+<div class="text-[10px] font-bold text-[#5C6B76] uppercase tracking-wider mb-1 flex items-center justify-between">
+<span>Fri, Oct 24</span>
+<span class="text-[#0F766E] font-bold">Peak</span>
+</div>
+<div class="space-y-1 text-xs">
+<div class="flex items-center justify-between font-bold text-[#0F766E]">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>Attio</span>
+<span>47% (#1)</span>
+</div>
+<div class="flex items-center justify-between text-[#5C6B76]">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#0284C7]"></span>HubSpot</span>
+<span>41%</span>
+</div>
+<div class="flex items-center justify-between text-[#5C6B76]">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#F97316]"></span>Salesforce</span>
+<span>28%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Time Markers (Mon to Sun) -->
+<div class="flex justify-between text-label-md font-label-md text-[#5C6B76] pt-3 px-3 border-t border-[#E3E9ED]">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span class="text-[#0F766E] font-bold">Fri (Peak)</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+<!-- Mini Footnote Insight -->
+<div class="mt-4 pt-3 border-t border-[#E3E9ED] flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-[#0F766E]" data-icon="insights">insights</span>
+                Attio visibility increased by <strong>6.8 percentage points</strong> following product comparison benchmarks published Oct 22.
+              </span>
+<a class="text-[#0F766E] font-semibold hover:underline" href="#">View Prompt Logs →</a>
+</div>
+</div>
+<!-- RIGHT: Ranked List Card 'Who AI Recommends' (approx 35% / 4 cols) -->
+<div class="lg:col-span-4 bg-white rounded-xl p-5 border border-[#E3E9ED] shadow-xs flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-[#0B1218]">Who AI Recommends</h3>
+<p class="text-body-sm font-body-sm text-[#5C6B76]">Ranked across 250 evaluation queries</p>
+</div>
+<span class="material-symbols-outlined text-[20px] text-[#5C6B76]" data-icon="military_tech">military_tech</span>
+</div>
+<!-- Ranked Entities with Progress Fill Bars -->
+<div class="space-y-4 pt-4">
+<!-- #1 Attio -->
+<div class="space-y-1.5 p-2 rounded-lg bg-[#F0FDF4] border border-[#0F766E]/20">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-[#0F766E] text-white flex items-center justify-center font-bold text-[11px]">1</span>
+<span class="font-extrabold text-[#0B1218]">Attio</span>
+<span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-[#ECFDF5] text-[#0F766E]">Top Pick</span>
+</div>
+<div class="text-right">
+<span class="font-bold text-[#0F766E]">47%</span>
+<span class="text-[10px] text-[#5C6B76] block">52 prompts</span>
+</div>
+</div>
+<div class="w-full h-2 bg-[#E3E9ED] rounded-full overflow-hidden">
+<div class="h-full bg-[#0F766E] rounded-full" style="width: 47%;"></div>
+</div>
+</div>
+<!-- #2 HubSpot -->
+<div class="space-y-1.5 px-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-slate-100 text-[#5C6B76] flex items-center justify-center font-bold text-[11px]">2</span>
+<span class="font-bold text-[#0B1218]">HubSpot</span>
+</div>
+<div class="text-right">
+<span class="font-bold text-[#0B1218]">41%</span>
+<span class="text-[10px] text-[#5C6B76] block">45 prompts</span>
+</div>
+</div>
+<div class="w-full h-2 bg-[#E3E9ED] rounded-full overflow-hidden">
+<div class="h-full bg-[#0284C7] rounded-full" style="width: 41%;"></div>
+</div>
+</div>
+<!-- #3 Salesforce -->
+<div class="space-y-1.5 px-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-slate-100 text-[#5C6B76] flex items-center justify-center font-bold text-[11px]">3</span>
+<span class="font-bold text-[#0B1218]">Salesforce</span>
+</div>
+<div class="text-right">
+<span class="font-bold text-[#0B1218]">28%</span>
+<span class="text-[10px] text-[#5C6B76] block">31 prompts</span>
+</div>
+</div>
+<div class="w-full h-2 bg-[#E3E9ED] rounded-full overflow-hidden">
+<div class="h-full bg-[#F97316] rounded-full" style="width: 28%;"></div>
+</div>
+</div>
+<!-- #4 Pipedrive -->
+<div class="space-y-1.5 px-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-slate-100 text-[#5C6B76] flex items-center justify-center font-bold text-[11px]">4</span>
+<span class="font-medium text-[#0B1218]">Pipedrive</span>
+</div>
+<div class="text-right">
+<span class="font-semibold text-[#0B1218]">19%</span>
+<span class="text-[10px] text-[#5C6B76] block">21 prompts</span>
+</div>
+</div>
+<div class="w-full h-2 bg-[#E3E9ED] rounded-full overflow-hidden">
+<div class="h-full bg-[#94A3B8] rounded-full" style="width: 19%;"></div>
+</div>
+</div>
+<!-- #5 Close CRM -->
+<div class="space-y-1.5 px-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded-full bg-slate-100 text-[#5C6B76] flex items-center justify-center font-bold text-[11px]">5</span>
+<span class="font-medium text-[#0B1218]">Close CRM</span>
+</div>
+<div class="text-right">
+<span class="font-semibold text-[#0B1218]">12%</span>
+<span class="text-[10px] text-[#5C6B76] block">13 prompts</span>
+</div>
+</div>
+<div class="w-full h-2 bg-[#E3E9ED] rounded-full overflow-hidden">
+<div class="h-full bg-[#CBD5E1] rounded-full" style="width: 12%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Summary Button -->
+<button class="w-full mt-4 py-2 px-3 bg-white border border-[#E3E9ED] hover:border-[#0F766E] hover:bg-[#F0FDF4] rounded-lg text-body-sm font-body-sm font-bold text-[#0F766E] flex items-center justify-center gap-1.5 transition-all">
+<span>View Full Competitor Matrix</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- BOTTOM DATA SECTION (Two Equal Cards: Platforms Breakdown & Geo Distribution) -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<!-- Card 1: 'Visibility by AI Platform' -->
+<div class="bg-white rounded-xl p-5 border border-[#E3E9ED] shadow-xs flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-[#0B1218]">Visibility by AI Platform</h3>
+<p class="text-body-sm font-body-sm text-[#5C6B76]">Attio mention rate and citation format breakdown</p>
+</div>
+<div class="flex items-center gap-1.5 text-label-md font-label-md text-[#5C6B76]">
+<span class="w-2 h-2 rounded-full bg-[#0F766E]"></span> Primary Citation
+                  <span class="w-2 h-2 rounded-full bg-slate-300 ml-2"></span> Incidental
+                </div>
+</div>
+<!-- Platform Breakdown Rows -->
+<div class="space-y-4 pt-4">
+<!-- ChatGPT-4o -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="smart_toy">smart_toy</span>
+<span class="font-bold text-[#0B1218]">ChatGPT-4o</span>
+<span class="text-[11px] text-[#5C6B76]">(OpenAI)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-[#5C6B76]">Direct Recommendation: 72%</span>
+<span class="font-bold text-[#0F766E] text-sm">58%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-[#F5F7F8] border border-[#E3E9ED] rounded-full overflow-hidden flex">
+<div class="h-full bg-[#0F766E]" style="width: 58%;"></div>
+</div>
+</div>
+<!-- Perplexity Pro -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="search_spark">search_spark</span>
+<span class="font-bold text-[#0B1218]">Perplexity Pro</span>
+<span class="text-[11px] text-[#5C6B76]">(Sonar-Large)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-[#5C6B76]">Primary Source Link: 84%</span>
+<span class="font-bold text-[#0F766E] text-sm">51%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-[#F5F7F8] border border-[#E3E9ED] rounded-full overflow-hidden flex">
+<div class="h-full bg-[#0F766E]" style="width: 51%;"></div>
+</div>
+</div>
+<!-- Google AI Overviews -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="travel_explore">travel_explore</span>
+<span class="font-bold text-[#0B1218]">Google AI Overviews</span>
+<span class="text-[11px] text-[#5C6B76]">(SGE)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-[#5C6B76]">Comparison Table: 61%</span>
+<span class="font-bold text-[#0F766E] text-sm">44%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-[#F5F7F8] border border-[#E3E9ED] rounded-full overflow-hidden flex">
+<div class="h-full bg-[#0F766E]" style="width: 44%;"></div>
+</div>
+</div>
+<!-- Gemini 1.5 Pro -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-bold text-[#0B1218]">Gemini 1.5 Pro</span>
+<span class="text-[11px] text-[#5C6B76]">(Google DeepMind)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-[#5C6B76]">Direct Mention: 48%</span>
+<span class="font-bold text-[#0F766E] text-sm">35%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-[#F5F7F8] border border-[#E3E9ED] rounded-full overflow-hidden flex">
+<div class="h-full bg-[#0F766E]" style="width: 35%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card Subfooter -->
+<div class="pt-3 mt-4 border-t border-[#E3E9ED] flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>Highest conviction: <strong>Perplexity</strong> (1.4 citations per prompt average)</span>
+<button class="text-[#0F766E] font-semibold hover:underline">Platform Specs →</button>
+</div>
+</div>
+<!-- Card 2: 'Mentions by Country' -->
+<div class="bg-white rounded-xl p-5 border border-[#E3E9ED] shadow-xs flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-[#0B1218]">Mentions by Country</h3>
+<p class="text-body-sm font-body-sm text-[#5C6B76]">Geographic distribution across localized prompt clusters</p>
+</div>
+<span class="material-symbols-outlined text-[20px] text-[#5C6B76]" data-icon="public">public</span>
+</div>
+<!-- Segmented Horizontal Stacked Bar Visualizer -->
+<div class="pt-4">
+<div class="flex items-center justify-between text-xs font-semibold text-[#5C6B76] mb-1.5">
+<span>Localized Coverage Proportion</span>
+<span class="text-[#0F766E] font-bold">100% Normalized</span>
+</div>
+<!-- Continuous Stacked Segments -->
+<div class="w-full h-4 rounded-lg overflow-hidden flex bg-slate-100 border border-[#E3E9ED]">
+<!-- US: 52% (Deep Teal #0F766E) -->
+<div class="h-full bg-[#0F766E] hover:opacity-90 transition-opacity" style="width: 52%;" title="United States: 52%"></div>
+<!-- UK: 21% (Sky Blue #0284C7) -->
+<div class="h-full bg-[#0284C7] hover:opacity-90 transition-opacity" style="width: 21%;" title="United Kingdom: 21%"></div>
+<!-- Germany: 14% (Coral #F97316) -->
+<div class="h-full bg-[#F97316] hover:opacity-90 transition-opacity" style="width: 14%;" title="Germany: 14%"></div>
+<!-- France: 8% (Teal Light #14B8A6) -->
+<div class="h-full bg-[#14B8A6] hover:opacity-90 transition-opacity" style="width: 8%;" title="France: 8%"></div>
+<!-- Canada: 5% (Slate #94A3B8) -->
+<div class="h-full bg-[#94A3B8] hover:opacity-90 transition-opacity" style="width: 5%;" title="Canada: 5%"></div>
+</div>
+<!-- Country Detail Breakdown List -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4">
+<!-- United States -->
+<div class="p-2.5 rounded-lg border border-[#E3E9ED] bg-[#FAFCFC]">
+<div class="flex items-center gap-1.5 text-xs text-[#5C6B76] mb-1">
+<span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>
+<span class="font-semibold text-[#0B1218]">United States</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-base font-extrabold text-[#0B1218]">52%</span>
+<span class="text-[10px] text-[#0F766E] font-semibold">59 mentions</span>
+</div>
+</div>
+<!-- United Kingdom -->
+<div class="p-2.5 rounded-lg border border-[#E3E9ED] bg-[#FAFCFC]">
+<div class="flex items-center gap-1.5 text-xs text-[#5C6B76] mb-1">
+<span class="w-2 h-2 rounded-full bg-[#0284C7]"></span>
+<span class="font-semibold text-[#0B1218]">United Kingdom</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-base font-extrabold text-[#0B1218]">21%</span>
+<span class="text-[10px] text-[#5C6B76]">24 mentions</span>
+</div>
+</div>
+<!-- Germany -->
+<div class="p-2.5 rounded-lg border border-[#E3E9ED] bg-[#FAFCFC]">
+<div class="flex items-center gap-1.5 text-xs text-[#5C6B76] mb-1">
+<span class="w-2 h-2 rounded-full bg-[#F97316]"></span>
+<span class="font-semibold text-[#0B1218]">Germany</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-base font-extrabold text-[#0B1218]">14%</span>
+<span class="text-[10px] text-[#5C6B76]">16 mentions</span>
+</div>
+</div>
+<!-- France -->
+<div class="p-2.5 rounded-lg border border-[#E3E9ED] bg-[#FAFCFC]">
+<div class="flex items-center gap-1.5 text-xs text-[#5C6B76] mb-1">
+<span class="w-2 h-2 rounded-full bg-[#14B8A6]"></span>
+<span class="font-semibold text-[#0B1218]">France</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-base font-extrabold text-[#0B1218]">8%</span>
+<span class="text-[10px] text-[#5C6B76]">9 mentions</span>
+</div>
+</div>
+<!-- Canada -->
+<div class="p-2.5 rounded-lg border border-[#E3E9ED] bg-[#FAFCFC]">
+<div class="flex items-center gap-1.5 text-xs text-[#5C6B76] mb-1">
+<span class="w-2 h-2 rounded-full bg-[#94A3B8]"></span>
+<span class="font-semibold text-[#0B1218]">Canada</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-base font-extrabold text-[#0B1218]">5%</span>
+<span class="text-[10px] text-[#5C6B76]">6 mentions</span>
+</div>
+</div>
+<!-- Other Global -->
+<div class="p-2.5 rounded-lg border border-dashed border-[#E3E9ED] bg-white flex flex-col justify-center">
+<span class="text-[11px] text-[#5C6B76]">Global Long-tail</span>
+<span class="text-xs font-bold text-[#0F766E] hover:underline cursor-pointer">+14 Regions</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card Subfooter -->
+<div class="pt-3 mt-4 border-t border-[#E3E9ED] flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>Geo Index resolution: <strong>140 metropolitan clusters</strong></span>
+<button class="text-[#0F766E] font-semibold hover:underline">Download Map Layer →</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

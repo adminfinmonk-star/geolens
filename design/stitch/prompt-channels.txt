@@ -1,0 +1,16 @@
+Design a DESKTOP light-theme SaaS SETTINGS — Channels & LLMs screen for GeoLens.
+
+Brand: teal #0F766E only — NO purple. Neutrals white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED. Plus Jakarta Sans. Soft mint wash. Light theme only.
+
+Chrome (Semrush-style dual rail, Settings suite ACTIVE):
+- Far-left icon rail: Analysis, Brand, Monitor, Results, Settings (active soft tile), Collapse
+- Secondary panel titled Settings: Profile, Brands, Topics & tags, Channels (active teal, "4 LLMs" badge), Billing, API keys, SSO
+
+Main — Channels:
+- Title: Channels · LLM coverage badge
+- Subtitle: Models and assistants you collect AI answers from
+- KPIs: Enabled channels, Countries, Collection mode, Last run
+- Table or cards: Channel | Provider | Status (On/Off) | Countries | Quota hint | Configure
+- Side: Fixture vs live collection note — honest about demo data
+
+Professional B2B. No emoji. 1440px.

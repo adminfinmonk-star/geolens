@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VortexIQ - AI Search &amp; Visibility Intelligence Platform</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#6b3dca",
+            "primary-container": "#8458e4",
+            "surface-mint": "#e8f3ee",
+            "surface-mint-subtle": "#f0f7f4",
+            "card-lilac": "#e8ddff",
+            "badge-purple": "#a78bfa",
+            "accent-teal": "#10b981",
+            "brand-charcoal": "#14171f",
+            "brand-gray": "#555d6e"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "Inter", "sans-serif"],
+            display: ["Plus Jakarta Sans", "sans-serif"],
+            body: ["Plus Jakarta Sans", "Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        color: #14171f;
+        background-color: #ffffff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+    }
+    .barcode-gradient {
+      background: repeating-linear-gradient(
+        90deg,
+        #2dd4bf 0px,
+        #2dd4bf 3px,
+        transparent 3px,
+        transparent 7px,
+        #a855f7 7px,
+        #a855f7 10px,
+        transparent 10px,
+        transparent 14px
+      );
+      mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+    }
+  </style>
+</head>
+<body class="bg-white text-[#14171f] antialiased overflow-x-hidden selection:bg-purple-100 selection:text-primary">
+<!-- Header / Navigation -->
+<header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+<div class="max-w-[1360px] mx-auto h-20 px-6 sm:px-8 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<!-- Logo -->
+<a class="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-950" href="#">
+<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-orange-500 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">cyclone</span>
+</div>
+<span class="tracking-tight font-extrabold text-[22px]">VORTEX<span class="text-primary font-black">IQ</span></span>
+<span class="text-[10px] uppercase font-semibold tracking-wider text-gray-400 ml-1 border-l border-gray-200 pl-2">AI Suite</span>
+</a>
+<!-- Nav links -->
+<nav class="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-700">
+<div class="flex items-center gap-1 cursor-pointer hover:text-black">
+<span>Product</span>
+<span class="material-symbols-outlined text-base">expand_more</span>
+</div>
+<a class="hover:text-black transition-colors" href="#pricing">Pricing</a>
+<div class="flex items-center gap-1 cursor-pointer hover:text-black">
+<span>Solutions</span>
+<span class="material-symbols-outlined text-base">expand_more</span>
+</div>
+<div class="flex items-center gap-1 cursor-pointer hover:text-black">
+<span>Resources</span>
+<span class="material-symbols-outlined text-base">expand_more</span>
+</div>
+<a class="flex items-center gap-1 hover:text-black transition-colors" href="#enterprise">
+<span>Enterprise</span>
+<span class="material-symbols-outlined text-sm">north_east</span>
+</a>
+</nav>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3">
+<a class="px-5 py-2.5 rounded-full border border-gray-900 text-gray-900 font-semibold text-sm hover:bg-gray-50 transition-all" href="#login">
+          Log In
+        </a>
+<a class="px-5 py-2.5 rounded-full bg-black text-white font-semibold text-sm hover:bg-gray-800 shadow-sm transition-all" href="#trial">
+          Start for free
+        </a>
+</div>
+</div>
+</header>
+<main class="w-full pt-20">
+<!-- 1. HERO SECTION -->
+<section class="relative w-full bg-gradient-to-b from-[#e6f4f0] via-[#ede9fe]/40 to-white pt-16 md:pt-24 pb-20 overflow-hidden border-b border-gray-100">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+<!-- Left Column: Copy & CTAs -->
+<div class="lg:col-span-6 flex flex-col items-start pr-0 lg:pr-6">
+<!-- Eyebrow -->
+<div class="flex items-center gap-2 text-[12px] font-bold tracking-wider uppercase text-gray-800 mb-6">
+<span class="w-2.5 h-2.5 bg-primary rounded-none inline-block"></span>
+<span>VORTEXIQ AI VISIBILITY FEATURES</span>
+</div>
+<!-- Main Headline -->
+<h1 class="text-4xl sm:text-5xl lg:text-[62px] font-extrabold tracking-tight text-gray-950 leading-[1.08] mb-6">
+              Own how your brand shows up in AI answers
+            </h1>
+<!-- Subtitle -->
+<p class="text-lg sm:text-xl text-gray-700 font-normal leading-relaxed max-w-xl mb-10">
+              Improve how often ChatGPT, AI Overviews, and other LLMs mention your brand and recommend your products.
+            </p>
+<!-- Buttons -->
+<div class="flex flex-wrap items-center gap-4">
+<a class="px-8 py-3.5 rounded-full bg-[#cca6ff] hover:bg-[#b88cff] text-gray-950 font-semibold text-[15px] shadow-sm transition-all hover:scale-[1.02]" href="#trial">
+                Try free for 7 days
+              </a>
+<a class="px-8 py-3.5 rounded-full border border-gray-900 text-gray-900 font-semibold text-[15px] hover:bg-white/80 transition-all" href="#demo">
+                Get a demo
+              </a>
+</div>
+</div>
+<!-- Right Column: Clean Semrush-Style Interactive Card -->
+<div class="lg:col-span-6 flex justify-center lg:justify-end">
+<div class="w-full max-w-[540px] bg-white rounded-3xl p-8 sm:p-12 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] border border-gray-100 flex flex-col items-center text-center">
+<span class="text-sm font-semibold text-gray-900 mb-6 block">AI visibility</span>
+<h3 class="text-3xl sm:text-4xl font-extrabold text-gray-950 tracking-tight leading-tight mb-8">
+                Be the brand<br/>AI recommends first
+              </h3>
+<div class="w-full relative flex flex-col sm:flex-row items-center border border-gray-200 rounded-full p-1.5 focus-within:ring-2 focus-within:ring-primary/40 focus-within:border-primary transition-all bg-white shadow-sm">
+<input class="w-full px-5 py-2.5 bg-transparent border-0 focus:ring-0 text-gray-900 placeholder:text-gray-400 text-[15px] outline-none" placeholder="Enter your domain or brand..." type="text" value="nike.com"/>
+<button class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 rounded-full bg-[#b77eff] hover:bg-[#a66bf7] text-white font-semibold text-sm whitespace-nowrap transition-all shadow-sm">
+                  Check AI visibility
+                </button>
+</div>
+<div class="mt-6 flex items-center gap-6 text-xs text-gray-500 font-medium">
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live multi-model index</span>
+<span>•</span>
+<span>No credit card required</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Wavy / Barcode Gradient Element -->
+<div class="w-full h-16 mt-16 barcode-gradient opacity-80"></div>
+</section>
+<!-- 2. SOCIAL PROOF & CLIENT LOGOS -->
+<section class="py-16 bg-white border-b border-gray-100">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8 text-center">
+<h2 class="text-2xl sm:text-3xl lg:text-[38px] font-extrabold text-gray-950 tracking-tight leading-tight max-w-4xl mx-auto mb-12">
+          AI platforms are recommending brands. Make sure they choose yours.
+        </h2>
+<!-- Brand Logos -->
+<div class="flex flex-wrap items-center justify-center gap-8 sm:gap-14 lg:gap-16 opacity-85 grayscale hover:grayscale-0 transition-all">
+<div class="font-extrabold text-2xl tracking-tighter text-gray-950">narly</div>
+<div class="flex items-center gap-1 text-xl font-bold text-gray-900 tracking-wider">
+<span class="material-symbols-outlined text-2xl">local_fire_department</span> HUAWEI
+          </div>
+<div class="font-black text-xl tracking-tight text-gray-900 flex items-center gap-1">
+<span class="material-symbols-outlined text-2xl">pest_control_rodent</span> mailchimp
+          </div>
+<div class="flex items-center gap-1 font-bold text-lg text-gray-900">
+<span class="inline-flex -space-x-2">
+<span class="w-5 h-5 rounded-full bg-gray-900 inline-block opacity-80"></span>
+<span class="w-5 h-5 rounded-full bg-gray-500 inline-block opacity-60"></span>
+</span>
+<span class="ml-1.5">mastercard</span>
+</div>
+<div class="font-bold text-2xl tracking-tight text-gray-900">amazon</div>
+<div class="font-black text-2xl tracking-tighter text-gray-950 flex items-center gap-1">
+<span class="material-symbols-outlined text-2xl">signal_cellular_alt</span> adidas
+          </div>
+<div class="font-bold text-lg tracking-tight text-gray-900 flex items-center gap-1">
+<span class="text-rose-600 font-bold">♥</span> CVSHealth
+          </div>
+<div class="font-bold text-xl tracking-tight text-gray-900">DATADOG</div>
+</div>
+</div>
+</section>
+<!-- 3. THREE EQUAL-WIDTH PURPLE/LILAC FEATURE CARDS (Matches Semrush Layout) -->
+<section class="py-20 bg-white">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Measure your AI presence -->
+<div class="bg-[#b388ff]/40 rounded-[28px] p-7 flex flex-col justify-between overflow-hidden shadow-sm">
+<div class="mb-8">
+<h3 class="text-2xl font-extrabold text-gray-950 tracking-tight mb-3">
+                Measure your AI presence
+              </h3>
+<p class="text-[15px] text-gray-800 leading-relaxed font-normal">
+                See how often your brand is mentioned across the top AI platforms.
+              </p>
+</div>
+<!-- White Mockup Card -->
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-white/60 relative">
+<div class="text-sm font-bold text-gray-900 mb-4">AI Visibility</div>
+<div class="flex items-center justify-between gap-4">
+<!-- Mentions breakdown card overlay -->
+<div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-xs space-y-2.5 w-36">
+<div class="flex items-center justify-between text-gray-500 font-medium">
+<span>Mentions</span>
+<span class="material-symbols-outlined text-xs">info</span>
+</div>
+<div class="flex items-center justify-between text-gray-900">
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ChatGPT</span>
+<span class="font-bold">190</span>
+</div>
+<div class="flex items-center justify-between text-gray-900">
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> AI Overview</span>
+<span class="font-bold">70</span>
+</div>
+<div class="flex items-center justify-between text-gray-900">
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Gemini</span>
+<span class="font-bold">85</span>
+</div>
+</div>
+<!-- Arc Gauge Graphic -->
+<div class="flex flex-col items-center justify-center flex-1">
+<div class="relative w-28 h-20 flex items-center justify-center">
+<svg class="w-28 h-28 -rotate-90 overflow-visible" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="38" stroke="#e5e7eb" stroke-dasharray="120 180" stroke-linecap="round" stroke-width="8"></circle>
+<circle class="drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]" cx="50" cy="50" fill="none" r="38" stroke="#10b981" stroke-dasharray="108 180" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center mt-2">
+<div class="text-xl font-extrabold text-gray-900 leading-none">90 <span class="text-[10px] text-gray-400 font-semibold">/100</span></div>
+<span class="text-xs font-bold text-gray-900 mt-1">Great</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Benchmark competitors and find gaps -->
+<div class="bg-[#b388ff]/40 rounded-[28px] p-7 flex flex-col justify-between overflow-hidden shadow-sm">
+<div class="mb-8">
+<h3 class="text-2xl font-extrabold text-gray-950 tracking-tight mb-3">
+                Benchmark competitors and find gaps
+              </h3>
+<p class="text-[15px] text-gray-800 leading-relaxed font-normal">
+                Find out who AI recommends when searchers ask questions in your category. See the gap. Close it.
+              </p>
+</div>
+<!-- White Mockup Card -->
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-white/60">
+<div class="grid grid-cols-12 text-[11px] font-semibold text-gray-500 pb-2 border-b border-gray-100 mb-3">
+<span class="col-span-6">Question</span>
+<span class="col-span-3 text-center">You</span>
+<span class="col-span-3 text-center">Competitor</span>
+</div>
+<div class="space-y-2.5 text-xs">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 bg-gray-200 h-2.5 rounded-full w-24"></div>
+<div class="col-span-3 text-center font-bold text-emerald-700 bg-emerald-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 100%
+                  </div>
+<div class="col-span-3 text-center font-bold text-emerald-700 bg-emerald-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 100%
+                  </div>
+</div>
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 bg-gray-200 h-2.5 rounded-full w-20"></div>
+<div class="col-span-3 text-center font-bold text-amber-700 bg-amber-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 33%
+                  </div>
+<div class="col-span-3 text-center font-bold text-amber-700 bg-amber-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 50%
+                  </div>
+</div>
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 bg-gray-200 h-2.5 rounded-full w-28"></div>
+<div class="col-span-3 text-center font-bold text-rose-700 bg-rose-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> 0%
+                  </div>
+<div class="col-span-3 text-center font-bold text-rose-700 bg-rose-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> 0%
+                  </div>
+</div>
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-6 bg-gray-200 h-2.5 rounded-full w-16"></div>
+<div class="col-span-3 text-center font-bold text-emerald-700 bg-emerald-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 100%
+                  </div>
+<div class="col-span-3 text-center font-bold text-emerald-700 bg-emerald-50 rounded-full py-0.5 px-1.5 flex items-center justify-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 100%
+                  </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Grow your AI share of voice -->
+<div class="bg-[#b388ff]/40 rounded-[28px] p-7 flex flex-col justify-between overflow-hidden shadow-sm">
+<div class="mb-8">
+<h3 class="text-2xl font-extrabold text-gray-950 tracking-tight mb-3">
+                Grow your AI share of voice
+              </h3>
+<p class="text-[15px] text-gray-800 leading-relaxed font-normal">
+                Track the most competitive prompts and topics, then work to improve your share voice across AI answers.
+              </p>
+</div>
+<!-- White Mockup Card -->
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-white/60">
+<div class="text-sm font-bold text-gray-900 mb-3">Share of voice</div>
+<div class="flex items-center justify-between gap-4">
+<div class="space-y-2 text-xs">
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-[#b388ff] flex items-center justify-center text-[10px] text-white">✓</span>
+<span class="font-medium text-gray-900">Your Brand</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-blue-400 flex items-center justify-center text-[10px] text-white">✓</span>
+<span class="text-gray-600">Competitor 1</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-teal-400 flex items-center justify-center text-[10px] text-white">✓</span>
+<span class="text-gray-600">Competitor 2</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-indigo-200 flex items-center justify-center text-[10px] text-white">✓</span>
+<span class="text-gray-600">Competitor 3</span>
+</div>
+</div>
+<!-- Donut Chart -->
+<div class="relative w-24 h-24 shrink-0 flex items-center justify-center">
+<svg class="w-24 h-24 -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="14" stroke="#e0e7ff" stroke-width="5"></circle>
+<circle cx="18" cy="18" fill="none" r="14" stroke="#2dd4bf" stroke-dasharray="25, 100" stroke-dashoffset="0" stroke-width="5"></circle>
+<circle cx="18" cy="18" fill="none" r="14" stroke="#60a5fa" stroke-dasharray="20, 100" stroke-dashoffset="-25" stroke-width="5"></circle>
+<circle cx="18" cy="18" fill="none" r="14" stroke="#b388ff" stroke-dasharray="45, 100" stroke-dashoffset="-45" stroke-width="5"></circle>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. TESTIMONIAL CALLOUT (Matches Semrush Image 5) -->
+<section class="py-24 bg-white border-y border-gray-100">
+<div class="max-w-4xl mx-auto px-6 text-center">
+<!-- Client Brandmark -->
+<div class="flex items-center justify-center gap-2 mb-8">
+<span class="text-2xl">❖</span>
+<span class="text-xl font-bold tracking-tight text-gray-900">sure oak</span>
+</div>
+<blockquote class="text-2xl sm:text-4xl lg:text-[42px] font-extrabold text-gray-950 tracking-tight leading-[1.25] mb-12">
+          "We're consistently getting featured in Google AI Overviews as well as listed as sources in LLMs."
+        </blockquote>
+<div class="flex flex-col items-center justify-center">
+<div class="relative w-20 h-20 mb-4">
+<div class="absolute inset-0 rounded-full bg-[#10b981] p-1 shadow-sm">
+<img alt="Andrea Schultz" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8RclSePoogbLpgqT2Jc8YjLzlnsdXhBA-Za3LFTFz9PkDxbvRAhDIgI5-hGomLDlzRW6ye92afsDhX5vlLq1FdTRqgZsJEWU8wMS8jeyE7nYwi11zQ_E7NzFGKc57VpFHHDT39Sx_sOc4XIcuPnOcTYymBu2nkr6EiSRf9g9oLkgwAHyDatJHoNY4t-O9WZuOI1Wr0jHMUPGdTiSzWuMtaME5i6I8uVYnuiMK1i70BnNDbIpOAYc"/>
+</div>
+</div>
+<div class="font-bold text-gray-950 text-base">Andrea Schultz</div>
+<div class="text-sm text-gray-500 font-medium">Technical SEO Specialist, Hotmart</div>
+</div>
+</div>
+</section>
+<!-- 5. ALTERNATING FEATURE SECTIONS WITH MINT/SAGE MOCKUP CONTAINERS -->
+<!-- Section A: Track AI Visibility (Matches Image 4) -->
+<section class="py-24 bg-white">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<!-- Mockup Left in Mint Container -->
+<div class="lg:col-span-7 bg-[#e8f3ee] rounded-[32px] p-6 sm:p-12">
+<div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+<!-- Tab Header -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+<span class="text-xl font-extrabold text-gray-950">AI Visibility</span>
+<div class="inline-flex rounded-lg bg-gray-100 p-1 text-xs font-semibold">
+<span class="px-3 py-1 rounded bg-black text-white">Main Metrics</span>
+<span class="px-3 py-1 text-gray-600">Monthly Audience</span>
+<span class="px-3 py-1 text-gray-600">AI Visibility</span>
+</div>
+</div>
+<!-- Top Metrics Row & Arc Gauge -->
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center pb-6 border-b border-gray-100">
+<div class="sm:col-span-5 flex flex-col items-center">
+<div class="relative w-32 h-24 flex items-center justify-center">
+<svg class="w-32 h-32 -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="38" stroke="#e5e7eb" stroke-dasharray="120 180" stroke-linecap="round" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="38" stroke="#10b981" stroke-dasharray="108 180" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center mt-2">
+<div class="text-2xl font-black text-gray-950 leading-none">90 <span class="text-xs text-gray-400 font-normal">/100</span></div>
+<span class="text-xs font-bold text-gray-800 mt-1">Good</span>
+</div>
+</div>
+<p class="text-[11px] text-gray-500 text-center mt-2">Frequently mentioned and often preferred by LLMs</p>
+</div>
+<div class="sm:col-span-7 grid grid-cols-3 gap-2 text-left">
+<div>
+<span class="flex items-center gap-1 text-[11px] text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Mentions</span>
+<div class="text-lg font-extrabold text-gray-950 mt-1">67.9K</div>
+<span class="text-[11px] text-rose-500 font-semibold">-2.4%</span>
+</div>
+<div>
+<span class="flex items-center gap-1 text-[11px] text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Citations</span>
+<div class="text-lg font-extrabold text-gray-950 mt-1">106K</div>
+<span class="text-[11px] text-emerald-600 font-semibold">+1.8%</span>
+</div>
+<div>
+<span class="flex items-center gap-1 text-[11px] text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Cited Pages</span>
+<div class="text-lg font-extrabold text-gray-950 mt-1">52.9K</div>
+<span class="text-[11px] text-rose-500 font-semibold">-0.3%</span>
+</div>
+</div>
+</div>
+<!-- Multi-line SVG chart -->
+<div class="py-4">
+<div class="h-28 w-full">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 450 90">
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="450" y1="20" y2="20"></line>
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="450" y1="50" y2="50"></line>
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="450" y1="80" y2="80"></line>
+<path d="M 0,65 Q 80,60 160,40 T 320,25 T 450,22" fill="none" stroke="#10b981" stroke-width="2.5"></path>
+<path d="M 0,75 Q 90,70 180,62 T 340,45 T 450,42" fill="none" stroke="#3b82f6" stroke-width="2.5"></path>
+<path d="M 0,82 Q 100,78 200,74 T 360,60 T 450,55" fill="none" stroke="#f59e0b" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] text-gray-400 font-medium px-1">
+<span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+</div>
+</div>
+<!-- Bottom Breakdown Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-gray-100 text-xs">
+<div>
+<div class="font-bold text-gray-900 mb-2">Mentions by country</div>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5"><span class="text-xs">🇺🇸</span> US</span>
+<span class="text-gray-500">52.9%</span>
+<span class="font-semibold text-gray-900">35.9K</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5"><span class="text-xs">🇮🇳</span> IN</span>
+<span class="text-gray-500">7%</span>
+<span class="font-semibold text-gray-900">4.8K</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5"><span class="text-xs">🇬🇧</span> UK</span>
+<span class="text-gray-500">6.2%</span>
+<span class="font-semibold text-gray-900">4.2K</span>
+</div>
+</div>
+</div>
+<div>
+<div class="font-bold text-gray-900 mb-2">Distribution by LLM</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between gap-2">
+<span class="w-20 truncate text-gray-600">ChatGPT</span>
+<div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-500 h-full w-[50%] rounded-full"></div>
+</div>
+<span class="font-semibold text-gray-900 w-10 text-right">13.9K</span>
+</div>
+<div class="flex items-center justify-between gap-2">
+<span class="w-20 truncate text-gray-600">AI overview</span>
+<div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full w-[70%] rounded-full"></div>
+</div>
+<span class="font-semibold text-gray-900 w-10 text-right">26.1K</span>
+</div>
+<div class="flex items-center justify-between gap-2">
+<span class="w-20 truncate text-gray-600">AI Mode</span>
+<div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+<div class="bg-purple-500 h-full w-[40%] rounded-full"></div>
+</div>
+<span class="font-semibold text-gray-900 w-10 text-right">16K</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Copy Right -->
+<div class="lg:col-span-5 flex flex-col items-start pl-0 lg:pl-6">
+<h2 class="text-3xl sm:text-4xl lg:text-[46px] font-extrabold text-gray-950 tracking-tight leading-[1.12] mb-6">
+              Track AI visibility
+            </h2>
+<p class="text-lg text-gray-700 font-normal leading-relaxed mb-8">
+              Know how often a brand appears in AI-generated answers across platforms, regions, and topics. Monitor your share of voice in AI answers over time.
+            </p>
+<a class="px-7 py-3 rounded-full border border-gray-900 text-gray-950 font-semibold text-sm hover:bg-black hover:text-white transition-all" href="#metrics">
+              Check AI visibility
+            </a>
+</div>
+</div>
+</div>
+</section>
+<!-- Section B: See what LLMs say about you (Matches Image 3) -->
+<section class="py-24 bg-white">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<!-- Copy Left -->
+<div class="lg:col-span-5 order-2 lg:order-1 flex flex-col items-start pr-0 lg:pr-6">
+<h2 class="text-3xl sm:text-4xl lg:text-[46px] font-extrabold text-gray-950 tracking-tight leading-[1.12] mb-6">
+              See what LLMs say about you
+            </h2>
+<p class="text-lg text-gray-700 font-normal leading-relaxed mb-8">
+              See how AI platforms describe your brand. Know whether you're being portrayed accurately, positively, and ahead of the competition.
+            </p>
+<a class="px-7 py-3 rounded-full border border-gray-900 text-gray-950 font-semibold text-sm hover:bg-black hover:text-white transition-all" href="#sentiment">
+              Check AI sentiment
+            </a>
+</div>
+<!-- Mockup Right in Mint Container -->
+<div class="lg:col-span-7 order-1 lg:order-2 bg-[#e8f3ee] rounded-[32px] p-6 sm:p-12">
+<div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+<div class="text-xl font-extrabold text-gray-950 mb-6">Share of Voice vs. Sentiment</div>
+<!-- Scatter Bubble Graph Mockup -->
+<div class="w-full h-44 bg-gray-50/70 rounded-xl p-4 relative border border-gray-100 mb-8 overflow-hidden">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none opacity-40">
+<div class="border-b border-gray-200 w-full"></div>
+<div class="border-b border-gray-200 w-full"></div>
+<div class="border-b border-gray-200 w-full"></div>
+</div>
+<!-- Pastel Bubbles matching image 3 -->
+<div class="absolute left-14 top-14 w-9 h-9 rounded-full bg-[#cca6ff] flex items-center justify-center text-white text-xs font-bold shadow-sm">+</div>
+<div class="absolute left-28 top-8 w-16 h-16 rounded-full bg-[#99f6e4] flex items-center justify-center text-teal-800 text-sm font-bold shadow-sm">+</div>
+<div class="absolute left-44 top-16 w-11 h-11 rounded-full bg-[#60a5fa] flex items-center justify-center text-white text-xs font-bold shadow-sm">+</div>
+<div class="absolute left-60 top-6 w-20 h-20 rounded-full bg-[#c084fc] flex items-center justify-center text-white text-base font-bold shadow-sm">+</div>
+<div class="absolute left-[330px] top-12 w-10 h-10 rounded-full bg-[#fb923c] flex items-center justify-center text-white text-xs font-bold shadow-sm">+</div>
+<div class="absolute left-[380px] top-14 w-12 h-12 rounded-full bg-[#34d399] flex items-center justify-center text-white text-xs font-bold shadow-sm">+</div>
+<div class="absolute right-8 top-8 w-8 h-8 rounded-full bg-[#fde047] flex items-center justify-center text-amber-900 text-xs font-bold shadow-sm">+</div>
+</div>
+<!-- Sentiment Drivers Breakdown -->
+<div>
+<div class="text-sm font-extrabold text-gray-900 mb-4">Key Sentiment Drivers</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+<div>
+<span class="font-semibold text-gray-700 block mb-3">Brand Strength Factors</span>
+<div class="space-y-3">
+<div class="flex items-center justify-between gap-3">
+<div class="bg-gray-200 h-2.5 rounded-full flex-1"></div>
+<div class="w-10 bg-emerald-500 h-2 rounded-full"></div>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="bg-gray-200 h-2.5 rounded-full flex-1"></div>
+<div class="w-8 bg-emerald-500 h-2 rounded-full"></div>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="bg-gray-200 h-2.5 rounded-full w-24"></div>
+<div class="w-4 bg-emerald-500 h-2 rounded-full"></div>
+</div>
+</div>
+</div>
+<div>
+<span class="font-semibold text-gray-700 block mb-3">Areas for Improvement</span>
+<div class="space-y-3">
+<div class="flex items-center justify-between gap-3">
+<div class="bg-gray-200 h-2.5 rounded-full flex-1"></div>
+<div class="w-12 bg-amber-500 h-2 rounded-full"></div>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="bg-gray-200 h-2.5 rounded-full flex-1"></div>
+<div class="w-8 bg-amber-500 h-2 rounded-full"></div>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="bg-gray-200 h-2.5 rounded-full w-28"></div>
+<div class="w-4 bg-amber-500 h-2 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section C: Conduct prompt research (Matches Image 2) -->
+<section class="py-24 bg-white">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+<!-- Mockup Left in Mint Container -->
+<div class="lg:col-span-7 bg-[#e8f3ee] rounded-[32px] p-6 sm:p-12">
+<div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+<div class="text-xl font-extrabold text-gray-950 mb-6">Prompt Research</div>
+<!-- Top Metrics Grid -->
+<div class="grid grid-cols-3 gap-4 pb-6 border-b border-gray-100 mb-6">
+<div>
+<span class="text-xs text-gray-500 font-medium block">AI volume</span>
+<div class="text-xl font-extrabold text-gray-950 mt-1">34.6K <span class="text-xs text-emerald-600 font-semibold">+16%</span></div>
+<div class="h-6 mt-1">
+<svg class="w-full h-full" viewbox="0 0 100 25">
+<path d="M 0,20 Q 25,5 50,18 T 100,5" fill="none" stroke="#3b82f6" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div>
+<span class="text-xs text-gray-500 font-medium block">Topic difficulty</span>
+<div class="text-xl font-extrabold text-gray-950 mt-1 flex items-center gap-1">
+<span class="w-4 h-4 rounded-full border-2 border-emerald-500 border-t-transparent inline-block"></span>
+                    29 <span class="text-xs text-emerald-600 font-semibold">↑12</span>
+</div>
+<div class="h-6 mt-1">
+<svg class="w-full h-full" viewbox="0 0 100 25">
+<path d="M 0,18 Q 30,2 60,16 T 100,6" fill="none" stroke="#38bdf8" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div>
+<span class="text-xs text-gray-500 font-medium block">Brand mentions</span>
+<div class="text-xl font-extrabold text-gray-950 mt-1">342</div>
+<div class="mt-2 flex items-center gap-1 text-[10px] font-bold">
+<span class="w-4 h-4 rounded bg-purple-100 text-purple-700 flex items-center justify-center">N</span>
+<span class="w-4 h-4 rounded bg-amber-100 text-amber-700 flex items-center justify-center">C</span>
+<span class="w-4 h-4 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center">T</span>
+<span class="w-4 h-4 rounded bg-blue-100 text-blue-700 flex items-center justify-center">I</span>
+<span class="w-4 h-4 rounded bg-orange-100 text-orange-700 flex items-center justify-center">C</span>
+</div>
+</div>
+</div>
+<!-- Table Filter Pills -->
+<div class="flex items-center gap-1 text-xs mb-4">
+<span class="px-3 py-1 bg-black text-white font-semibold rounded">Prompts</span>
+<span class="px-3 py-1 bg-gray-100 text-gray-700 font-semibold rounded">Brands</span>
+<span class="px-3 py-1 bg-gray-100 text-gray-700 font-semibold rounded">Source domains</span>
+</div>
+<!-- Prompt Results List -->
+<div class="space-y-3 text-xs">
+<div class="grid grid-cols-12 items-center text-gray-400 font-medium pb-1 border-b border-gray-100">
+<span class="col-span-3">Prompt</span>
+<span class="col-span-2">Brand</span>
+<span class="col-span-2">Sources</span>
+<span class="col-span-3">AI Response</span>
+<span class="col-span-2 text-right">Action</span>
+</div>
+<div class="grid grid-cols-12 items-center pt-2">
+<div class="col-span-3 space-y-1">
+<div class="bg-gray-200 h-2.5 rounded-full w-20"></div>
+<div class="bg-gray-200 h-2 rounded-full w-14"></div>
+</div>
+<div class="col-span-2"><div class="bg-gray-200 h-2.5 rounded-full w-8"></div></div>
+<div class="col-span-2"><div class="bg-gray-200 h-2.5 rounded-full w-10"></div></div>
+<div class="col-span-3 flex items-center gap-1.5">
+<span class="text-xs">🤖</span>
+<div class="bg-gray-200 h-2 rounded-full flex-1"></div>
+</div>
+<div class="col-span-2 text-right">
+<button class="px-2.5 py-1 rounded border border-gray-300 font-semibold text-[11px] hover:border-black">Create content</button>
+</div>
+</div>
+<div class="grid grid-cols-12 items-center pt-2">
+<div class="col-span-3 space-y-1">
+<div class="bg-gray-200 h-2.5 rounded-full w-24"></div>
+<div class="bg-gray-200 h-2 rounded-full w-16"></div>
+</div>
+<div class="col-span-2"><div class="bg-gray-200 h-2.5 rounded-full w-10"></div></div>
+<div class="col-span-2"><div class="bg-gray-200 h-2.5 rounded-full w-8"></div></div>
+<div class="col-span-3 flex items-center gap-1.5">
+<span class="text-xs font-bold text-red-500">G</span>
+<div class="bg-gray-200 h-2 rounded-full flex-1"></div>
+</div>
+<div class="col-span-2 text-right">
+<button class="px-2.5 py-1 rounded border border-gray-300 font-semibold text-[11px] hover:border-black">Create content</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Copy Right -->
+<div class="lg:col-span-5 flex flex-col items-start pl-0 lg:pl-6">
+<h2 class="text-3xl sm:text-4xl lg:text-[46px] font-extrabold text-gray-950 tracking-tight leading-[1.12] mb-6">
+              Conduct prompt research
+            </h2>
+<p class="text-lg text-gray-700 font-normal leading-relaxed mb-8">
+              Find out which prompts and questions trigger brand mentions and citations in your category. Spot the topics you're absent from, so you can build content that puts you in the answer.
+            </p>
+<a class="px-7 py-3 rounded-full border border-gray-900 text-gray-950 font-semibold text-sm hover:bg-black hover:text-white transition-all" href="#topics">
+              Find high-value topics
+            </a>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. COMPREHENSIVE FEATURE GRID / TOOLKIT -->
+<section class="py-24 bg-gray-50/60 border-t border-gray-100">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="max-w-3xl mb-16">
+<span class="text-xs uppercase font-bold tracking-widest text-primary mb-2 block">AI SEARCH SUITE</span>
+<h2 class="text-3xl sm:text-4xl font-extrabold text-gray-950 tracking-tight">
+            Every tool you need for AI visibility dominance
+          </h2>
+<p class="text-gray-600 text-lg mt-3">
+            Engineered to give forward-thinking marketing teams, SEO leaders, and brand executives total clarity in the generative era.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Tool 1 -->
+<div class="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">radar</span>
+</div>
+<h3 class="text-xl font-bold text-gray-950 mb-3">Visibility Overview</h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-6">
+                Measure your AI visibility across platforms, topics, and geographies in real time. Continuous multi-LLM telemetry.
+              </p>
+</div>
+<a class="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:text-primary" href="#">
+<span>Explore Overview</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+<!-- Tool 2 -->
+<div class="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">sentiment_satisfied</span>
+</div>
+<h3 class="text-xl font-bold text-gray-950 mb-3">Brand Performance</h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-6">
+                See how AI models portray your brand narrative and verify sentiment favorability across multi-turn answers.
+              </p>
+</div>
+<a class="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:text-primary" href="#">
+<span>Explore Performance</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+<!-- Tool 3 -->
+<div class="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">swords</span>
+</div>
+<h3 class="text-xl font-bold text-gray-950 mb-3">Competitor Research</h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-6">
+                Find exactly where competitors get cited over you and identify high-opportunity content topics to reclaim share.
+              </p>
+</div>
+<a class="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:text-primary" href="#">
+<span>Explore Competitors</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+<!-- Tool 4 -->
+<div class="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">dynamic_form</span>
+</div>
+<h3 class="text-xl font-bold text-gray-950 mb-3">Prompt Tracking</h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-6">
+                Receive automated daily alerts and updates when citations fluctuate across Google AI Overviews and ChatGPT.
+              </p>
+</div>
+<a class="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:text-primary" href="#">
+<span>Explore Tracking</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+<!-- Tool 5 -->
+<div class="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">newspaper</span>
+</div>
+<h3 class="text-xl font-bold text-gray-950 mb-3">AI-Cited Media</h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-6">
+                Discover which publication outlets LLMs reference most for your industry so your PR team can pitch with pinpoint accuracy.
+              </p>
+</div>
+<a class="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:text-primary" href="#">
+<span>Explore AI Media</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+<!-- Tool 6 -->
+<div class="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div>
+<div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">shield</span>
+</div>
+<h3 class="text-xl font-bold text-gray-950 mb-3">Hallucination Shield</h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-6">
+                Real-time monitoring for brand inaccuracies or outdated pricing data generated by AI conversational engines.
+              </p>
+</div>
+<a class="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:text-primary" href="#">
+<span>Explore Hallucination Shield</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. REVIEWS & RATINGS -->
+<section class="py-20 bg-white border-t border-gray-100">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="text-center max-w-3xl mx-auto mb-14">
+<h2 class="text-3xl font-extrabold text-gray-950 tracking-tight mb-3">
+            Don't just take our word for it
+          </h2>
+<p class="text-gray-600">
+            Leading digital agencies, Fortune 500 brands, and high-growth scaleups rely on VortexIQ.
+          </p>
+</div>
+<!-- Rating Badges -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+<div class="p-6 rounded-2xl bg-gray-50 border border-gray-200/60 flex items-center justify-center gap-5">
+<div class="text-4xl font-extrabold text-gray-950">4.8</div>
+<div>
+<div class="flex text-amber-400">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs text-gray-500 font-semibold uppercase tracking-wider">G2 Crowd Rating</span>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-gray-50 border border-gray-200/60 flex items-center justify-center gap-5">
+<div class="text-4xl font-extrabold text-gray-950">4.9</div>
+<div>
+<div class="flex text-amber-400">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Capterra Reviews</span>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-gray-50 border border-gray-200/60 flex items-center justify-center gap-5">
+<div class="text-4xl font-extrabold text-gray-950">4.7</div>
+<div>
+<div class="flex text-amber-400">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Gartner Peer Insights</span>
+</div>
+</div>
+</div>
+<!-- 3 Review Quotes -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="p-8 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col justify-between">
+<p class="text-gray-700 text-sm leading-relaxed italic mb-6">
+              "Since bringing our marketing in-house, VortexIQ has become our most vital intelligence platform. It detects technical blockers early enough for us to fix them before they harm our citation footprint."
+            </p>
+<div class="flex items-center gap-3">
+<img alt="Brandi V." class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUHDDEWupN82oXwZEPu5wXWagQ0fr4eoy_jPYV2weP_BQ_eNFECJqNu7RS2VlaEQRJI1KIGFwQRa6bzkX0VCZghnGWSe6yEqia2eCSAzq6Kbg5cJfIwL-yrCO7Xr2tVzFYx8gmB6r5IziJCtyrkd0cQjGP0-BARg7n4xqzpC7on2KzlH9h-3yEH3ZW2tbrJFxs7uhKCLEeHfKPrKWIpkn2Oy3aT18pLKin7shnnEaaLwYotiQfBu4"/>
+<div>
+<div class="font-bold text-gray-950 text-sm">Brandi V.</div>
+<div class="text-xs text-gray-500">Marketing Director, FinScale</div>
+</div>
+</div>
+</div>
+<div class="p-8 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col justify-between">
+<p class="text-gray-700 text-sm leading-relaxed italic mb-6">
+              "I can trust the reliability of VortexIQ's multi-model crawler data and confidently make GEO decisions. Legacy SEO software simply cannot compare in the era of ChatGPT."
+            </p>
+<div class="flex items-center gap-3">
+<img alt="Tom V." class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoQgQXvEjFx_j9zGMtBgyQarg6pL4EDr-eNK0_9qu43_egUHEx9komxiKaCW8HhnxK8Hxix3IgTYjdfB3mIvdRUPQnsGbbkcIXmG8NtBTs0V6cwsYskmB9crgyd6vN074-iH_3KiwLqk2KwAUMD9InGjg-9dFxeoaqRquf4AZeuuEDkm702TBetgptjqynVSaygjFIWSE_I57MrqRc42X8nxHzHSliqGxvwRYM678V0DMMtSrfT6k"/>
+<div>
+<div class="font-bold text-gray-950 text-sm">Tom V.</div>
+<div class="text-xs text-gray-500">Global SEO Director, Nexus Media</div>
+</div>
+</div>
+</div>
+<div class="p-8 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col justify-between">
+<p class="text-gray-700 text-sm leading-relaxed italic mb-6">
+              "VortexIQ is our go-to tool for managing all things generative search. What stands out most is how it tracks citations and makes it crystal clear where our content surfaces."
+            </p>
+<div class="flex items-center gap-3">
+<img alt="Greg M." class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyg2TKvPfp0m9K2SN5rn1jBqNXzaJzhzS-9cD5Zz_ZUPxN-2JNcifqiKhoxeyHCtMquxXAlMR5S0ObTgRsvOWly7KC9Zyslu_BZ4VFzXIFcB2za-Yg_zznXu-B8VZzd4Lh1aP7XWdndVc1b4_Cx-ZtUsoPq4qAiFWSUnhIEGu83JgzjDLkD__9dK0iUE4w5n-N8eZFuWiwpjBQZYtPwXhFb9YFNlDom0hGetTfOv26mCvcYntVkRc"/>
+<div>
+<div class="font-bold text-gray-950 text-sm">Greg M.</div>
+<div class="text-xs text-gray-500">eCommerce Director, Apex Retail</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. BOTTOM HERO-STYLE CONVERSION BANNER -->
+<section class="py-20 bg-gradient-to-b from-white via-[#f0f7f4] to-[#e8f3ee] border-t border-gray-100">
+<div class="max-w-4xl mx-auto px-6 text-center">
+<h2 class="text-4xl sm:text-5xl font-extrabold text-gray-950 tracking-tight mb-6">
+          Own how your brand shows up in AI answers
+        </h2>
+<p class="text-lg text-gray-700 mb-10 max-w-2xl mx-auto">
+          Improve how often ChatGPT, AI Overviews, and other LLMs mention your brand and recommend your products.
+        </p>
+<div class="flex flex-wrap items-center justify-center gap-4">
+<a class="px-8 py-3.5 rounded-full bg-[#cca6ff] hover:bg-[#b88cff] text-gray-950 font-bold text-sm shadow-sm transition-all hover:scale-[1.02]" href="#trial">
+            Try free for 7 days
+          </a>
+<a class="px-8 py-3.5 rounded-full border border-gray-900 text-gray-900 font-semibold text-sm hover:bg-white transition-all" href="#demo">
+            Get a demo
+          </a>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER -->
+<footer class="bg-[#f9fafb] border-t border-gray-200/80 pt-16 pb-12 text-sm text-gray-600">
+<div class="max-w-[1360px] mx-auto px-6 sm:px-8">
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-16">
+<div>
+<h4 class="font-bold text-gray-950 text-xs uppercase tracking-wider mb-4">Product</h4>
+<ul class="space-y-2.5">
+<li><a class="hover:text-black transition-colors" href="#">AI Visibility Engine</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Citation Benchmarking</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Generative Overview (GEO)</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Synthetic Prompts</a></li>
+<li><a class="hover:text-black transition-colors" href="#">API &amp; Bulk Access</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-gray-950 text-xs uppercase tracking-wider mb-4">Solutions</h4>
+<ul class="space-y-2.5">
+<li><a class="hover:text-black transition-colors" href="#">For Enterprise SEOs</a></li>
+<li><a class="hover:text-black transition-colors" href="#">For Digital Agencies</a></li>
+<li><a class="hover:text-black transition-colors" href="#">For Brand Protection</a></li>
+<li><a class="hover:text-black transition-colors" href="#">For LLM Citations</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Custom Audits</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-gray-950 text-xs uppercase tracking-wider mb-4">Platforms</h4>
+<ul class="space-y-2.5">
+<li><a class="hover:text-black transition-colors" href="#">Perplexity Radar</a></li>
+<li><a class="hover:text-black transition-colors" href="#">ChatGPT Citation Share</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Gemini AI Overview Index</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Claude Knowledge Graph</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Source Authority Score</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-gray-950 text-xs uppercase tracking-wider mb-4">Company</h4>
+<ul class="space-y-2.5">
+<li><a class="hover:text-black transition-colors" href="#">About VortexIQ</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Leadership</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-black transition-colors" href="#">News &amp; Press</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Partners</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-gray-950 text-xs uppercase tracking-wider mb-4">Resources</h4>
+<ul class="space-y-2.5">
+<li><a class="hover:text-black transition-colors" href="#">State of AI Search 2025</a></li>
+<li><a class="hover:text-black transition-colors" href="#">GEO Knowledge Base</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Community</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Research Labs</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-gray-950 text-xs uppercase tracking-wider mb-4">Legal &amp; Trust</h4>
+<ul class="space-y-2.5">
+<li><a class="hover:text-black transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Security &amp; SOC-2</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Data Processing</a></li>
+<li><a class="hover:text-black transition-colors" href="#">Compliance</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2 font-bold text-gray-900">
+<span class="material-symbols-outlined text-primary text-xl">cyclone</span>
+<span>VORTEXIQ</span>
+<span class="text-xs text-gray-500 font-normal">© 2025 VortexIQ Intelligence Inc. All rights reserved.</span>
+</div>
+<div class="text-xs text-gray-500">
+          AI Visibility, GEO Engine &amp; Next-Gen Search Intelligence.
+        </div>
+</div>
+</div>
+</footer>
+</body></html>

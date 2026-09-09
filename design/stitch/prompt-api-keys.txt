@@ -1,0 +1,17 @@
+Design a DESKTOP light-theme SaaS SETTINGS — API Keys screen for GeoLens.
+
+Brand: teal #0F766E only — NO purple. Neutrals white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED. Plus Jakarta Sans. Soft mint wash. Light theme only.
+
+Chrome (Semrush-style dual rail, Settings suite ACTIVE):
+- Far-left icon rail: Analysis, Brand, Monitor, Results, Settings (active soft tile), Collapse
+- Secondary panel titled Settings: Profile, Brands, Topics & tags, Channels, Billing, API keys (active teal), SSO
+
+Main — API keys:
+- Title: API keys · Workspace access badge
+- Subtitle: Machine access for exports, webhooks, and automations
+- KPIs: Active keys, Revoked, Last used, Scopes in use
+- Create form strip: Name field + Create key (teal) — show one-time plaintext reveal panel when created
+- Table: Name | Prefix | Scopes | Created | Last used | Status | Revoke
+- Side: Security notes — never commit keys; rotate on leak; scopes least-privilege
+
+Professional B2B. No emoji. 1440px.

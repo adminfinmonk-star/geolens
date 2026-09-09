@@ -1,0 +1,13 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — Chats results page.
+
+Brand: teal #0F766E, Plus Jakarta Sans, light theme. No purple.
+
+Chrome: Chats ACTIVE under Results. Top bar Attio · Demo.
+
+Main — Chats:
+- Title: Chats · Atomic measurements badge
+- Subtitle: One prompt × channel × country × day
+- KPIs: Total chats, Mentions, Models covered, Countries
+- Search + model/country filters
+- Table: Date | Prompt | Model | Country | Mentions | Status | Open
+- Professional B2B light theme. 1440px. No emoji.

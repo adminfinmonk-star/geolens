@@ -1,0 +1,49 @@
+{
+  "projectId": "8355541918828779128",
+  "sessionId": "9200352808953049402",
+  "outputComponents": [
+    {
+      "design": {
+        "screens": [
+          {
+            "screenshot": {
+              "name": "projects/8355541918828779128/files/d17810a5fce44e9fa3774de0914dcfcb",
+              "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1X0t3faS1a5ldoOxZUv32Kfb6VkJbwpetXhMGjBn1sq06RZ3DsQt3o4nNUQZ7ee02f49SDLXARRu81RBB2Hs9hIzLIyU0vsn_G3ySQGSDY26RrOVf0kWShDiPcwi_axRpm0LOfQTfT62xnavrqVQdfdAzKqhvlmxRqNia9RbOvx2CsCFpv_6_deKgOasggZisWaDegnAn9qVzVCuFaHrmKamMwSZaAagPDRAoS49A8p0tBwsUwqslnW7w"
+            },
+            "htmlCode": {
+              "name": "projects/8355541918828779128/files/f8df2098844d464e919dbb7d581100b5",
+              "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ6Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpZCiVodG1sXzlhZjYwN2JiOGE2OTQyZWFiOTY1M2E1YWRiZDUzNzgzEgoSBhDioPqSDRgBkgEjCgpwcm9qZWN0X2lkEhVCEzgzNTU1NDE5MTg4Mjg3NzkxMjg&filename=&opi=96797242",
+              "mimeType": "text/html"
+            },
+            "id": "432ef9045b6444fdb70d12da91d7e82a",
+            "generatedBy": "create_datastore_entry",
+            "width": "2560",
+            "height": "3436",
+            "title": "GeoLens — Prompt Research",
+            "name": "projects/8355541918828779128/screens/432ef9045b6444fdb70d12da91d7e82a",
+            "theme": {},
+            "deviceType": "DESKTOP",
+            "screenType": "DESIGN",
+            "screenMetadata": {
+              "agentType": "PRO_AGENT",
+              "status": "COMPLETE"
+            }
+          }
+        ],
+        "theme": {}
+      }
+    },
+    {
+      "text": "I have designed and built the **GeoLens — Prompt Research** screen matching your exact brand system and product chrome specs.\n\n### Design Details:\n1. **Brand System & Consistency (`Precision Geospatial Analytics`)**:\n   - **Colors**: Accent teal `#0F766E`, clean white panels (`#FFFFFF`), soft mint/gray background wash (`#F5F7F8`), dark ink typography (`#0B1218`), muted metadata (`#5C6B76`), and clean light borders (`#E3E9ED`). No purple, no emojis, purely professional B2B analytics.\n   - **Typography & Radius**: Plus Jakarta Sans with refined hierarchy and 12–16px container radius.\n\n2. **App Chrome & Context**:\n   - **Top Bar**: Workspace selector (`Attio · Demo`), date range controls (`Last 7 days`, `Last 30 days`), model selector (`All Models / 4 AI Engines`), trial status, report export, and primary teal CTA (`New Analysis`).\n   - **Left Secondary Navigation**: Under the `AI Analysis` group, **Prompt Research** is rendered in its active state (teal badge and white icon/text), with links for Visibility Overview, Competitor Research, Brand Performance, and Boost & Monitor sections plus real-time quota telemetry.\n\n3. **Prompt Research Discovery Workspace**:\n   - **Top KPI Ribbon**: Identified Buyer Prompts (384), High-Volume Inquiries (126), Currently Active Tracking (68), and Uncovered Opportunity Gaps (42).\n   - **Research Controls & Toolbar**: Prompt search bar, dropdown filters for Volume (1–5★), Search Intent (Commercial, Technical, Comparative), Branding (Non-Branded vs. Attio Branded), and an AI prompt generation CTA (`Generate Prompts`).\n   - **Topic Filter Chips**: Quick filtering across *All Topics (384)*, *Startup & Early Stage*, *Modern Relational CRM*, *HubSpot Alternatives*, and *API & Developer First*.\n   - **Dense Data Table**: Rows with interactive multi-select checkboxes, prompt text with top-cited AI platforms, topic badges, intent pills, branding indicators, volume star ratings (1–5), coverage status pills (`Active Tracking`, `Suggested Gap`, `Critical Deficit`), and quick action buttons.\n   - **Batch Action Footer**: Multi-selection summary (`3 prompts selected`), with prominent `Activate Selected` and `Export CSV` buttons alongside standard pagination.\n\n4. **Right Panel — Coverage Overview & Starter Pack**:\n   - **Coverage Overview**: Stacked progress bar showing the activation rate (17.7% active, 48.2% suggested gaps, 34.1% unreviewed), plus breakdowns by topic cluster, buyer persona (Founders, RevOps, Engineers, Agencies), and geographical benchmark.\n   - **Suggested Starter Prompts (CRM / Attio Demo)**: Curated high-intent prompts targeting common AI buyer inquiries with one-click `Add to Track` and bulk import capabilities."
+    },
+    {
+      "suggestion": "Add an interactive modal for 'Generate Prompts' with prompt synthesis controls"
+    },
+    {
+      "suggestion": "Design the detailed 'Prompt Deep-Dive & Citation Trace' drawer for a selected query"
+    },
+    {
+      "suggestion": "Generate the mobile responsive version of this Prompt Research screen"
+    }
+  ]
+}

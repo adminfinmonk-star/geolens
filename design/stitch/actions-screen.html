@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens — Actions &amp; Fixes</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Plus Jakarta Sans Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-background": "#0e1d26",
+            "outline": "#6e7977",
+            "on-primary": "#ffffff",
+            "on-error-container": "#93000a",
+            "surface-container-highest": "#d5e5f1",
+            "surface-container": "#e0f0fd",
+            "on-surface-variant": "#3e4947",
+            "primary-container": "#0f766e",
+            "on-tertiary-container": "#ffe6da",
+            "on-secondary": "#ffffff",
+            "on-primary-container": "#a3faef",
+            "inverse-on-surface": "#e4f3ff",
+            "on-secondary-fixed": "#001d31",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#80d5cb",
+            "surface-container-low": "#eaf5ff",
+            "outline-variant": "#bdc9c6",
+            "primary-fixed": "#9cf2e8",
+            "secondary-fixed-dim": "#93ccff",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#ffb690",
+            "surface": "#f5faff",
+            "on-surface": "#0e1d26",
+            "secondary-container": "#5bb8fe",
+            "surface-dim": "#ccdce9",
+            "surface-container-high": "#daeaf7",
+            "tertiary-fixed": "#ffdbca",
+            "tertiary": "#893a00",
+            "secondary-fixed": "#cce5ff",
+            "inverse-surface": "#24323c",
+            "primary": "#005c55",
+            "on-secondary-fixed-variant": "#004b73",
+            "surface-tint": "#006a63",
+            "on-tertiary-fixed": "#341100",
+            "on-primary-fixed-variant": "#00504a",
+            "background": "#f5faff",
+            "secondary": "#006398",
+            "tertiary-container": "#af4c00",
+            "surface-variant": "#d5e5f1",
+            "on-primary-fixed": "#00201d",
+            "error": "#ba1a1a",
+            "surface-bright": "#f5faff",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-container": "#00476e",
+            "primary-fixed-dim": "#80d5cb",
+            "on-tertiary-fixed-variant": "#783200",
+            "on-error": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-2xs": "0.125rem",
+            "gutter-desktop": "1.5rem",
+            "space-xl": "1.5rem",
+            "panel-padding-compact": "0.75rem",
+            "panel-padding-standard": "1.25rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "space-2xl": "2rem",
+            "gutter-mobile": "1rem",
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-base": "1rem",
+            "space-3xl": "3rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "data-mono": ["13px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "500" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "500" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #bdc9c6;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- TOP APP BAR -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm sticky top-0 z-40 bg-surface-container-lowest border-b border-outline-variant shadow-sm h-14">
+<!-- Left branding & project context -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm pl-0">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold text-headline-sm">
+<span class="material-symbols-outlined" data-icon="deployed_code" style="font-size: 20px;">deployed_code</span>
+</div>
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface">GeoLens</span>
+</div>
+<div class="h-5 w-px bg-outline-variant"></div>
+<!-- Scope Switchers -->
+<div class="flex items-center gap-space-sm">
+<!-- Project Switcher -->
+<button class="flex items-center gap-space-xs px-space-md py-1 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors duration-150 text-body-sm font-body-sm text-on-surface">
+<span class="material-symbols-outlined text-primary" data-icon="corporate_fare">corporate_fare</span>
+<span class="font-semibold">Attio · Demo</span>
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Engine Selector -->
+<button class="flex items-center gap-space-xs px-space-md py-1 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors duration-150 text-body-sm font-body-sm text-on-surface">
+<span class="material-symbols-outlined text-outline" data-icon="neurology">neurology</span>
+<span>All Models</span>
+<span class="text-label-md font-label-md bg-surface-container px-1.5 py-0.5 rounded text-secondary font-bold">4</span>
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Date Range Filter -->
+<div class="inline-flex rounded-lg border border-outline-variant p-0.5 bg-surface-container-lowest">
+<button class="px-2.5 py-1 text-label-md font-label-md rounded bg-primary-container text-on-primary font-semibold">Last 7 days</button>
+<button class="px-2.5 py-1 text-label-md font-label-md rounded text-on-surface-variant hover:text-on-surface">Last 30 Days</button>
+<button class="px-2.5 py-1 text-label-md font-label-md rounded text-on-surface-variant hover:text-on-surface">90 days</button>
+</div>
+</div>
+</div>
+<!-- Right Trail Actions -->
+<div class="flex items-center gap-space-md">
+<!-- Trial Badge -->
+<div class="flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-surface-container-low border border-outline-variant text-body-sm font-body-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-on-surface-variant">14 days left in trial</span>
+<a class="text-primary font-semibold hover:underline ml-1" href="#">Upgrade</a>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg border border-outline-variant text-body-sm font-body-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors duration-150">
+<span class="material-symbols-outlined" data-icon="file_download">file_download</span>
+<span>Export Report</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-body-sm font-semibold hover:opacity-90 shadow-sm transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>New Analysis</span>
+</button>
+<div class="h-5 w-px bg-outline-variant"></div>
+<!-- Icon Actions -->
+<div class="flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low transition-colors" title="Notifications">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low transition-colors" title="Help &amp; Support">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container-low transition-colors" title="Tune Settings">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-label-md ring-2 ring-surface-container">
+        AL
+      </div>
+</div>
+</header>
+<!-- WORKSPACE BODY WITH DOCKED SIDEBAR -->
+<div class="flex flex-1 overflow-hidden">
+<!-- LEFT NAVIGATION SIDEBAR -->
+<aside class="w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between h-[calc(100vh-3.5rem)] sticky top-14 z-30 shrink-0 select-none">
+<!-- Top Section -->
+<div class="p-space-md space-y-space-md overflow-y-auto custom-scrollbar">
+<!-- Brand/App Identity Tag -->
+<div class="flex items-center justify-between px-space-sm pb-space-xs border-b border-outline-variant">
+<div>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">GeoLens</span>
+<span class="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-surface-container text-secondary">v2.4</span>
+<p class="text-label-md font-label-md text-on-surface-variant">Spatial &amp; Search AI</p>
+</div>
+</div>
+<!-- Primary Workspace Action -->
+<button class="w-full flex items-center justify-center gap-space-xs px-space-md py-2 rounded-lg bg-primary-container text-on-primary font-semibold text-body-sm shadow-sm hover:opacity-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span>New Analysis</span>
+</button>
+<!-- Navigation Categories -->
+<div class="space-y-space-md">
+<!-- Category 1: AI ANALYSIS -->
+<div>
+<div class="px-space-sm py-1 text-[10px] font-bold text-outline tracking-wider">AI ANALYSIS</div>
+<nav class="space-y-0.5 mt-1">
+<a class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Visibility Overview</span>
+</a>
+<a class="flex items-center justify-between px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>Competitor Research</span>
+</div>
+<span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-surface-container text-secondary">5</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span>Prompt Research</span>
+</a>
+</nav>
+</div>
+<!-- Category 2: BRAND PERFORMANCE -->
+<div>
+<div class="px-space-sm py-1 text-[10px] font-bold text-outline tracking-wider">BRAND PERFORMANCE</div>
+<nav class="space-y-0.5 mt-1">
+<a class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span>Brand Performance</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span>Perception &amp; Sentiment</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span>Fact-checking</span>
+</a>
+</nav>
+</div>
+<!-- Category 3: BOOST & MONITOR -->
+<div>
+<div class="px-space-sm py-1 text-[10px] font-bold text-outline tracking-wider">BOOST &amp; MONITOR</div>
+<nav class="space-y-0.5 mt-1">
+<a class="flex items-center justify-between px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span>Prompt Tracking</span>
+</div>
+<span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded bg-error-container text-error tracking-wider">LIVE</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-medium text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="format_quote">format_quote</span>
+<span>Sources &amp; Citations</span>
+</a>
+<!-- ACTIVE STATE: Actions & Fixes -->
+<a class="flex items-center justify-between px-space-md py-1.5 rounded-lg bg-surface-container text-primary font-bold text-body-sm shadow-sm transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary font-bold" data-icon="task_alt">task_alt</span>
+<span>Actions &amp; Fixes</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+<!-- Bottom Sidebar Footer: Quota & Utility -->
+<div class="p-space-md border-t border-outline-variant space-y-space-md bg-surface">
+<!-- Prompt Quota Gauge -->
+<div class="p-2.5 rounded-lg border border-outline-variant bg-surface-container-lowest">
+<div class="flex items-center justify-between text-label-md font-label-md mb-1">
+<span class="text-on-surface-variant">Monthly AI Crawl Quota</span>
+<span class="font-bold text-on-surface">28.4%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 28.4%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline mt-1.5">
+<span>1,420 / 5,000 queries</span>
+<a class="text-primary hover:underline font-semibold" href="#">Manage</a>
+</div>
+</div>
+<!-- Secondary Utility Links -->
+<div class="grid grid-cols-3 gap-1 pt-1 text-center text-label-md font-label-md text-on-surface-variant border-t border-outline-variant">
+<a class="py-1 hover:text-primary flex flex-col items-center gap-0.5" href="#">
+<span class="material-symbols-outlined text-base" data-icon="menu_book">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="py-1 hover:text-primary flex flex-col items-center gap-0.5" href="#">
+<span class="material-symbols-outlined text-base" data-icon="support_agent">support_agent</span>
+<span>Support</span>
+</a>
+<a class="py-1 hover:text-primary flex flex-col items-center gap-0.5" href="#">
+<span class="material-symbols-outlined text-base" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- MAIN VIEWPORT CANVAS -->
+<main class="flex-1 overflow-y-auto bg-surface p-space-xl space-y-space-lg custom-scrollbar">
+<!-- HEADER BREADCRUMB & INTENT HERO -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm">
+<div class="space-y-1">
+<div class="flex items-center gap-space-sm">
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">Actions &amp; Fixes</h1>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-primary font-bold text-label-md border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>Opportunity Queue</span>
+</div>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-3xl">
+            Ranked recommendations grounded in evidence (R1–R10) — prioritized optimizations to reclaim citation share and resolve AI visibility deficits.
+          </p>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span>Saved Views</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+<span>Share Queue</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+<span class="material-symbols-outlined" data-icon="auto_mode">auto_mode</span>
+<span>Run Auto-Prioritization</span>
+</button>
+</div>
+</div>
+<!-- KPI SUMMARY CARDS (4 DENSE METRIC TILES) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Tile 1: Open Actions -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline">Open Actions</span>
+<span class="material-symbols-outlined text-outline" data-icon="pending_actions">pending_actions</span>
+</div>
+<div class="my-2">
+<div class="text-display-lg font-display-lg text-on-surface leading-none">28</div>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm font-body-sm text-primary">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="north_east">north_east</span>
+<span class="font-bold">+4 new this crawl</span>
+<span class="text-on-surface-variant">· Awaiting triage</span>
+</div>
+</div>
+<!-- Tile 2: High Opportunity -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline">High Opportunity</span>
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+</div>
+<div class="my-2">
+<div class="text-display-lg font-display-lg text-primary leading-none">9</div>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm font-body-sm text-primary">
+<span class="font-bold">Est. +18.4% citation lift</span>
+<span class="text-on-surface-variant">· Top priority</span>
+</div>
+</div>
+<!-- Tile 3: In Progress -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline">In Progress</span>
+<span class="material-symbols-outlined text-secondary" data-icon="engineering">engineering</span>
+</div>
+<div class="my-2">
+<div class="text-display-lg font-display-lg text-on-surface leading-none">6</div>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm font-body-sm text-on-surface-variant">
+<span class="font-semibold text-secondary">3 dev, 3 editorial</span>
+<span>· Active sprint</span>
+</div>
+</div>
+<!-- Tile 4: Resolved / Completed -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline">Resolved / Completed</span>
+<span class="material-symbols-outlined text-primary" data-icon="verified">verified</span>
+</div>
+<div class="my-2">
+<div class="text-display-lg font-display-lg text-on-surface leading-none">42</div>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm font-body-sm text-primary">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="check_circle">check_circle</span>
+<span class="font-bold">Last 30 days</span>
+<span class="text-on-surface-variant">· 100% LLM verified</span>
+</div>
+</div>
+</div>
+<!-- FILTER & GROUPING TOOLBAR -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border border-outline-variant shadow-sm space-y-space-md">
+<!-- Top Toolbar Row: Tabs + Search -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<!-- Status Tabs -->
+<div class="inline-flex items-center border border-outline-variant rounded-lg p-0.5 bg-surface">
+<button class="px-space-md py-1.5 rounded text-body-sm font-semibold bg-surface-container-lowest text-primary shadow-sm border border-outline-variant">
+              All (28)
+            </button>
+<button class="px-space-md py-1.5 rounded text-body-sm font-medium text-on-surface-variant hover:text-on-surface">
+              New (13)
+            </button>
+<button class="px-space-md py-1.5 rounded text-body-sm font-medium text-on-surface-variant hover:text-on-surface">
+              In Progress (6)
+            </button>
+<button class="px-space-md py-1.5 rounded text-body-sm font-medium text-on-surface-variant hover:text-on-surface">
+              Done (42)
+            </button>
+</div>
+<!-- Search Input -->
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg" data-icon="search">search</span>
+<input class="w-full pl-9 pr-space-md py-1.5 rounded-lg border border-outline-variant bg-surface-container-lowest text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:border-primary placeholder-outline" placeholder="Search actions by keyword, domain, or root cause..." type="text"/>
+</div>
+</div>
+<!-- Bottom Toolbar Row: Filter Pills + Bulk Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline mr-1">Categories:</span>
+<button class="px-2.5 py-1 rounded-md text-label-lg font-label-lg bg-surface-container text-primary font-bold border border-primary-container">
+              All Groups
+            </button>
+<button class="px-2.5 py-1 rounded-md text-label-lg font-label-lg bg-surface-container-lowest text-on-surface-variant border border-outline-variant hover:bg-surface-container-low">
+              SITE_AUDIT (11)
+            </button>
+<button class="px-2.5 py-1 rounded-md text-label-lg font-label-lg bg-surface-container-lowest text-on-surface-variant border border-outline-variant hover:bg-surface-container-low">
+              OWNED_CONTENT (9)
+            </button>
+<button class="px-2.5 py-1 rounded-md text-label-lg font-label-lg bg-surface-container-lowest text-on-surface-variant border border-outline-variant hover:bg-surface-container-low">
+              EARNED_MEDIA (8)
+            </button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<!-- Severity Dropdown -->
+<button class="flex items-center gap-1 px-2.5 py-1 rounded-md text-label-lg font-label-lg bg-surface-container-lowest text-on-surface border border-outline-variant hover:bg-surface-container-low">
+<span class="text-outline">Impact:</span>
+<span class="font-semibold">High (≥ 80)</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<!-- Bulk Operations Bar -->
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Bulk Actions:</span>
+<button class="px-2 py-1 rounded border border-outline-variant hover:bg-surface-container-low text-on-surface font-medium">Assign</button>
+<button class="px-2 py-1 rounded border border-outline-variant hover:bg-surface-container-low text-on-surface font-medium">Mark Done</button>
+<button class="px-2 py-1 rounded border border-outline-variant hover:bg-surface-container-low text-on-surface font-medium">Export CSV</button>
+</div>
+</div>
+</div>
+<!-- MAIN CONTENT GRID (8 COLS MAIN QUEUE, 4 COLS SIDEBAR INTELLIGENCE) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: RECOMMENDATION QUEUE CARDS (8 COLS) -->
+<section class="lg:col-span-8 space-y-space-md">
+<!-- Card R1 (High Opportunity - SITE_AUDIT) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm hover:border-primary transition-all duration-150">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-outline-variant">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold text-label-lg">R1</span>
+<span class="px-2 py-0.5 rounded border border-outline-variant text-label-md font-label-md font-bold text-on-surface-variant uppercase tracking-wider">SITE_AUDIT</span>
+<span class="text-label-md font-label-md text-outline">Deficit ID: #SA-4091</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-bold text-primary">94/100</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Opportunity Score</span>
+<div class="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 94%;"></div>
+</div>
+</div>
+</div>
+<div class="py-space-md space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
+                Inject missing JSON-LD Product &amp; Pricing Schema on /docs/pricing
+              </h2>
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div>
+<strong class="text-on-surface">Root Cause &amp; Deficit:</strong>
+                    ChatGPT-4o and Perplexity fail to quote seat tiers because pricing tables are rendered via dynamic client-side JS without Schema.org markup.
+                  </div>
+</div>
+</div>
+<!-- Evidence Callout Snippet -->
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5 text-secondary font-semibold mb-1 text-label-lg">
+<span class="material-symbols-outlined text-sm" data-icon="find_in_page">find_in_page</span>
+<span>Grounding Evidence Snippet:</span>
+</div>
+<p class="italic text-on-surface-variant pl-5 border-l-2 border-secondary">
+                  "Perplexity Pro: 'Attio enterprise pricing requires bespoke annual quote...' (Deficit detected in 34 competitor queries)."
+                </p>
+</div>
+</div>
+<!-- Card Metadata & Actions Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-sm border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-md text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                  +6.2% Citation Share
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="timer">timer</span>
+                  Effort: <strong class="text-on-surface ml-0.5">Low (1h)</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hub">hub</span>
+                  Perplexity, Google AI Overviews
+                </span>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+                  Open Fix Blueprint
+                </button>
+<button class="px-2.5 py-1.5 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low">
+                  Assign
+                </button>
+<button class="p-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card R2 (High Opportunity - OWNED_CONTENT) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm hover:border-primary transition-all duration-150">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-outline-variant">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold text-label-lg">R2</span>
+<span class="px-2 py-0.5 rounded border border-outline-variant text-label-md font-label-md font-bold text-on-surface-variant uppercase tracking-wider">OWNED</span>
+<span class="text-label-md font-label-md text-outline">Deficit ID: #OC-1934</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-bold text-primary">89/100</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Opportunity Score</span>
+<div class="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 89%;"></div>
+</div>
+</div>
+</div>
+<div class="py-space-md space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
+                Publish Relational Schema vs HubSpot Comparison Guide
+              </h2>
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div>
+<strong class="text-on-surface">Root Cause &amp; Deficit:</strong>
+                    HubSpot cited in 71.0% of 'modern CRM architecture' queries; Attio cited in only 32% despite feature parity.
+                  </div>
+</div>
+</div>
+<!-- Evidence Snippet -->
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5 text-secondary font-semibold mb-1 text-label-lg">
+<span class="material-symbols-outlined text-sm" data-icon="find_in_page">find_in_page</span>
+<span>Grounding Evidence Snippet:</span>
+</div>
+<p class="italic text-on-surface-variant pl-5 border-l-2 border-secondary">
+                  "Google AI Overviews synthesized comparison relying solely on G2 and HubSpot blog tables."
+                </p>
+</div>
+</div>
+<!-- Card Metadata & Actions Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-sm border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-md text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                  +5.4% Citation Share
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="timer">timer</span>
+                  Effort: <strong class="text-on-surface ml-0.5">Medium (4h)</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hub">hub</span>
+                  ChatGPT-4o, Gemini 1.5 Pro
+                </span>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+                  Open Fix Blueprint
+                </button>
+<button class="px-2.5 py-1.5 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low">
+                  Assign
+                </button>
+</div>
+</div>
+</article>
+<!-- Card R3 (High Opportunity - EARNED_MEDIA) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm hover:border-primary transition-all duration-150">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-outline-variant">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold text-label-lg">R3</span>
+<span class="px-2 py-0.5 rounded border border-outline-variant text-label-md font-label-md font-bold text-on-surface-variant uppercase tracking-wider">EARNED</span>
+<span class="text-label-md font-label-md text-outline">Deficit ID: #EM-5512</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-bold text-primary">86/100</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Opportunity Score</span>
+<div class="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 86%;"></div>
+</div>
+</div>
+</div>
+<div class="py-space-md space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
+                Claim and Update G2 Product Attribute Matrix for Developer Workflows
+              </h2>
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div>
+<strong class="text-on-surface">Root Cause:</strong>
+                    G2 accounts for 34.8% of Google AI Overviews source citations. Attio missing in GraphQL benchmark filter.
+                  </div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5 text-secondary font-semibold mb-1 text-label-lg">
+<span class="material-symbols-outlined text-sm" data-icon="find_in_page">find_in_page</span>
+<span>Grounding Evidence Snippet:</span>
+</div>
+<p class="italic text-on-surface-variant pl-5 border-l-2 border-secondary">
+                  "G2 category grid cited 232 times across CRM queries; Attio profile missing API rating criteria."
+                </p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-sm border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-md text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                  +4.8% Citation Share
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="timer">timer</span>
+                  Effort: <strong class="text-on-surface ml-0.5">Low (2h)</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hub">hub</span>
+                  Google AI Overviews
+                </span>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+                  Open Fix Blueprint
+                </button>
+<button class="px-2.5 py-1.5 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low">
+                  Assign
+                </button>
+</div>
+</div>
+</article>
+<!-- Card R4 (SITE_AUDIT - In Progress) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm hover:border-primary transition-all duration-150">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-outline-variant">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold text-label-lg">R4</span>
+<span class="px-2 py-0.5 rounded border border-outline-variant text-label-md font-label-md font-bold text-on-surface-variant uppercase tracking-wider">SITE_AUDIT</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-secondary font-bold text-label-md">In Progress (Dev)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-bold text-primary">82/100</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Opportunity Score</span>
+<div class="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 82%;"></div>
+</div>
+</div>
+</div>
+<div class="py-space-md space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
+                Resolve robots.txt blocking of PerplexityBot on /benchmarks/*
+              </h2>
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div>
+<strong class="text-on-surface">Root Cause:</strong>
+                    Recent CDN rule blocked AI user agents from reading internal benchmarks.
+                  </div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5 text-secondary font-semibold mb-1 text-label-lg">
+<span class="material-symbols-outlined text-sm" data-icon="find_in_page">find_in_page</span>
+<span>Grounding Evidence Snippet:</span>
+</div>
+<p class="italic text-on-surface-variant pl-5 border-l-2 border-secondary">
+                  "HTTP 403 logged for PerplexityBot; 12 prompt citations lost in last 7 days."
+                </p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-sm border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-md text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                  +3.9% Citation Share
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="timer">timer</span>
+                  Effort: <strong class="text-on-surface ml-0.5">Immediate</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hub">hub</span>
+                  Perplexity Pro
+                </span>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-1.5 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low">
+                  View Pull Request
+                </button>
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+                  Re-crawl Test
+                </button>
+</div>
+</div>
+</article>
+<!-- Card R5 (OWNED_CONTENT - In Progress) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm hover:border-primary transition-all duration-150">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-outline-variant">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold text-label-lg">R5</span>
+<span class="px-2 py-0.5 rounded border border-outline-variant text-label-md font-label-md font-bold text-on-surface-variant uppercase tracking-wider">OWNED</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-secondary font-bold text-label-md">In Progress (Editorial)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-bold text-primary">78/100</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Opportunity Score</span>
+<div class="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+<div class="py-space-md space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
+                Authoritative SOC2 Type II Security Documentation Page Update
+              </h2>
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div>
+<strong class="text-on-surface">Root Cause:</strong>
+                    LLMs hallucinate that SOC2 certification is pending based on outdated 2023 tech blog post.
+                  </div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5 text-secondary font-semibold mb-1 text-label-lg">
+<span class="material-symbols-outlined text-sm" data-icon="find_in_page">find_in_page</span>
+<span>Grounding Evidence Snippet:</span>
+</div>
+<p class="italic text-on-surface-variant pl-5 border-l-2 border-secondary">
+                  "ChatGPT-4o flagged SOC2 status as 'unverified enterprise friction' in 14 RFP prompt evaluations."
+                </p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-sm border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-md text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                  +3.1% Citation Share
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="timer">timer</span>
+                  Effort: <strong class="text-on-surface ml-0.5">Low</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hub">hub</span>
+                  ChatGPT-4o, Claude 3.5
+                </span>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+                  Open Fix Blueprint
+                </button>
+<button class="px-2.5 py-1.5 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low">
+                  Review Draft
+                </button>
+</div>
+</div>
+</article>
+<!-- Card R6 (EARNED_MEDIA) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm hover:border-primary transition-all duration-150">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-space-sm border-b border-outline-variant">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold text-label-lg">R6</span>
+<span class="px-2 py-0.5 rounded border border-outline-variant text-label-md font-label-md font-bold text-on-surface-variant uppercase tracking-wider">EARNED</span>
+<span class="text-label-md font-label-md text-outline">Deficit ID: #EM-7822</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg font-bold text-primary">74/100</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Opportunity Score</span>
+<div class="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 74%;"></div>
+</div>
+</div>
+</div>
+<div class="py-space-md space-y-space-sm">
+<h2 class="text-headline-sm font-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
+                Seed Technical Proof-Points on Reddit r/sales &amp; Hacker News Discussion
+              </h2>
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div>
+<strong class="text-on-surface">Root Cause:</strong>
+                    Reddit represents 48.9% citation frequency for raw founder recommendations. Competitor Folk dominates.
+                  </div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5 text-secondary font-semibold mb-1 text-label-lg">
+<span class="material-symbols-outlined text-sm" data-icon="find_in_page">find_in_page</span>
+<span>Grounding Evidence Snippet:</span>
+</div>
+<p class="italic text-on-surface-variant pl-5 border-l-2 border-secondary">
+                  "Attio mentioned without direct URL attribution in 139 developer discussions."
+                </p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-sm border-t border-outline-variant">
+<div class="flex flex-wrap items-center gap-space-md text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+                  +2.8% Citation Share
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="timer">timer</span>
+                  Effort: <strong class="text-on-surface ml-0.5">Medium</strong>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="hub">hub</span>
+                  Google AI Overviews, Perplexity Pro
+                </span>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary text-body-sm font-semibold hover:opacity-95 shadow-sm transition-all">
+                  Open Fix Blueprint
+                </button>
+<button class="px-2.5 py-1.5 rounded-lg border border-outline-variant text-body-sm font-semibold text-on-surface hover:bg-surface-container-low">
+                  Assign
+                </button>
+</div>
+</div>
+</article>
+</section>
+<!-- RIGHT COLUMN: SIDEBAR INTELLIGENCE & CONTEXT (4 COLS) -->
+<aside class="lg:col-span-4 space-y-space-md">
+<!-- Panel 1: Algorithm Impact & Weights -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Why this matters</h3>
+<span class="px-2 py-0.5 rounded text-label-md font-label-md bg-surface-container text-primary font-bold">Algorithm Weights</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              How LLM retrieval synthesis weights citations during dynamic answer assembly:
+            </p>
+<!-- Breakdown Weights -->
+<div class="space-y-space-sm pt-1">
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="text-on-surface font-semibold">Structured JSON-LD schema</span>
+<span class="font-bold text-primary">38%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 38%;"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="text-on-surface font-semibold">Authoritative 3rd-party reviews</span>
+<span class="font-bold text-secondary">31%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 31%;"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="text-on-surface font-semibold">Direct documentation freshness</span>
+<span class="font-bold text-primary">22%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 22%;"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="text-on-surface font-semibold">Social consensus &amp; Reddit mentions</span>
+<span class="font-bold text-outline">9%</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-outline rounded-full" style="width: 9%;"></div>
+</div>
+</div>
+</div>
+<!-- Projected Lift Banner -->
+<div class="p-space-sm rounded-lg bg-surface-container-low border border-surface-container mt-space-md">
+<div class="text-label-md font-label-md uppercase tracking-wider text-secondary font-bold">Sprint Projection</div>
+<div class="text-headline-sm font-headline-sm font-bold text-primary mt-0.5">+18.4% Aggregate Visibility Lift</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">
+                Achieved if top 5 ranked actions (R1–R5) are deployed and verified this sprint.
+              </p>
+</div>
+<button class="w-full flex items-center justify-center gap-1 text-primary font-bold text-body-sm hover:underline pt-1">
+<span>Explore Projected Impact Model</span>
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Panel 2: Engine Grounding Telemetry -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Grounding Index</h3>
+<span class="text-label-md font-label-md text-outline">Engine Telemetry</span>
+</div>
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between p-space-sm rounded-lg border border-outline-variant bg-surface">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="saved_search">saved_search</span>
+<div>
+<div class="font-semibold text-body-sm text-on-surface">Perplexity Pro</div>
+<div class="text-[11px] text-outline">8 queued actions</div>
+</div>
+</div>
+<span class="text-label-lg font-bold text-primary bg-surface-container px-2 py-0.5 rounded">+7.8% proj.</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg border border-outline-variant bg-surface">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="travel_explore">travel_explore</span>
+<div>
+<div class="font-semibold text-body-sm text-on-surface">Google AI Overviews</div>
+<div class="text-[11px] text-outline">11 queued actions</div>
+</div>
+</div>
+<span class="text-label-lg font-bold text-secondary bg-surface-container px-2 py-0.5 rounded">+6.4% proj.</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg border border-outline-variant bg-surface">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="smart_toy">smart_toy</span>
+<div>
+<div class="font-semibold text-body-sm text-on-surface">ChatGPT-4o</div>
+<div class="text-[11px] text-outline">9 queued actions</div>
+</div>
+</div>
+<span class="text-label-lg font-bold text-primary bg-surface-container px-2 py-0.5 rounded">+4.2% proj.</span>
+</div>
+</div>
+</div>
+<!-- Panel 3: Automated Verification Webhook -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary" data-icon="sync">sync</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Auto-Verification</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full text-label-md font-label-md bg-surface-container text-primary font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                Active
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              When your engineering team marks an issue deployed, GeoLens initiates an isolated synthetic prompt test to confirm LLM citation recovery within 4 hours.
+            </p>
+<div class="pt-2 border-t border-outline-variant">
+<a class="inline-flex items-center gap-1 text-primary font-semibold text-body-sm hover:underline" href="#">
+<span class="material-symbols-outlined text-base" data-icon="webhook">webhook</span>
+<span>Configure CI/CD &amp; JIRA Webhooks</span>
+</a>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

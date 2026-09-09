@@ -1,0 +1,18 @@
+Design a DESKTOP light-theme SaaS SETTINGS — Billing screen for GeoLens.
+
+Brand: teal #0F766E only — NO purple. Neutrals white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED. Plus Jakarta Sans. Soft mint wash. Light theme only.
+
+Chrome (Semrush-style dual rail, Settings suite ACTIVE):
+- Far-left icon rail: Analysis, Brand, Monitor, Results, Settings (active soft tile), Collapse
+- Secondary panel titled Settings: Profile, Brands, Topics & tags, Channels, Billing (active teal, Pro badge), API keys, SSO
+
+Main — Billing:
+- Title: Billing · Workspace plan badge
+- Subtitle: Plan, usage, and invoices for this GeoLens workspace
+- KPIs: Plan name, Seats, Prompt quota used %, Next renewal
+- Current plan card with Upgrade / Manage (teal primary)
+- Usage bars: Prompts tracked, Collection runs, API requests
+- Invoices table: Date | Amount | Status | Download
+- Side: What counts toward quota — short honest note
+
+Professional B2B. No emoji. 1440px.

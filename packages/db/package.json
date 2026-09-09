@@ -1,0 +1,39 @@
+{
+  "name": "@geo/db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "seed": "tsx src/seed-cli.ts",
+    "migrate": "tsx src/migrate.ts",
+    "lint": "echo ok"
+  },
+  "dependencies": {
+    "@geo/adapters": "workspace:*",
+    "@geo/contracts": "workspace:*",
+    "@geo/core": "workspace:*",
+    "@geo/registry": "workspace:*",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.38.3",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/node": "^22.10.2",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

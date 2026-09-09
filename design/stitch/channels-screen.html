@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, initial-scale=1.0">
+  <title>GeoLens — Settings / Channels & LLMs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#0F766E',
+              dark: '#0d655e',
+              light: '#14b8a6',
+              surface: '#F0FDFA',
+              border: '#CCFBF1',
+            },
+            neutral: {
+              page: '#F5F7F8',
+              surface: '#FFFFFF',
+              border: '#E3E9ED',
+              'border-subtle': '#EEF2F4',
+              ink: '#0B1218',
+              muted: '#5C6B76',
+              faint: '#8B9AA5',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D5DDE2;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-neutral-page text-neutral-ink font-sans antialiased min-h-screen flex flex-col selection:bg-brand-border selection:text-brand-dark">
+
+  <!-- Top Global Utility Bar -->
+  <header class="h-14 bg-neutral-surface border-b border-neutral-border flex items-center justify-between px-5 sticky top-0 z-30">
+    <div class="flex items-center gap-4">
+      <!-- Workspace Brand Switcher -->
+      <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-neutral-border hover:border-neutral-muted transition-colors cursor-pointer bg-neutral-surface">
+        <div class="w-5 h-5 rounded bg-brand flex items-center justify-center text-white font-mono text-xs font-bold">
+          N
+        </div>
+        <span class="text-sm font-semibold text-neutral-ink tracking-tight">nike.com (Global)</span>
+        <span class="material-symbols-outlined text-neutral-muted text-base">unfold_more</span>
+      </div>
+
+      <div class="h-4 w-px bg-neutral-border"></div>
+
+      <!-- Breadcrumbs -->
+      <nav class="flex items-center gap-2 text-xs text-neutral-muted">
+        <span>Settings Suite</span>
+        <span class="material-symbols-outlined text-sm text-neutral-faint">chevron_right</span>
+        <span class="font-semibold text-neutral-ink">Channels &amp; LLMs</span>
+      </nav>
+    </div>
+
+    <!-- Right Utility Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Telemetry Live Engine Status -->
+      <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-brand-surface border border-brand-border text-xs font-medium text-brand">
+        <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+        <span>Telemetry Active (4 Engines)</span>
+      </div>
+
+      <!-- Search Input -->
+      <div class="relative w-64">
+        <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-faint text-lg">search</span>
+        <input type="text" placeholder="Search engines, models, regions..." class="w-full pl-9 pr-3 py-1.5 text-xs bg-neutral-page border border-neutral-border rounded-lg text-neutral-ink placeholder-neutral-faint focus:outline-none focus:border-brand focus:bg-white transition-all">
+      </div>
+
+      <button class="p-2 text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page rounded-lg transition-colors" title="Notifications">
+        <span class="material-symbols-outlined text-xl">notifications</span>
+      </button>
+
+      <button class="p-2 text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page rounded-lg transition-colors" title="Documentation & Help">
+        <span class="material-symbols-outlined text-xl">help</span>
+      </button>
+
+      <!-- User Avatar -->
+      <div class="flex items-center gap-2 pl-2 border-l border-neutral-border">
+        <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs">
+          GL
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="text-xs font-semibold text-neutral-ink leading-none">Spatial Ops</span>
+          <span class="text-[10px] text-neutral-muted mt-0.5 leading-none">Admin</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Body Layout: Semrush-style Dual Rail + Main Content Area -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- Rail 1: Far-Left Icon Rail (64px) -->
+    <aside class="w-16 bg-neutral-surface border-r border-neutral-border flex flex-col justify-between items-center py-4 flex-shrink-0 z-20">
+      <div class="flex flex-col items-center gap-4 w-full">
+        <!-- Brand Glyph -->
+        <a href="#" class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center font-bold text-lg shadow-sm hover:opacity-95 transition-opacity" title="GeoLens Platform">
+          <span class="material-symbols-outlined text-2xl font-bold">radar</span>
+        </a>
+
+        <div class="w-8 h-px bg-neutral-border my-1"></div>
+
+        <!-- Suite Icons -->
+        <nav class="flex flex-col gap-1.5 w-full px-2.5">
+          <button class="w-full aspect-square flex flex-col items-center justify-center rounded-lg text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors group" title="Analysis Suite">
+            <span class="material-symbols-outlined group-hover:scale-105 transition-transform">insights</span>
+            <span class="text-[9px] font-medium mt-0.5 tracking-tight">Analysis</span>
+          </button>
+
+          <button class="w-full aspect-square flex flex-col items-center justify-center rounded-lg text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors group" title="Brand Performance">
+            <span class="material-symbols-outlined group-hover:scale-105 transition-transform">verified</span>
+            <span class="text-[9px] font-medium mt-0.5 tracking-tight">Brand</span>
+          </button>
+
+          <button class="w-full aspect-square flex flex-col items-center justify-center rounded-lg text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors group" title="Monitor & Tracking">
+            <span class="material-symbols-outlined group-hover:scale-105 transition-transform">monitoring</span>
+            <span class="text-[9px] font-medium mt-0.5 tracking-tight">Monitor</span>
+          </button>
+
+          <button class="w-full aspect-square flex flex-col items-center justify-center rounded-lg text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors group" title="Results & Telemetry">
+            <span class="material-symbols-outlined group-hover:scale-105 transition-transform">table_chart</span>
+            <span class="text-[9px] font-medium mt-0.5 tracking-tight">Results</span>
+          </button>
+
+          <!-- Settings Active Soft Tile -->
+          <button class="w-full aspect-square flex flex-col items-center justify-center rounded-lg bg-brand-surface text-brand border border-brand-border shadow-xs transition-colors group" title="Settings (Active)">
+            <span class="material-symbols-outlined fill text-brand">settings</span>
+            <span class="text-[9px] font-bold mt-0.5 tracking-tight">Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Bottom Controls -->
+      <div class="flex flex-col items-center gap-3 w-full px-2.5">
+        <button class="w-full aspect-square flex items-center justify-center rounded-lg text-neutral-faint hover:text-neutral-ink hover:bg-neutral-page transition-colors" title="Collapse Rail">
+          <span class="material-symbols-outlined">keyboard_double_arrow_left</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Rail 2: Secondary Panel (Settings Suite - 224px) -->
+    <aside class="w-56 bg-neutral-surface border-r border-neutral-border flex flex-col justify-between py-5 flex-shrink-0 z-10">
+      <div>
+        <!-- Secondary Panel Header -->
+        <div class="px-5 pb-4 border-b border-neutral-border">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-neutral-muted">Configuration</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-neutral-page text-neutral-muted border border-neutral-border">v2.4</span>
+          </div>
+          <h2 class="text-base font-bold text-neutral-ink mt-1">Settings Suite</h2>
+        </div>
+
+        <!-- Entity & Setup Navigation Links -->
+        <div class="px-3 py-4">
+          <span class="px-3 text-[11px] font-bold uppercase tracking-wider text-neutral-faint block mb-2">Entity &amp; Setup</span>
+          <nav class="space-y-1">
+            <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors">
+              <span class="material-symbols-outlined text-neutral-faint">domain</span>
+              <span>Profile</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-neutral-faint">corporate_fare</span>
+                <span>Brands</span>
+              </div>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-page text-neutral-muted border border-neutral-border">5</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-neutral-faint">label</span>
+                <span>Topics &amp; tags</span>
+              </div>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-page text-neutral-muted border border-neutral-border">18</span>
+            </a>
+            
+            <!-- Channels Active Item -->
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold bg-brand text-white shadow-sm transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-white">tune</span>
+                <span>Channels &amp; LLMs</span>
+              </div>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-dark text-brand-border border border-brand-light/30">4 LLMs</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Security & Billing Group -->
+        <div class="px-3 pt-2">
+          <span class="px-3 text-[11px] font-bold uppercase tracking-wider text-neutral-faint block mb-2">Security &amp; Billing</span>
+          <nav class="space-y-1">
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-neutral-faint">credit_card</span>
+                <span>Billing</span>
+              </div>
+              <span class="text-[10px] font-semibold text-brand bg-brand-surface px-1.5 py-0.5 rounded border border-brand-border">Pro</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-neutral-faint">key</span>
+                <span>API keys</span>
+              </div>
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-neutral-muted hover:text-neutral-ink hover:bg-neutral-page transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-neutral-faint">shield</span>
+                <span>SSO &amp; SAML</span>
+              </div>
+              <span class="text-[10px] font-mono text-neutral-faint">2.0</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Bottom Panel Quota Card -->
+      <div class="px-4">
+        <div class="p-3.5 rounded-xl bg-neutral-page border border-neutral-border">
+          <div class="flex items-center justify-between text-xs mb-1.5">
+            <span class="font-semibold text-neutral-ink">Synthetic Crawl Quota</span>
+            <span class="font-mono text-[11px] text-brand font-bold">28.4%</span>
+          </div>
+          <div class="w-full bg-neutral-border h-1.5 rounded-full overflow-hidden mb-2">
+            <div class="bg-brand h-full rounded-full" style="width: 28.4%"></div>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-neutral-muted">
+            <span>1,420 / 5,000 queries</span>
+            <a href="#" class="font-semibold text-brand hover:underline">Upgrade</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Surface (1440px target width view) -->
+    <main class="flex-1 overflow-y-auto px-8 py-7 bg-neutral-page">
+      <div class="max-w-6xl mx-auto space-y-6">
+
+        <!-- Header Section with Title, Subtitle, and Global Actions -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-border">
+          <div>
+            <div class="flex items-center gap-3">
+              <h1 class="text-2xl font-bold text-neutral-ink tracking-tight">Channels &amp; LLMs</h1>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-surface text-brand border border-brand-border">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                LLM coverage: 4 Active Foundation Engines
+              </span>
+            </div>
+            <p class="text-xs text-neutral-muted mt-1.5">
+              Configure foundation models and conversational assistants you collect AI answers, synthetic citations, and brand mentions from.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2.5 flex-shrink-0">
+            <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-neutral-surface border border-neutral-border hover:bg-neutral-page text-xs font-semibold text-neutral-ink shadow-2xs transition-colors">
+              <span class="material-symbols-outlined text-base">tune</span>
+              Global Crawler Cadence
+            </button>
+            <button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand hover:bg-brand-dark text-xs font-semibold text-white shadow-sm transition-all">
+              <span class="material-symbols-outlined text-base">add</span>
+              Add Custom Channel
+            </button>
+          </div>
+        </div>
+
+        <!-- High-Level KPI Summary Tiles -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- KPI 1 -->
+          <div class="p-4 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+            <div class="flex items-center justify-between text-neutral-muted mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-neutral-muted">Enabled Channels</span>
+              <span class="material-symbols-outlined text-brand text-lg">smart_toy</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-neutral-ink font-mono">4</span>
+              <span class="text-xs text-neutral-muted">of 6 available</span>
+            </div>
+            <div class="mt-2 text-[11px] text-brand font-medium flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">check_circle</span>
+              All core search engines online
+            </div>
+          </div>
+
+          <!-- KPI 2 -->
+          <div class="p-4 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+            <div class="flex items-center justify-between text-neutral-muted mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-neutral-muted">Target Geographies</span>
+              <span class="material-symbols-outlined text-brand text-lg">public</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-neutral-ink font-mono">18</span>
+              <span class="text-xs text-neutral-muted">Countries monitored</span>
+            </div>
+            <div class="mt-2 text-[11px] text-neutral-muted">
+              Residential proxy triangulation active
+            </div>
+          </div>
+
+          <!-- KPI 3 -->
+          <div class="p-4 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+            <div class="flex items-center justify-between text-neutral-muted mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-neutral-muted">Collection Mode</span>
+              <span class="material-symbols-outlined text-brand text-lg">sync_saved_locally</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-lg font-bold text-neutral-ink">Hybrid Active</span>
+            </div>
+            <div class="mt-2 text-[11px] text-neutral-muted">
+              Daily headless cron + live API triggers
+            </div>
+          </div>
+
+          <!-- KPI 4 -->
+          <div class="p-4 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+            <div class="flex items-center justify-between text-neutral-muted mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-neutral-muted">Last Sweep Run</span>
+              <span class="material-symbols-outlined text-brand text-lg">schedule</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-extrabold text-neutral-ink font-mono">14m ago</span>
+            </div>
+            <div class="mt-2 text-[11px] text-neutral-muted flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              Next scheduled: Today 18:00 UTC
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content Area: Channels Table + Side Information Note -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- Left: Channels & Models Configuration Table (8 Cols) -->
+          <div class="lg:col-span-8 space-y-4">
+            <div class="bg-neutral-surface rounded-xl border border-neutral-border shadow-2xs overflow-hidden">
+              
+              <!-- Table Controls Header -->
+              <div class="p-4 border-b border-neutral-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-bold text-neutral-ink">Connected Search &amp; Generative AI Engines</span>
+                  <span class="text-xs text-neutral-muted font-mono">(4 Active, 2 Standby)</span>
+                </div>
+
+                <!-- Filter & Search in Table -->
+                <div class="flex items-center gap-2">
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-neutral-faint text-sm">filter_list</span>
+                    <select class="pl-7 pr-7 py-1 text-xs bg-neutral-page border border-neutral-border rounded-lg text-neutral-ink font-medium focus:outline-none focus:border-brand cursor-pointer">
+                      <option>All Providers</option>
+                      <option>OpenAI</option>
+                      <option>Google</option>
+                      <option>Perplexity</option>
+                      <option>Anthropic</option>
+                    </select>
+                  </div>
+                  <button class="p-1.5 rounded-lg border border-neutral-border hover:bg-neutral-page text-neutral-muted hover:text-neutral-ink transition-colors" title="Reload status">
+                    <span class="material-symbols-outlined text-base">refresh</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Structured Table -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="bg-neutral-page/60 border-b border-neutral-border text-[11px] font-bold text-neutral-muted uppercase tracking-wider">
+                      <th class="py-3 px-4">Channel &amp; Model</th>
+                      <th class="py-3 px-3">Provider</th>
+                      <th class="py-3 px-3">Status</th>
+                      <th class="py-3 px-3">Countries</th>
+                      <th class="py-3 px-3">Monthly Quota Hint</th>
+                      <th class="py-3 px-4 text-right">Configure</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-neutral-border">
+
+                    <!-- Row 1: ChatGPT-4o -->
+                    <tr class="hover:bg-neutral-page/40 transition-colors group">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-mono font-bold text-xs flex-shrink-0">
+                            GPT
+                          </div>
+                          <div>
+                            <div class="font-bold text-neutral-ink flex items-center gap-1.5">
+                              <span>ChatGPT-4o</span>
+                              <span class="text-[10px] font-normal px-1.5 py-0.2 bg-neutral-page border border-neutral-border rounded text-neutral-muted font-mono">search-gpt</span>
+                            </div>
+                            <div class="text-[11px] text-neutral-muted">OpenAI GPT-4o with live web browsing anchor detection</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <span class="font-medium text-neutral-ink">OpenAI</span>
+                        <div class="text-[10px] text-neutral-muted font-mono">Direct API + Bot</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-brand"></span>
+                          <span class="font-semibold text-brand">Active</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 font-mono text-neutral-ink">
+                        <span>18 Geos</span>
+                        <div class="text-[10px] text-neutral-muted font-sans">US, UK, DE, FR...</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="font-mono text-neutral-ink">520 / 1,500</div>
+                        <div class="w-20 bg-neutral-border h-1 rounded-full mt-1">
+                          <div class="bg-brand h-1 rounded-full" style="width: 35%"></div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button class="px-2.5 py-1 rounded-lg border border-neutral-border bg-neutral-surface hover:border-brand text-xs font-semibold text-neutral-ink hover:text-brand transition-colors inline-flex items-center gap-1">
+                          <span>Edit</span>
+                          <span class="material-symbols-outlined text-xs">tune</span>
+                        </button>
+                      </td>
+                    </tr>
+
+                    <!-- Row 2: Perplexity Pro -->
+                    <tr class="hover:bg-neutral-page/40 transition-colors group">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 text-teal-800 flex items-center justify-center font-mono font-bold text-xs flex-shrink-0">
+                            PPLX
+                          </div>
+                          <div>
+                            <div class="font-bold text-neutral-ink flex items-center gap-1.5">
+                              <span>Perplexity Pro</span>
+                              <span class="text-[10px] font-normal px-1.5 py-0.2 bg-brand-surface border border-brand-border rounded text-brand font-mono">sonar-large</span>
+                            </div>
+                            <div class="text-[11px] text-neutral-muted">Perplexity AI Online with verbatim footnotes analysis</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <span class="font-medium text-neutral-ink">Perplexity</span>
+                        <div class="text-[10px] text-neutral-muted font-mono">Sonar Online v2</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-brand"></span>
+                          <span class="font-semibold text-brand">Active</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 font-mono text-neutral-ink">
+                        <span>18 Geos</span>
+                        <div class="text-[10px] text-neutral-muted font-sans">US, UK, DE, FR...</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="font-mono text-neutral-ink">410 / 1,500</div>
+                        <div class="w-20 bg-neutral-border h-1 rounded-full mt-1">
+                          <div class="bg-brand h-1 rounded-full" style="width: 27%"></div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button class="px-2.5 py-1 rounded-lg border border-neutral-border bg-neutral-surface hover:border-brand text-xs font-semibold text-neutral-ink hover:text-brand transition-colors inline-flex items-center gap-1">
+                          <span>Edit</span>
+                          <span class="material-symbols-outlined text-xs">tune</span>
+                        </button>
+                      </td>
+                    </tr>
+
+                    <!-- Row 3: Google AI Overviews -->
+                    <tr class="hover:bg-neutral-page/40 transition-colors group">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-sky-50 border border-sky-200 text-sky-800 flex items-center justify-center font-mono font-bold text-xs flex-shrink-0">
+                            SGE
+                          </div>
+                          <div>
+                            <div class="font-bold text-neutral-ink flex items-center gap-1.5">
+                              <span>Google AI Overviews</span>
+                              <span class="text-[10px] font-normal px-1.5 py-0.2 bg-neutral-page border border-neutral-border rounded text-neutral-muted font-mono">serp-sge</span>
+                            </div>
+                            <div class="text-[11px] text-neutral-muted">Zero-click generative snapshots in Google Mobile &amp; Desktop</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <span class="font-medium text-neutral-ink">Google</span>
+                        <div class="text-[10px] text-neutral-muted font-mono">SERP Synthetic Headless</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-brand"></span>
+                          <span class="font-semibold text-brand">Active</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 font-mono text-neutral-ink">
+                        <span>12 Geos</span>
+                        <div class="text-[10px] text-neutral-muted font-sans">US, UK, IN, JP...</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="font-mono text-neutral-ink">310 / 1,000</div>
+                        <div class="w-20 bg-neutral-border h-1 rounded-full mt-1">
+                          <div class="bg-brand h-1 rounded-full" style="width: 31%"></div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button class="px-2.5 py-1 rounded-lg border border-neutral-border bg-neutral-surface hover:border-brand text-xs font-semibold text-neutral-ink hover:text-brand transition-colors inline-flex items-center gap-1">
+                          <span>Edit</span>
+                          <span class="material-symbols-outlined text-xs">tune</span>
+                        </button>
+                      </td>
+                    </tr>
+
+                    <!-- Row 4: Gemini 1.5 Pro -->
+                    <tr class="hover:bg-neutral-page/40 transition-colors group">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 flex items-center justify-center font-mono font-bold text-xs flex-shrink-0">
+                            GEM
+                          </div>
+                          <div>
+                            <div class="font-bold text-neutral-ink flex items-center gap-1.5">
+                              <span>Gemini 1.5 Pro</span>
+                              <span class="text-[10px] font-normal px-1.5 py-0.2 bg-neutral-page border border-neutral-border rounded text-neutral-muted font-mono">gemini-pro</span>
+                            </div>
+                            <div class="text-[11px] text-neutral-muted">Google DeepMind multimodal grounding with search attribution</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <span class="font-medium text-neutral-ink">Google Cloud</span>
+                        <div class="text-[10px] text-neutral-muted font-mono">Vertex AI REST</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-brand"></span>
+                          <span class="font-semibold text-brand">Active</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 font-mono text-neutral-ink">
+                        <span>18 Geos</span>
+                        <div class="text-[10px] text-neutral-muted font-sans">US, UK, DE, FR...</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="font-mono text-neutral-ink">180 / 1,000</div>
+                        <div class="w-20 bg-neutral-border h-1 rounded-full mt-1">
+                          <div class="bg-brand h-1 rounded-full" style="width: 18%"></div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button class="px-2.5 py-1 rounded-lg border border-neutral-border bg-neutral-surface hover:border-brand text-xs font-semibold text-neutral-ink hover:text-brand transition-colors inline-flex items-center gap-1">
+                          <span>Edit</span>
+                          <span class="material-symbols-outlined text-xs">tune</span>
+                        </button>
+                      </td>
+                    </tr>
+
+                    <!-- Row 5: Claude 3.5 Sonnet (Standby / Off) -->
+                    <tr class="hover:bg-neutral-page/40 transition-colors group opacity-75">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-200 text-neutral-600 flex items-center justify-center font-mono font-bold text-xs flex-shrink-0">
+                            CLD
+                          </div>
+                          <div>
+                            <div class="font-bold text-neutral-ink flex items-center gap-1.5">
+                              <span>Claude 3.5 Sonnet</span>
+                              <span class="text-[10px] font-normal px-1.5 py-0.2 bg-neutral-page border border-neutral-border rounded text-neutral-muted font-mono">anthropic</span>
+                            </div>
+                            <div class="text-[11px] text-neutral-muted">Anthropic conversational research assistant</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <span class="font-medium text-neutral-ink">Anthropic</span>
+                        <div class="text-[10px] text-neutral-muted font-mono">Direct API</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-neutral-border"></span>
+                          <span class="font-semibold text-neutral-muted">Off (Standby)</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 font-mono text-neutral-muted">
+                        <span>Disabled</span>
+                        <div class="text-[10px] text-neutral-faint font-sans">Click to enable</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="font-mono text-neutral-muted">0 / 1,000</div>
+                        <div class="w-20 bg-neutral-border h-1 rounded-full mt-1"></div>
+                      </td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button class="px-2.5 py-1 rounded-lg border border-neutral-border bg-neutral-surface hover:border-neutral-muted text-xs font-semibold text-neutral-ink transition-colors">
+                          Enable
+                        </button>
+                      </td>
+                    </tr>
+
+                    <!-- Row 6: Meta Llama 3.1 70B (Standby / Off) -->
+                    <tr class="hover:bg-neutral-page/40 transition-colors group opacity-75">
+                      <td class="py-3.5 px-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-200 text-neutral-600 flex items-center justify-center font-mono font-bold text-xs flex-shrink-0">
+                            LLM
+                          </div>
+                          <div>
+                            <div class="font-bold text-neutral-ink flex items-center gap-1.5">
+                              <span>Meta AI (Llama 3.1)</span>
+                              <span class="text-[10px] font-normal px-1.5 py-0.2 bg-neutral-page border border-neutral-border rounded text-neutral-muted font-mono">open-weights</span>
+                            </div>
+                            <div class="text-[11px] text-neutral-muted">Open source synthetic crawler benchmark test harness</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <span class="font-medium text-neutral-ink">Meta / Together</span>
+                        <div class="text-[10px] text-neutral-muted font-mono">Self-hosted Gateway</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-neutral-border"></span>
+                          <span class="font-semibold text-neutral-muted">Off (Standby)</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-3 font-mono text-neutral-muted">
+                        <span>Disabled</span>
+                        <div class="text-[10px] text-neutral-faint font-sans">Requires Pro Quota</div>
+                      </td>
+                      <td class="py-3.5 px-3">
+                        <div class="font-mono text-neutral-muted">0 / 500</div>
+                        <div class="w-20 bg-neutral-border h-1 rounded-full mt-1"></div>
+                      </td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button class="px-2.5 py-1 rounded-lg border border-neutral-border bg-neutral-surface hover:border-neutral-muted text-xs font-semibold text-neutral-ink transition-colors">
+                          Enable
+                        </button>
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Table Footer Details -->
+              <div class="p-3.5 bg-neutral-page/40 border-t border-neutral-border flex items-center justify-between text-xs text-neutral-muted">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm text-brand">info</span>
+                  <span>Crawling frequency: Every 12 hours across commercial prompt clusters.</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <a href="#" class="text-brand font-semibold hover:underline">Download Ingestion Log (JSON)</a>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Ingestion Cadence & Regional Settings Card -->
+            <div class="p-5 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+              <div class="flex items-center justify-between pb-3 border-b border-neutral-border mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-neutral-ink">Collection &amp; Triangulation Settings</h3>
+                  <p class="text-xs text-neutral-muted">Manage how synthetic queries are routed to prevent IP fingerprinting and hallucinated geo-biasing.</p>
+                </div>
+                <span class="px-2.5 py-1 rounded bg-brand-surface text-brand border border-brand-border text-xs font-semibold font-mono">
+                  TLS Fingerprint: Chrome v131
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div class="p-3 rounded-lg bg-neutral-page border border-neutral-border">
+                  <span class="font-bold text-neutral-ink block mb-1">Residential Proxy Pool</span>
+                  <p class="text-neutral-muted text-[11px] mb-2">Rotates localized mobile &amp; residential IPs across 18 target countries.</p>
+                  <span class="inline-flex items-center gap-1 text-brand font-semibold text-[11px]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                    48,200 Clean Nodes Active
+                  </span>
+                </div>
+
+                <div class="p-3 rounded-lg bg-neutral-page border border-neutral-border">
+                  <span class="font-bold text-neutral-ink block mb-1">Strict Determinism (temp=0.1)</span>
+                  <p class="text-neutral-muted text-[11px] mb-2">Minimizes stochastic LLM drift between morning and evening sweeps.</p>
+                  <span class="inline-flex items-center gap-1 text-brand font-semibold text-[11px]">
+                    <span class="material-symbols-outlined text-xs">lock</span>
+                    Enforced on all crawls
+                  </span>
+                </div>
+
+                <div class="p-3 rounded-lg bg-neutral-page border border-neutral-border">
+                  <span class="font-bold text-neutral-ink block mb-1">Citation Verbatim Extraction</span>
+                  <p class="text-neutral-muted text-[11px] mb-2">Parses raw DOM markdown citations and anchor references into SQLite.</p>
+                  <span class="inline-flex items-center gap-1 text-brand font-semibold text-[11px]">
+                    <span class="material-symbols-outlined text-xs">check</span>
+                    Schema.org validator attached
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right: Fixture vs Live Collection & Telemetry Note (4 Cols) -->
+          <div class="lg:col-span-4 space-y-4">
+
+            <!-- Honest Demo Data & Fixture Telemetry Callout Card -->
+            <div class="p-5 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+              <div class="flex items-center gap-2 text-brand font-bold text-xs uppercase tracking-wider mb-2">
+                <span class="material-symbols-outlined text-base">verified_user</span>
+                Telemetry Transparency
+              </div>
+              <h3 class="text-sm font-bold text-neutral-ink">Live Crawl vs. Workspace Fixture</h3>
+              
+              <div class="mt-3 p-3 rounded-lg bg-neutral-page border border-neutral-border space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-neutral-muted">Telemetry Environment</span>
+                  <span class="font-mono font-bold text-brand">Demo / Seed Fixture</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-neutral-muted">Sample Workspace</span>
+                  <span class="font-mono text-neutral-ink font-medium">nike.com (Global)</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-neutral-muted">Live Proxy Webhooks</span>
+                  <span class="font-mono text-brand font-medium">Ready to Bind</span>
+                </div>
+              </div>
+
+              <p class="text-xs text-neutral-muted mt-3 leading-relaxed">
+                This workspace currently displays verified synthetic crawl fixtures collected across 4 active foundation models (ChatGPT-4o, Perplexity Pro, Google AI Overviews, Gemini 1.5 Pro).
+              </p>
+
+              <div class="mt-4 pt-4 border-t border-neutral-border space-y-2.5">
+                <div class="text-[11px] font-bold text-neutral-ink">To enable direct enterprise live crawlers:</div>
+                <ul class="text-xs text-neutral-muted space-y-2">
+                  <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-brand text-sm mt-0.5">check</span>
+                    <span>Enter your OpenAI or Perplexity Organization API keys under <strong>API Keys</strong>.</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-brand text-sm mt-0.5">check</span>
+                    <span>Provide residential proxy credentials or utilize GeoLens Managed Crawler Nodes.</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="material-symbols-outlined text-brand text-sm mt-0.5">check</span>
+                    <span>Configure your webhook endpoints for instant prompt hallucination alerts.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="mt-4">
+                <button class="w-full py-2 px-3 rounded-lg bg-brand-surface text-brand border border-brand-border hover:bg-brand-border/40 text-xs font-bold transition-colors text-center">
+                  Switch to Live Custom Gateway
+                </button>
+              </div>
+            </div>
+
+            <!-- Engine Latency & Uptime Benchmarks -->
+            <div class="p-5 rounded-xl bg-neutral-surface border border-neutral-border shadow-2xs">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-muted mb-3">Model Ingestion Latency (p95)</h3>
+              
+              <div class="space-y-3">
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-medium text-neutral-ink">ChatGPT-4o (OpenAI)</span>
+                    <span class="font-mono text-neutral-muted text-[11px]">780ms · 99.9%</span>
+                  </div>
+                  <div class="w-full bg-neutral-border h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-brand h-full rounded-full" style="width: 25%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-medium text-neutral-ink">Perplexity Pro (Sonar)</span>
+                    <span class="font-mono text-neutral-muted text-[11px]">840ms · 99.8%</span>
+                  </div>
+                  <div class="w-full bg-neutral-border h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-brand h-full rounded-full" style="width: 32%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-medium text-neutral-ink">Google AI Overviews (Headless)</span>
+                    <span class="font-mono text-neutral-muted text-[11px]">1,420ms · 99.4%</span>
+                  </div>
+                  <div class="w-full bg-neutral-border h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-brand h-full rounded-full" style="width: 58%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="font-medium text-neutral-ink">Gemini 1.5 Pro (Vertex)</span>
+                    <span class="font-mono text-neutral-muted text-[11px]">690ms · 99.9%</span>
+                  </div>
+                  <div class="w-full bg-neutral-border h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-brand h-full rounded-full" style="width: 20%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-neutral-border flex items-center justify-between text-[11px] text-neutral-faint">
+                <span>Updated every 5 minutes</span>
+                <a href="#" class="text-brand font-semibold hover:underline">Status Page</a>
+              </div>
+            </div>
+
+            <!-- Quick Action Help -->
+            <div class="p-4 rounded-xl bg-brand-surface/60 border border-brand-border/80">
+              <div class="flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-brand text-lg mt-0.5">contact_support</span>
+                <div>
+                  <h4 class="text-xs font-bold text-neutral-ink">Need custom LLM endpoints?</h4>
+                  <p class="text-[11px] text-neutral-muted mt-0.5">Deploy internal LLM test harnesses behind your corporate VPC or SSO gateway.</p>
+                  <a href="#" class="inline-block mt-2 text-xs font-bold text-brand hover:underline">Contact Solutions Engineering &rarr;</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Global Workspace Footer -->
+        <footer class="pt-6 pb-4 border-t border-neutral-border flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-muted gap-3">
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-neutral-ink flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand"></span>
+              GeoLens Enterprise AI
+            </span>
+            <span>Workspace: Nike Global Direct</span>
+            <span>·</span>
+            <span>Schema: v4.8 (Production)</span>
+          </div>
+
+          <div class="flex items-center gap-4 text-xs">
+            <a href="#" class="hover:text-neutral-ink transition-colors">Channels API</a>
+            <a href="#" class="hover:text-neutral-ink transition-colors">LLM Crawler Status</a>
+            <span class="inline-flex items-center gap-1.5 text-brand font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              All 4 Engines Operational
+            </span>
+          </div>
+        </footer>
+
+      </div>
+    </main>
+
+  </div>
+
+</body>
+</html>

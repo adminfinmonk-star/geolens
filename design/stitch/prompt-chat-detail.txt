@@ -1,0 +1,17 @@
+Design a DESKTOP light-theme SaaS CHAT DETAIL screen for GeoLens.
+
+Brand: teal #0F766E only — NO purple. Light theme: white/#F5F7F8/#0B1218/#5C6B76/#E3E9ED. Plus Jakarta Sans.
+
+Chrome: Results suite active on dual-rail; secondary shows Chats (active), Fanouts, Ads.
+
+Main — Chat detail:
+- Back link to Chats
+- Title: Chat detail · Atomic measurement badge
+- Meta row: Date · Model · Country · Status
+- Prompt text highlighted
+- Answer / response body panel (readable prose)
+- Mentions list: brands with position/sentiment chips
+- Sources cited table: URL · Domain · Cited yes/no
+- Side: Fanouts for this chat if any
+
+Professional B2B analytics. No emoji. 1440px.

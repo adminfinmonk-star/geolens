@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens — Settings / Billing</title>
+<!-- Google Fonts: Plus Jakarta Sans & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary": "#ffffff",
+            "on-surface": "#0e1d26",
+            "surface-container-highest": "#d5e5f1",
+            "on-error": "#ffffff",
+            "inverse-surface": "#24323c",
+            "primary-container": "#0f766e",
+            "on-tertiary-fixed-variant": "#783200",
+            "outline-variant": "#bdc9c6",
+            "error-container": "#ffdad6",
+            "surface-dim": "#ccdce9",
+            "secondary-fixed-dim": "#93ccff",
+            "tertiary-fixed": "#ffdbca",
+            "inverse-primary": "#80d5cb",
+            "secondary-fixed": "#cce5ff",
+            "surface-tint": "#006a63",
+            "surface-bright": "#f5faff",
+            "surface-variant": "#d5e5f1",
+            "on-background": "#0e1d26",
+            "on-tertiary-container": "#ffe6da",
+            "tertiary": "#893a00",
+            "on-secondary-fixed-variant": "#004b73",
+            "surface-container": "#e0f0fd",
+            "error": "#ba1a1a",
+            "secondary": "#006398",
+            "primary-fixed": "#9cf2e8",
+            "on-secondary": "#ffffff",
+            "primary-fixed-dim": "#80d5cb",
+            "tertiary-fixed-dim": "#ffb690",
+            "on-primary-fixed-variant": "#00504a",
+            "on-secondary-fixed": "#001d31",
+            "surface-container-lowest": "#ffffff",
+            "secondary-container": "#5bb8fe",
+            "on-tertiary-fixed": "#341100",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#e4f3ff",
+            "surface-container-low": "#eaf5ff",
+            "primary": "#005c55",
+            "tertiary-container": "#af4c00",
+            "surface": "#f5faff",
+            "on-surface-variant": "#3e4947",
+            "on-primary-fixed": "#00201d",
+            "on-secondary-container": "#00476e",
+            "outline": "#6e7977",
+            "on-primary-container": "#a3faef",
+            "background": "#f5faff",
+            "on-error-container": "#93000a",
+            "surface-container-high": "#daeaf7"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-3xl": "3rem",
+            "space-md": "0.75rem",
+            "panel-padding-standard": "1.25rem",
+            "space-xs": "0.25rem",
+            "space-xl": "1.5rem",
+            "space-sm": "0.5rem",
+            "gutter-desktop": "1.5rem",
+            "space-2xl": "2rem",
+            "panel-padding-compact": "0.75rem",
+            "gutter-mobile": "1rem",
+            "space-base": "1rem",
+            "space-lg": "1.25rem",
+            "space-2xs": "0.125rem"
+          },
+          fontFamily: {
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"]
+          },
+          fontSize: {
+            "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "500" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "500" }],
+            "label-lg": ["13px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "600" }],
+            "label-md": ["11px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
+            "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.005em", fontWeight: "500" }],
+            "data-mono": ["13px", { lineHeight: "16px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "display-lg-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "display-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.03em", fontWeight: "800" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      background-color: #F5F7F8;
+      color: #0B1218;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .subtle-border {
+      border-color: #E3E9ED;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #bdc9c6;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F5F7F8] text-[#0B1218]">
+<!-- Top Global Header (Semrush-style Dual Chrome Top Bar) -->
+<header class="w-full bg-[#FFFFFF] border-b border-[#E3E9ED] h-14 px-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+<!-- Left Section: Workspace Selector & Breadcrumbs -->
+<div class="flex items-center gap-4">
+<!-- Entity Switcher -->
+<button class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[#E3E9ED] hover:border-[#0F766E] bg-white transition-colors duration-150 group">
+<span class="w-5 h-5 rounded bg-[#0B1218] text-white font-bold text-xs flex items-center justify-center tracking-tighter">N</span>
+<span class="text-xs font-bold text-[#0B1218] tracking-tight">nike.com (Global)</span>
+<span class="text-[10px] font-bold text-[#0F766E] bg-[#e6f4f2] px-1.5 py-0.5 rounded">US &amp; EU</span>
+<span class="material-symbols-outlined text-[#5C6B76] group-hover:text-[#0B1218] text-[18px]">expand_more</span>
+</button>
+<div class="h-4 w-px bg-[#E3E9ED]"></div>
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-1.5 font-label-lg text-label-lg text-[#5C6B76]">
+<span class="hover:text-[#0B1218] cursor-pointer">Settings</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-[#0B1218] font-semibold">Billing &amp; Plan</span>
+</nav>
+<!-- Telemetry Status Live Indicator -->
+<div class="hidden lg:flex items-center gap-2 bg-[#e6f4f2] border border-[#ccede8] px-2.5 py-1 rounded-full">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0F766E] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-[#0F766E]"></span>
+</span>
+<span class="text-[11px] font-bold text-[#0F766E] tracking-tight">Telemetry Active (4 Engines)</span>
+</div>
+</div>
+<!-- Center Search -->
+<div class="flex-1 max-w-md mx-6 hidden md:block">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[#5C6B76] text-[18px]">search</span>
+<input class="w-full pl-9 pr-12 py-1.5 text-xs bg-[#F5F7F8] border border-[#E3E9ED] rounded-lg text-[#0B1218] placeholder-[#5C6B76] focus:outline-none focus:border-[#0F766E] focus:ring-1 focus:ring-[#0F766E] transition-all" placeholder="Search settings, docs, keys... [Cmd+K]" type="text"/>
+<span class="absolute right-2.5 px-1.5 py-0.5 text-[10px] font-medium bg-white border border-[#E3E9ED] rounded text-[#5C6B76]">⌘K</span>
+</div>
+</div>
+<!-- Right Controls: Notification, Help & Avatar -->
+<div class="flex items-center gap-2">
+<button class="relative p-1.5 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-[#0F766E] rounded-full border border-white"></span>
+</button>
+<button class="p-1.5 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="h-4 w-px bg-[#E3E9ED] mx-1"></div>
+<!-- User Profile Dropdown Pill -->
+<button class="flex items-center gap-2.5 pl-1.5 pr-2 py-1 rounded-lg hover:bg-[#F5F7F8] transition-colors border border-transparent hover:border-[#E3E9ED]">
+<div class="w-7 h-7 rounded bg-[#0F766E] text-white font-bold text-xs flex items-center justify-center tracking-tight shadow-sm">
+          GL
+        </div>
+<div class="text-left hidden sm:block">
+<p class="text-xs font-bold text-[#0B1218] leading-tight">Spatial Ops Admin</p>
+<p class="text-[10px] font-medium text-[#5C6B76] leading-none">Enterprise Team</p>
+</div>
+<span class="material-symbols-outlined text-[#5C6B76] text-[16px]">arrow_drop_down</span>
+</button>
+</div>
+</header>
+<!-- Application Body Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- 1. Far-Left Primary Icon Rail (72px) -->
+<aside class="w-[72px] bg-[#FFFFFF] border-r border-[#E3E9ED] flex flex-col justify-between items-center py-4 flex-shrink-0 z-30">
+<!-- Top Group -->
+<div class="flex flex-col items-center gap-5 w-full">
+<!-- Brand Mark -->
+<a class="w-10 h-10 rounded-xl bg-[#0F766E] flex items-center justify-center text-white shadow-sm hover:opacity-95 transition-opacity mb-2" href="#">
+<span class="material-symbols-outlined text-[22px] font-bold" style="font-variation-settings: 'FILL' 1;">track_changes</span>
+</a>
+<!-- Primary Icon Group -->
+<nav class="flex flex-col items-center gap-2 w-full px-2">
+<!-- Analysis (grid) -->
+<a class="w-11 h-11 flex flex-col items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#" title="Analysis">
+<span class="material-symbols-outlined text-[22px]">grid_view</span>
+<span class="text-[9px] font-semibold mt-0.5 tracking-tight">Inspect</span>
+</a>
+<!-- Brand (shield/sparkle) -->
+<a class="w-11 h-11 flex flex-col items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#" title="Brand Protection">
+<span class="material-symbols-outlined text-[22px]">verified_user</span>
+<span class="text-[9px] font-semibold mt-0.5 tracking-tight">Brand</span>
+</a>
+<!-- Monitor (radar) -->
+<a class="w-11 h-11 flex flex-col items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#" title="Real-time Monitor">
+<span class="material-symbols-outlined text-[22px]">radar</span>
+<span class="text-[9px] font-semibold mt-0.5 tracking-tight">Monitor</span>
+</a>
+<!-- Results (chat bubbles) -->
+<a class="w-11 h-11 flex flex-col items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#" title="Prompts &amp; Results">
+<span class="material-symbols-outlined text-[22px]">forum</span>
+<span class="text-[9px] font-semibold mt-0.5 tracking-tight">Answers</span>
+</a>
+<!-- Settings (ACTIVE ITEM) -->
+<a class="w-11 h-11 flex flex-col items-center justify-center rounded-lg bg-[#e6f4f2] text-[#0F766E] border border-[#ccede8] shadow-xs" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px] fill-icon">settings</span>
+<span class="text-[9px] font-bold mt-0.5 tracking-tight">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Group (Docs, Support, Collapse) -->
+<div class="flex flex-col items-center gap-2 w-full px-2">
+<a class="w-10 h-10 flex items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#" title="Documentation">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</a>
+<a class="w-10 h-10 flex items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#" title="Support Helpdesk">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</a>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" title="Collapse Rail">
+<span class="material-symbols-outlined text-[18px]">keyboard_double_arrow_left</span>
+</button>
+</div>
+</aside>
+<!-- 2. Secondary Settings Navigation Rail (240px) -->
+<aside class="w-60 bg-[#FFFFFF] border-r border-[#E3E9ED] flex flex-col justify-between flex-shrink-0 z-20">
+<div class="p-4 flex-1 overflow-y-auto custom-scrollbar">
+<!-- Rail Header -->
+<div class="flex items-center justify-between mb-4 pb-3 border-b border-[#E3E9ED]">
+<div>
+<h2 class="text-[12px] font-bold tracking-wider text-[#0B1218] uppercase">Settings</h2>
+<p class="text-[10px] text-[#5C6B76] font-medium">nike.com Global Scope</p>
+</div>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-[#e6f4f2] text-[#0F766E] rounded-md border border-[#ccede8]">Active</span>
+</div>
+<!-- Section: Entity & Setup -->
+<div class="mb-5">
+<p class="text-[10px] font-bold tracking-wider text-[#5C6B76] uppercase px-2 mb-1.5">Entity &amp; Setup</p>
+<ul class="space-y-0.5">
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">account_circle</span>
+                  Profile
+                </span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">apartment</span>
+                  Brands
+                </span>
+<span class="text-[10px] font-bold bg-[#F5F7F8] border border-[#E3E9ED] text-[#5C6B76] px-1.5 py-0.2 rounded-full">5</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">tag</span>
+                  Topics &amp; tags
+                </span>
+<span class="text-[10px] font-bold bg-[#F5F7F8] border border-[#E3E9ED] text-[#5C6B76] px-1.5 py-0.2 rounded-full">18</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                  Channels &amp; LLMs
+                </span>
+<span class="text-[10px] font-semibold bg-[#e6f4f2] text-[#0F766E] px-1.5 py-0.2 rounded">4 LLMs</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Section: Security & Billing -->
+<div>
+<p class="text-[10px] font-bold tracking-wider text-[#5C6B76] uppercase px-2 mb-1.5">Security &amp; Billing</p>
+<ul class="space-y-1">
+<!-- Active Billing Item -->
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-sm transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-white">credit_card</span>
+                  Billing
+                </span>
+<span class="text-[10px] font-extrabold bg-[#ccede8] text-[#005c55] px-1.5 py-0.5 rounded">Pro</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">key</span>
+                  API keys
+                </span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] transition-colors" href="#">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">vpn_lock</span>
+                  SSO &amp; SAML
+                </span>
+<span class="text-[9px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-1.5 py-0.5 rounded">SAML 2.0</span>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<!-- Bottom Rail Quota Footer -->
+<div class="p-3 border-t border-[#E3E9ED] bg-[#F5F7F8]/80">
+<div class="flex items-center justify-between text-[11px] font-semibold text-[#0B1218] mb-1.5">
+<span>Synthetic Crawl Quota</span>
+<span class="text-[10px] text-[#0F766E] font-bold">28.4%</span>
+</div>
+<div class="w-full bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden mb-1.5">
+<div class="bg-[#0F766E] h-1.5 rounded-full" style="width: 28.4%"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-[#5C6B76]">
+<span>1,420 / 5,000 queries</span>
+<a class="font-bold text-[#0F766E] hover:underline" href="#plans">Upgrade</a>
+</div>
+</div>
+</aside>
+<!-- 3. Main Content Viewport (Desktop 1440px target, scrollable canvas) -->
+<main class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-[#F5F7F8]">
+<div class="max-w-[1140px] mx-auto space-y-6">
+<!-- 1. Page Title & Primary Actions Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#E3E9ED]">
+<div>
+<div class="flex items-center gap-2.5">
+<h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#0B1218]">Billing</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#e6f4f2] text-[#0F766E] border border-[#ccede8]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span>
+                Workspace plan · Pro Tier
+              </span>
+</div>
+<p class="text-xs sm:text-sm text-[#5C6B76] mt-0.5">Plan, usage, and invoices for this GeoLens workspace</p>
+</div>
+<div class="flex items-center gap-2.5 flex-wrap">
+<button class="px-3.5 py-2 text-xs font-semibold text-[#0B1218] bg-white border border-[#E3E9ED] rounded-lg hover:border-[#0F766E] hover:bg-[#e6f4f2]/20 transition-all flex items-center gap-1.5 shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">credit_card</span>
+              Change Payment Method
+            </button>
+<button class="px-4 py-2 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#115E59] active:bg-[#134E4A] rounded-lg transition-all shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+              Upgrade Plan
+            </button>
+</div>
+</div>
+<!-- 2. KPI Metric Cards (4 Cards Grid) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1: Current Plan -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-sm hover:border-[#0F766E]/40 transition-colors">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-[11px] font-bold tracking-wider uppercase">Current Plan</span>
+<span class="material-symbols-outlined text-[#0F766E] text-[18px]">verified</span>
+</div>
+<div class="text-xl font-bold text-[#0B1218] tracking-tight">Pro Annual</div>
+<p class="text-xs text-[#5C6B76] mt-1">$249 / month billed annually</p>
+</div>
+<!-- Card 2: Active Seats -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-sm hover:border-[#0F766E]/40 transition-colors">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-[11px] font-bold tracking-wider uppercase">Active Seats</span>
+<span class="material-symbols-outlined text-[#5C6B76] text-[18px]">group</span>
+</div>
+<div class="text-xl font-bold text-[#0B1218] tracking-tight">8 of 10 Seats</div>
+<p class="text-xs text-[#5C6B76] mt-1">2 team invites pending</p>
+</div>
+<!-- Card 3: Prompt Quota Used -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-sm hover:border-[#0F766E]/40 transition-colors">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-[11px] font-bold tracking-wider uppercase">Prompt Quota Used</span>
+<span class="text-xs font-bold text-[#0F766E] bg-[#e6f4f2] px-1.5 py-0.2 rounded">28.4%</span>
+</div>
+<div class="text-xl font-bold text-[#0B1218] tracking-tight">1,420 queries</div>
+<p class="text-xs text-[#5C6B76] mt-1">1,420 / 5,000 queries used</p>
+</div>
+<!-- Card 4: Next Renewal -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-sm hover:border-[#0F766E]/40 transition-colors">
+<div class="flex items-center justify-between text-[#5C6B76] mb-1">
+<span class="text-[11px] font-bold tracking-wider uppercase">Next Renewal</span>
+<span class="material-symbols-outlined text-[#5C6B76] text-[18px]">calendar_month</span>
+</div>
+<div class="text-xl font-bold text-[#0B1218] tracking-tight">Nov 14, 2025</div>
+<div class="flex items-center gap-1 text-[11px] font-semibold text-[#0F766E] mt-1">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+              Auto-renew active
+            </div>
+</div>
+</div>
+<!-- 3. Two-Column Workspace Layout (Main Column ~70%, Side Column ~30%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- A. Main Column (8 cols) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Card 1: Current Plan Details & Entitlements -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl shadow-sm overflow-hidden" id="plans">
+<div class="p-5 border-b border-[#E3E9ED] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-base font-bold text-[#0B1218]">Pro Workspace Tier</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-[#e6f4f2] text-[#0F766E] border border-[#ccede8] rounded-full">ACTIVE SUBSCRIPTION</span>
+</div>
+<p class="text-xs text-[#5C6B76] mt-0.5">High-frequency LLM monitoring and spatial search intelligence</p>
+</div>
+<div class="text-right">
+<div class="text-lg font-bold text-[#0B1218]">$2,988 <span class="text-xs font-normal text-[#5C6B76]">/ year</span></div>
+<p class="text-[10px] text-[#5C6B76]">Renews Nov 14, 2025</p>
+</div>
+</div>
+<div class="p-5">
+<h4 class="text-[11px] font-bold uppercase tracking-wider text-[#5C6B76] mb-3">Included Entitlements &amp; Features</h4>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] mt-0.5">check_circle</span>
+<span class="text-xs text-[#0B1218] font-medium leading-relaxed"><strong>5,000</strong> synthetic crawl queries/mo</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] mt-0.5">check_circle</span>
+<span class="text-xs text-[#0B1218] font-medium leading-relaxed"><strong>4 active foundation LLMs</strong> (ChatGPT-4o, Perplexity, Gemini, SGE)</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] mt-0.5">check_circle</span>
+<span class="text-xs text-[#0B1218] font-medium leading-relaxed"><strong>18 target countries</strong> &amp; multi-region proxy clusters</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] mt-0.5">check_circle</span>
+<span class="text-xs text-[#0B1218] font-medium leading-relaxed"><strong>10 team seats</strong> with RBAC role governance</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] mt-0.5">check_circle</span>
+<span class="text-xs text-[#0B1218] font-medium leading-relaxed"><strong>1-year historical</strong> telemetry &amp; share of voice data</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px] mt-0.5">check_circle</span>
+<span class="text-xs text-[#0B1218] font-medium leading-relaxed"><strong>Webhooks &amp; CI/CD sync</strong> via machine API access</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-3 pt-4 border-t border-[#E3E9ED]">
+<button class="px-3.5 py-1.5 text-xs font-semibold text-[#0B1218] bg-[#F5F7F8] border border-[#E3E9ED] rounded-lg hover:border-[#0F766E] transition-colors">
+                    Manage Subscription
+                  </button>
+<button class="px-3.5 py-1.5 text-xs font-semibold text-[#0F766E] bg-white border border-[#ccede8] rounded-lg hover:bg-[#e6f4f2] transition-colors">
+                    Add Extra Seats (+ $25/mo)
+                  </button>
+<button class="px-3.5 py-1.5 text-xs font-medium text-[#5C6B76] hover:text-[#0B1218] ml-auto transition-colors">
+                    Switch to Enterprise Custom →
+                  </button>
+</div>
+</div>
+</div>
+<!-- Card 2: Quota & Real-time Usage Telemetry -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-base font-bold text-[#0B1218]">Quota &amp; Real-time Usage Telemetry</h3>
+<p class="text-xs text-[#5C6B76]">Current billing cycle ending in 21 days (Nov 14, 2025)</p>
+</div>
+<span class="text-xs font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2.5 py-1 rounded-md">
+                  Reset: Nov 14, 00:00 UTC
+                </span>
+</div>
+<!-- Meter 1: Synthetic Crawl Prompts -->
+<div class="space-y-4">
+<div class="border border-[#E3E9ED] rounded-lg p-3.5 bg-[#F5F7F8]/40">
+<div class="flex items-center justify-between text-xs mb-1.5">
+<span class="font-bold text-[#0B1218] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">terminal</span>
+                      Synthetic Crawl Prompts
+                    </span>
+<span class="text-xs text-[#0B1218] font-semibold">1,420 of 5,000 used <span class="text-[#0F766E] font-bold ml-1">(28.4%)</span></span>
+</div>
+<div class="w-full bg-[#E3E9ED] h-2 rounded-full overflow-hidden mb-1.5">
+<div class="bg-[#0F766E] h-2 rounded-full transition-all duration-500" style="width: 28.4%"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>Standard queries executed across 4 LLM engines</span>
+<span class="font-medium text-[#0F766E]">Reset in 21 days</span>
+</div>
+</div>
+<!-- Meter 2: Collection & Sweeps Runs -->
+<div class="border border-[#E3E9ED] rounded-lg p-3.5 bg-[#F5F7F8]/40">
+<div class="flex items-center justify-between text-xs mb-1.5">
+<span class="font-bold text-[#0B1218] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#006398]">tune</span>
+                      Collection &amp; Sweeps Runs
+                    </span>
+<span class="text-xs text-[#0B1218] font-semibold">742 of 2,000 runs <span class="text-[#006398] font-bold ml-1">(37.1%)</span></span>
+</div>
+<div class="w-full bg-[#E3E9ED] h-2 rounded-full overflow-hidden mb-1.5">
+<div class="bg-[#006398] h-2 rounded-full transition-all duration-500" style="width: 37.1%"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>Automated headless cron pipelines</span>
+<span>1,258 runs remaining</span>
+</div>
+</div>
+<!-- Meter 3: Machine API & Webhook Requests -->
+<div class="border border-[#E3E9ED] rounded-lg p-3.5 bg-[#F5F7F8]/40">
+<div class="flex items-center justify-between text-xs mb-1.5">
+<span class="font-bold text-[#0B1218] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">api</span>
+                      Machine API &amp; Webhook Requests
+                    </span>
+<span class="text-xs text-[#0B1218] font-semibold">14,200 of 50,000 reqs <span class="text-[#5C6B76] font-bold ml-1">(28.4%)</span></span>
+</div>
+<div class="w-full bg-[#E3E9ED] h-2 rounded-full overflow-hidden mb-1.5">
+<div class="bg-[#5C6B76] h-2 rounded-full transition-all duration-500" style="width: 28.4%"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>REST &amp; GraphQL programmatic endpoints</span>
+<span>35,800 calls remaining</span>
+</div>
+</div>
+<!-- Meter 4: Tracked Competitor Brands -->
+<div class="border border-[#E3E9ED] rounded-lg p-3.5 bg-[#F5F7F8]/40">
+<div class="flex items-center justify-between text-xs mb-1.5">
+<span class="font-bold text-[#0B1218] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">hub</span>
+                      Tracked Competitor Brands
+                    </span>
+<span class="text-xs text-[#0B1218] font-semibold">5 of 10 entities <span class="text-[#0F766E] font-bold ml-1">(50%)</span></span>
+</div>
+<div class="w-full bg-[#E3E9ED] h-2 rounded-full overflow-hidden mb-1.5">
+<div class="bg-[#0F766E] h-2 rounded-full transition-all duration-500" style="width: 50%"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-[#5C6B76]">
+<span>Adidas, Puma, Under Armour, Lululemon, On Running</span>
+<span>5 slots available</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Invoices & Payment History Table -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+<div>
+<h3 class="text-base font-bold text-[#0B1218]">Invoices &amp; Payment History</h3>
+<p class="text-xs text-[#5C6B76]">Download past invoices and PDF VAT tax receipts</p>
+</div>
+<button class="px-3 py-1.5 text-xs font-semibold text-[#0B1218] bg-[#F5F7F8] border border-[#E3E9ED] hover:border-[#0F766E] rounded-lg flex items-center gap-1.5 self-start sm:self-auto transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">download</span>
+                  Export CSV
+                </button>
+</div>
+<!-- Table View -->
+<div class="overflow-x-auto border border-[#E3E9ED] rounded-lg">
+<table class="w-full text-left border-collapse text-xs">
+<thead>
+<tr class="bg-[#F5F7F8] border-b border-[#E3E9ED] text-[#5C6B76] font-bold text-[10px] tracking-wider uppercase">
+<th class="py-2.5 px-3">INVOICE ID</th>
+<th class="py-2.5 px-3">DATE</th>
+<th class="py-2.5 px-3">BILLING PERIOD</th>
+<th class="py-2.5 px-3">AMOUNT</th>
+<th class="py-2.5 px-3">STATUS</th>
+<th class="py-2.5 px-3">PAYMENT METHOD</th>
+<th class="py-2.5 px-3 text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#E3E9ED] text-[#0B1218]">
+<!-- Row 1 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-3 px-3 font-semibold font-data-mono">INV-2025-1002</td>
+<td class="py-3 px-3 text-[#5C6B76]">Oct 14, 2025</td>
+<td class="py-3 px-3 text-[#5C6B76]">Oct 14 - Nov 14, 2025</td>
+<td class="py-3 px-3 font-bold">$2,988.00</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#e6f4f2] text-[#0F766E] border border-[#ccede8]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span> Paid
+                        </span>
+</td>
+<td class="py-3 px-3 text-[#5C6B76] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">credit_card</span>
+                        Mastercard ···· 4242
+                      </td>
+<td class="py-3 px-3 text-right">
+<div class="inline-flex items-center gap-2">
+<button class="text-[#0F766E] font-semibold hover:underline text-xs">PDF</button>
+<span class="text-[#bdc9c6]">|</span>
+<button class="text-[#5C6B76] hover:text-[#0B1218] text-xs">Receipt</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-3 px-3 font-semibold font-data-mono">INV-2024-1001</td>
+<td class="py-3 px-3 text-[#5C6B76]">Oct 14, 2024</td>
+<td class="py-3 px-3 text-[#5C6B76]">Oct 14 - Oct 14, 2025</td>
+<td class="py-3 px-3 font-bold">$2,988.00</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#e6f4f2] text-[#0F766E] border border-[#ccede8]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span> Paid
+                        </span>
+</td>
+<td class="py-3 px-3 text-[#5C6B76] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">credit_card</span>
+                        Mastercard ···· 4242
+                      </td>
+<td class="py-3 px-3 text-right">
+<div class="inline-flex items-center gap-2">
+<button class="text-[#0F766E] font-semibold hover:underline text-xs">PDF</button>
+<span class="text-[#bdc9c6]">|</span>
+<button class="text-[#5C6B76] hover:text-[#0B1218] text-xs">Receipt</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-3 px-3 font-semibold font-data-mono">INV-2024-0512</td>
+<td class="py-3 px-3 text-[#5C6B76]">May 02, 2024</td>
+<td class="py-3 px-3 text-[#5C6B76]">Additional 5 Seats Addon</td>
+<td class="py-3 px-3 font-bold">$300.00</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#e6f4f2] text-[#0F766E] border border-[#ccede8]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span> Paid
+                        </span>
+</td>
+<td class="py-3 px-3 text-[#5C6B76] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">credit_card</span>
+                        Mastercard ···· 4242
+                      </td>
+<td class="py-3 px-3 text-right">
+<div class="inline-flex items-center gap-2">
+<button class="text-[#0F766E] font-semibold hover:underline text-xs">PDF</button>
+<span class="text-[#bdc9c6]">|</span>
+<button class="text-[#5C6B76] hover:text-[#0B1218] text-xs">Receipt</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- B. Side Column (4 cols) -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Card 1: What counts toward quota -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-sm">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[#0F766E] text-[18px]">info</span>
+<h3 class="text-sm font-bold text-[#0B1218]">What counts toward quota</h3>
+</div>
+<p class="text-xs text-[#5C6B76] mb-3 leading-relaxed">
+                Clear telemetry accounting logic for your synthetic search jobs:
+              </p>
+<ul class="space-y-3 text-xs text-[#0B1218]">
+<li class="flex items-start gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E] mt-1.5 flex-shrink-0"></span>
+<span>Each synthetic query prompt executed across <strong>1 foundation engine</strong> in <strong>1 country</strong> equals 1 query unit.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E] mt-1.5 flex-shrink-0"></span>
+<span>Follow-up fanout inquiries generated autonomously are counted at standard 1x.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E] mt-1.5 flex-shrink-0"></span>
+<span>Cached re-evaluations and static dashboard views <strong>do NOT</strong> consume quota.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E] mt-1.5 flex-shrink-0"></span>
+<span>Failed proxy connections or timeout crawl attempts are automatically refunded to your pool.</span>
+</li>
+</ul>
+</div>
+<!-- Card 2: Payment Method on File -->
+<div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-sm font-bold text-[#0B1218]">Payment Method on File</h3>
+<span class="material-symbols-outlined text-[#0F766E] text-[18px]">lock</span>
+</div>
+<!-- Card Tile Visual -->
+<div class="p-3 bg-[#F5F7F8] border border-[#E3E9ED] rounded-lg mb-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-6 bg-white border border-[#E3E9ED] rounded flex items-center justify-center font-bold text-[10px] text-[#0B1218] tracking-wider shadow-xs">
+                    MC
+                  </div>
+<div>
+<p class="text-xs font-bold text-[#0B1218]">Mastercard ending in 4242</p>
+<p class="text-[11px] text-[#5C6B76]">Expires 08/28</p>
+</div>
+</div>
+<span class="px-2 py-0.5 text-[9px] font-bold bg-[#e6f4f2] text-[#0F766E] rounded">Default</span>
+</div>
+<div class="space-y-2 text-xs border-t border-[#E3E9ED] pt-3">
+<div class="flex justify-between">
+<span class="text-[#5C6B76]">Billing Contact:</span>
+<span class="font-semibold text-[#0B1218]">billing@nike.com</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[#5C6B76]">VAT/Tax ID:</span>
+<span class="font-semibold text-[#0B1218] flex items-center gap-1">
+                    US-94-3128910 
+                    <span class="material-symbols-outlined text-[#0F766E] text-[14px]">check</span>
+</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[#5C6B76]">Billing Address:</span>
+<span class="font-medium text-[#0B1218] text-right">One Bowerman Drive<br/>Beaverton, OR 97005</span>
+</div>
+</div>
+<button class="w-full mt-4 py-1.5 text-xs font-semibold text-[#0B1218] bg-white border border-[#E3E9ED] rounded-lg hover:border-[#0F766E] hover:bg-[#F5F7F8] transition-colors">
+                Edit Details
+              </button>
+</div>
+<!-- Card 3: Need Custom Enterprise Quotas? -->
+<div class="bg-gradient-to-br from-white to-[#e6f4f2]/40 border border-[#ccede8] rounded-xl p-5 shadow-sm">
+<div class="w-8 h-8 rounded-lg bg-[#0F766E] text-white flex items-center justify-center mb-3 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">domain_verification</span>
+</div>
+<h3 class="text-sm font-bold text-[#0B1218] mb-1">Need Custom Enterprise Quotas?</h3>
+<p class="text-xs text-[#5C6B76] leading-relaxed mb-3">
+                High-volume residential proxy nodes, dedicated LLM test harnesses, custom SLAs, or invoice billing (ACH/Wire).
+              </p>
+<a class="text-xs font-bold text-[#0F766E] hover:text-[#115E59] inline-flex items-center gap-1 group" href="#">
+                Talk to Solutions Engineering
+                <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

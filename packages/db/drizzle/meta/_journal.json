@@ -1,0 +1,30 @@
+[
+  {
+    "idx": 0,
+    "version": "7",
+    "when": 1740000000000,
+    "tag": "0000_phase0",
+    "breakpoints": true
+  },
+  {
+    "idx": 1,
+    "version": "7",
+    "when": 1740000001000,
+    "tag": "0001_gap_closure",
+    "breakpoints": true
+  },
+  {
+    "idx": 2,
+    "version": "7",
+    "when": 1740000002000,
+    "tag": "0002_api_keys",
+    "breakpoints": true
+  },
+  {
+    "idx": 3,
+    "version": "7",
+    "when": 1740000003000,
+    "tag": "0004_onboarding",
+    "breakpoints": true
+  }
+]

@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoLens — Sources & Citations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#0F766E',
+              dark: '#0B5953',
+              light: '#F0FDFA',
+              border: '#CCFBF1',
+              ring: '#14B8A6'
+            },
+            neutral: {
+              ink: '#0B1218',
+              muted: '#5C6B76',
+              border: '#E3E9ED',
+              surface: '#FFFFFF',
+              bg: '#F5F7F8',
+              surfaceSubtle: '#F8FAFB'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #0B1218;
+      background-color: #F5F7F8;
+      -webkit-font-smoothing: antialiased;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F5F7F8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1D9DE;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex bg-[#F5F7F8] text-[#0B1218]">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-[#E3E9ED] flex flex-col justify-between h-screen sticky top-0 shrink-0 z-30">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="px-5 py-4 flex items-center justify-between border-b border-[#E3E9ED]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#0F766E] flex items-center justify-center text-white shadow-sm">
+            <span class="material-symbols-outlined text-[20px] fill-icon">scatter_plot</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-[15px] tracking-tight text-[#0B1218]">GeoLens</span>
+              <span class="text-[10px] font-semibold bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1] px-1.5 py-0.5 rounded">v2.4</span>
+            </div>
+            <p class="text-[11px] text-[#5C6B76] font-medium leading-none mt-0.5">Spatial & Search AI</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button: New Analysis -->
+      <div class="p-4 pb-2">
+        <button class="w-full flex items-center justify-center gap-2 bg-[#0F766E] hover:bg-[#0B5953] active:bg-[#084540] text-white text-xs font-semibold py-2.5 px-3 rounded-lg shadow-sm transition-colors duration-150">
+          <span class="material-symbols-outlined text-[16px]">add</span>
+          <span>New Analysis</span>
+        </button>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="px-3 py-2 space-y-5 text-xs font-medium overflow-y-auto max-h-[calc(100vh-250px)]">
+        
+        <!-- Group 1: AI Analysis -->
+        <div>
+          <span class="px-2.5 text-[10px] font-bold uppercase tracking-wider text-[#5C6B76]">AI Analysis</span>
+          <div class="mt-1.5 space-y-0.5">
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <span class="material-symbols-outlined">analytics</span>
+              <span>Visibility Overview</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined">query_stats</span>
+                <span>Competitor Research</span>
+              </div>
+              <span class="text-[10px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-1.5 py-0.2 rounded">5</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <span class="material-symbols-outlined">manage_search</span>
+              <span>Prompt Research</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Group 2: Brand Performance -->
+        <div>
+          <span class="px-2.5 text-[10px] font-bold uppercase tracking-wider text-[#5C6B76]">Brand Performance</span>
+          <div class="mt-1.5 space-y-0.5">
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <span class="material-symbols-outlined">monitoring</span>
+              <span>Brand Performance</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <span class="material-symbols-outlined">sentiment_satisfied</span>
+              <span>Perception & Sentiment</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <span class="material-symbols-outlined">verified</span>
+              <span>Fact-checking</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Group 3: Boost & Monitor (ACTIVE HERE) -->
+        <div>
+          <span class="px-2.5 text-[10px] font-bold uppercase tracking-wider text-[#5C6B76]">Boost & Monitor</span>
+          <div class="mt-1.5 space-y-0.5">
+            <a href="#" class="flex items-center justify-between px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined">radar</span>
+                <span>Prompt Tracking</span>
+              </div>
+              <span class="text-[9px] font-bold uppercase text-[#0F766E] bg-[#F0FDFA] border border-[#CCFBF1] px-1.5 py-0.5 rounded">Live</span>
+            </a>
+            <!-- Active item -->
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 bg-[#F0FDFA] text-[#0F766E] font-semibold rounded-md border border-[#CCFBF1] shadow-xs">
+              <span class="material-symbols-outlined text-[#0F766E] fill-icon">format_quote</span>
+              <span>Sources & Citations</span>
+            </a>
+            <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F7F8] rounded-md transition-colors">
+              <span class="material-symbols-outlined">bolt</span>
+              <span>Actions & Fixes</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Sidebar Bottom Usage & Settings -->
+    <div class="p-3 border-t border-[#E3E9ED] bg-[#F8FAFB]">
+      <div class="p-3 rounded-lg bg-white border border-[#E3E9ED] mb-3">
+        <div class="flex items-center justify-between text-[11px] mb-1.5">
+          <span class="text-[#5C6B76] font-medium">Prompt Quota</span>
+          <span class="font-bold text-[#0B1218]">28.4%</span>
+        </div>
+        <div class="w-full bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden mb-1.5">
+          <div class="bg-[#0F766E] h-full rounded-full" style="width: 28.4%"></div>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-[#5C6B76]">
+          <span>1,420 / 5,000 queries</span>
+          <a href="#" class="font-semibold text-[#0F766E] hover:underline">Manage</a>
+        </div>
+      </div>
+      <div class="flex items-center justify-between text-[11px] text-[#5C6B76] px-1 font-medium">
+        <a href="#" class="flex items-center gap-1 hover:text-[#0B1218]"><span class="material-symbols-outlined text-[15px]">menu_book</span>Docs</a>
+        <a href="#" class="flex items-center gap-1 hover:text-[#0B1218]"><span class="material-symbols-outlined text-[15px]">headset_mic</span>Support</a>
+        <a href="#" class="flex items-center gap-1 hover:text-[#0B1218]"><span class="material-symbols-outlined text-[15px]">settings</span>Settings</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- TOP NAVIGATION CHROME -->
+    <header class="h-14 bg-white border-b border-[#E3E9ED] px-6 flex items-center justify-between sticky top-0 z-20 shrink-0">
+      <!-- Left: Breadcrumbs / Workspace switcher -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-[#F8FAFB] border border-[#E3E9ED] hover:border-[#D1D9DE] px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors">
+          <span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>
+          <span class="text-[#0B1218]">Attio · Demo</span>
+          <span class="material-symbols-outlined text-[16px] text-[#5C6B76]">unfold_more</span>
+        </div>
+        <span class="text-[#E3E9ED]">/</span>
+        <div class="text-xs font-semibold text-[#5C6B76]">
+          AI Visibility Suite
+        </div>
+      </div>
+
+      <!-- Right: Global Controls & Actions -->
+      <div class="flex items-center gap-2.5">
+        <!-- Date selector -->
+        <div class="flex items-center bg-[#F8FAFB] border border-[#E3E9ED] rounded-lg p-0.5 text-xs font-medium">
+          <button class="px-2.5 py-1 rounded bg-white text-[#0F766E] font-semibold shadow-xs border border-[#E3E9ED]">Last 7 days</button>
+          <button class="px-2.5 py-1 text-[#5C6B76] hover:text-[#0B1218]">Last 30 days</button>
+          <button class="px-2.5 py-1 text-[#5C6B76] hover:text-[#0B1218]">90 days</button>
+        </div>
+
+        <!-- Models selector -->
+        <div class="flex items-center gap-1.5 bg-[#F8FAFB] border border-[#E3E9ED] px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer hover:bg-white transition-colors">
+          <span class="material-symbols-outlined text-[#0F766E] text-[16px]">neurology</span>
+          <span class="text-[#0B1218] font-semibold">All Models</span>
+          <span class="text-[10px] text-[#5C6B76] bg-[#E3E9ED] px-1 rounded font-medium">4</span>
+          <span class="material-symbols-outlined text-[15px] text-[#5C6B76]">expand_more</span>
+        </div>
+
+        <!-- Trial Days Indicator -->
+        <div class="hidden xl:flex items-center gap-1 text-[11px] text-[#5C6B76] bg-[#F8FAFB] border border-[#E3E9ED] px-2.5 py-1.5 rounded-lg">
+          <span class="material-symbols-outlined text-[15px] text-[#0F766E]">schedule</span>
+          <span>14 days left</span>
+          <a href="#" class="text-[#0F766E] font-bold hover:underline ml-1">Upgrade</a>
+        </div>
+
+        <div class="h-4 w-px bg-[#E3E9ED]"></div>
+
+        <!-- Export -->
+        <button class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#0B1218] bg-white border border-[#E3E9ED] hover:bg-[#F8FAFB] rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[16px] text-[#5C6B76]">file_download</span>
+          <span>Export</span>
+        </button>
+
+        <!-- Teal New Analysis button -->
+        <button class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0B5953] rounded-lg shadow-xs transition-colors">
+          <span class="material-symbols-outlined text-[16px]">add</span>
+          <span>New Analysis</span>
+        </button>
+
+        <div class="h-4 w-px bg-[#E3E9ED]"></div>
+
+        <!-- Notification & Profile -->
+        <button class="p-1.5 text-[#5C6B76] hover:text-[#0B1218] rounded-md hover:bg-[#F5F7F8]">
+          <span class="material-symbols-outlined text-[18px]">notifications</span>
+        </button>
+        <div class="w-7 h-7 rounded-full bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold ring-2 ring-[#CCFBF1]">
+          AL
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="flex-1 p-6 space-y-6 max-w-[1440px] w-full mx-auto">
+      
+      <!-- PAGE HEADER -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-[#0B1218] tracking-tight">Sources &amp; Citations</h1>
+            <span class="text-[11px] font-semibold text-[#0F766E] bg-[#F0FDFA] border border-[#CCFBF1] px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#0F766E] animate-pulse"></span>
+              Live Retrieval Index
+            </span>
+          </div>
+          <p class="text-xs text-[#5C6B76] mt-0.5 font-medium">
+            Domains AI retrieves and cites when answering buyer questions across ChatGPT, Perplexity, Gemini, and Google AI Overviews.
+          </p>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="flex items-center gap-2">
+          <button class="flex items-center gap-1.5 text-xs font-semibold text-[#5C6B76] bg-white border border-[#E3E9ED] hover:text-[#0B1218] hover:border-[#D1D9DE] px-3 py-1.5 rounded-lg transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[16px]">bookmark_border</span>
+            <span>Saved Views</span>
+          </button>
+          <button class="flex items-center gap-1.5 text-xs font-semibold text-[#5C6B76] bg-white border border-[#E3E9ED] hover:text-[#0B1218] hover:border-[#D1D9DE] px-3 py-1.5 rounded-lg transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[16px]">share</span>
+            <span>Share Report</span>
+          </button>
+          <button class="flex items-center gap-1.5 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0B5953] px-3.5 py-1.5 rounded-lg transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[16px]">sync</span>
+            <span>Recrawl Sources</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI METRIC CARDS (4 CARDS) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Card 1: Domains Retrieved -->
+        <div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-[#5C6B76]">Domains Retrieved</span>
+            <span class="material-symbols-outlined text-[#0F766E] text-[18px]">travel_explore</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-[#0B1218] tracking-tight">418</span>
+            <span class="text-[11px] font-semibold text-[#0F766E] flex items-center">
+              <span class="material-symbols-outlined text-[14px]">trending_up</span>+34
+            </span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-[#F5F7F8] flex items-center justify-between text-[11px] text-[#5C6B76]">
+            <span>Active crawl surface</span>
+            <span class="font-semibold text-[#0B1218]">2,840 queries</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Citation Rate -->
+        <div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-[#5C6B76]">Citation Rate</span>
+            <span class="material-symbols-outlined text-[#0F766E] text-[18px]">verified</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-[#0B1218] tracking-tight">38.2%</span>
+            <span class="text-[11px] font-semibold text-[#0F766E] flex items-center">
+              <span class="material-symbols-outlined text-[14px]">trending_up</span>+4.1%
+            </span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-[#F5F7F8] flex items-center justify-between text-[11px] text-[#5C6B76]">
+            <span>Average across 4 engines</span>
+            <span class="font-semibold text-[#0B1218]">Top decile</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Own-domain share -->
+        <div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-[#5C6B76]">Own-Domain Share</span>
+            <span class="material-symbols-outlined text-[#0F766E] text-[18px]">pie_chart</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-[#0B1218] tracking-tight">21.4%</span>
+            <span class="text-[11px] font-semibold text-[#0F766E] flex items-center">
+              <span class="material-symbols-outlined text-[14px]">trending_up</span>+1.8%
+            </span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-[#F5F7F8] flex items-center justify-between text-[11px] text-[#5C6B76]">
+            <span>attio.com direct citations</span>
+            <span class="font-semibold text-[#0B1218]">182 citations</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Gap domains -->
+        <div class="bg-white border border-[#E3E9ED] rounded-xl p-4 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-[#5C6B76]">Gap Domains</span>
+            <span class="material-symbols-outlined text-[#0F766E] text-[18px]">warning</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-[#0B1218] tracking-tight">64</span>
+            <span class="text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] px-1.5 py-0.2 rounded border border-[#E3E9ED]">
+              18 critical
+            </span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-[#F5F7F8] flex items-center justify-between text-[11px] text-[#5C6B76]">
+            <span>Competitors cited, you absent</span>
+            <span class="font-semibold text-[#0F766E] hover:underline cursor-pointer">View gaps</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAIN SPLIT LAYOUT: TABLE & SIDEBAR -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT COLUMN: FILTERS & DATA TABLE (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          
+          <!-- Filter Controls Bar -->
+          <div class="bg-white border border-[#E3E9ED] rounded-xl p-3.5 shadow-xs space-y-3">
+            
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <!-- Search bar -->
+              <div class="relative flex-1">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#5C6B76] text-[17px]">search</span>
+                <input type="text" placeholder="Search domains by name, TLD, or URL path..." value="" 
+                  class="w-full bg-[#F8FAFB] border border-[#E3E9ED] focus:border-[#0F766E] focus:bg-white text-xs text-[#0B1218] pl-9 pr-3 py-2 rounded-lg outline-none font-medium placeholder:text-[#5C6B76] transition-colors" />
+              </div>
+
+              <!-- Filter Pills: Classification -->
+              <div class="flex items-center gap-1 bg-[#F8FAFB] border border-[#E3E9ED] p-1 rounded-lg text-xs font-medium">
+                <button class="px-2.5 py-1 rounded bg-white text-[#0F766E] font-semibold shadow-xs border border-[#E3E9ED]">All</button>
+                <button class="px-2.5 py-1 text-[#5C6B76] hover:text-[#0B1218]">Own</button>
+                <button class="px-2.5 py-1 text-[#5C6B76] hover:text-[#0B1218]">Competitor</button>
+                <button class="px-2.5 py-1 text-[#5C6B76] hover:text-[#0B1218]">Other</button>
+              </div>
+            </div>
+
+            <!-- Subfilter row -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#F5F7F8] text-xs">
+              <div class="flex items-center gap-3">
+                <!-- Checkbox: Cited only -->
+                <label class="flex items-center gap-2 cursor-pointer select-none text-[#0B1218] font-medium">
+                  <input type="checkbox" checked class="w-3.5 h-3.5 accent-[#0F766E] rounded border-[#E3E9ED]" />
+                  <span>Cited only (exclude unverified retrievals)</span>
+                </label>
+                <span class="text-[#E3E9ED]">|</span>
+                <span class="text-[#5C6B76]">Showing <strong class="text-[#0B1218]">1–7</strong> of 418 domains</span>
+              </div>
+
+              <div class="flex items-center gap-2 text-[#5C6B76]">
+                <span>Sort by:</span>
+                <button class="flex items-center gap-1 font-semibold text-[#0B1218] hover:text-[#0F766E]">
+                  <span>Citation Rate %</span>
+                  <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- TABLE CONTAINER -->
+          <div class="bg-white border border-[#E3E9ED] rounded-xl overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-[#E3E9ED] bg-[#F8FAFB] text-[#5C6B76] font-semibold">
+                    <th class="py-3 px-4">Domain</th>
+                    <th class="py-3 px-3">Retrieved %</th>
+                    <th class="py-3 px-3">Citation Rate</th>
+                    <th class="py-3 px-3">Classification</th>
+                    <th class="py-3 px-3 text-right">Mentions</th>
+                    <th class="py-3 px-4 text-right">Gap vs You</th>
+                    <th class="py-3 px-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#E3E9ED]">
+                  
+                  <!-- Row 1: Own Domain (Attio) -->
+                  <tr class="hover:bg-[#F0FDFA]/40 transition-colors bg-[#F0FDFA]/20">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#0F766E] text-white flex items-center justify-center font-bold text-[11px]">
+                          A
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">attio.com</span>
+                            <span class="text-[9px] font-bold uppercase text-[#0F766E] bg-[#F0FDFA] border border-[#CCFBF1] px-1.5 py-0.2 rounded">You</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">attio.com/docs &middot; product</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#0F766E] h-full" style="width: 78.4%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">78.4%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0F766E]">64.2%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(182 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0F766E] bg-[#F0FDFA] border border-[#CCFBF1] px-2 py-0.5 rounded-md">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span>
+                        Own Domain
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">182</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-bold text-[#0F766E] bg-[#F0FDFA] px-2 py-0.5 rounded">Baseline</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 2: Competitor (HubSpot) -->
+                  <tr class="hover:bg-[#F5F7F8] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#F5F7F8] border border-[#E3E9ED] text-[#0B1218] flex items-center justify-center font-bold text-[11px]">
+                          H
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">hubspot.com</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">hubspot.com/products/crm</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#5C6B76] h-full" style="width: 84.1%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">84.1%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0B1218]">71.0%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(202 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1218] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded-md">
+                        Competitor
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">202</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded">+6.8% gap</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 3: Competitor (Salesforce) -->
+                  <tr class="hover:bg-[#F5F7F8] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#F5F7F8] border border-[#E3E9ED] text-[#0B1218] flex items-center justify-center font-bold text-[11px]">
+                          S
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">salesforce.com</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">salesforce.com/crm</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#5C6B76] h-full" style="width: 61.5%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">61.5%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0B1218]">52.4%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(149 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1218] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded-md">
+                        Competitor
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">149</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-semibold text-[#0F766E] bg-[#F0FDFA] px-2 py-0.5 rounded">-11.8% lead</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 4: Review Site (G2.com - Other) -->
+                  <tr class="hover:bg-[#F5F7F8] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#F5F7F8] border border-[#E3E9ED] text-[#0B1218] flex items-center justify-center font-bold text-[11px]">
+                          G
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">g2.com</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">g2.com/categories/crm</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#5C6B76] h-full" style="width: 92.3%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">92.3%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0B1218]">81.5%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(232 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded-md">
+                        Review Platform
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">232</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded">+17.3% gap</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 5: Community (Reddit - Other) -->
+                  <tr class="hover:bg-[#F5F7F8] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#F5F7F8] border border-[#E3E9ED] text-[#0B1218] flex items-center justify-center font-bold text-[11px]">
+                          R
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">reddit.com</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">reddit.com/r/sales</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#5C6B76] h-full" style="width: 58.0%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">58.0%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0B1218]">48.9%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(139 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded-md">
+                        Community / UGC
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">139</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded">-15.3% lead</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 6: Tech Publication (TechCrunch - Other) -->
+                  <tr class="hover:bg-[#F5F7F8] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#F5F7F8] border border-[#E3E9ED] text-[#0B1218] flex items-center justify-center font-bold text-[11px]">
+                          T
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">techcrunch.com</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">techcrunch.com/enterprise</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#5C6B76] h-full" style="width: 42.1%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">42.1%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0B1218]">39.2%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(111 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#5C6B76] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded-md">
+                        Media / PR
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">111</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-semibold text-[#0F766E] bg-[#F0FDFA] px-2 py-0.5 rounded">-25.0% lead</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 7: Competitor (Pipedrive) -->
+                  <tr class="hover:bg-[#F5F7F8] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-[#0B1218]">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-md bg-[#F5F7F8] border border-[#E3E9ED] text-[#0B1218] flex items-center justify-center font-bold text-[11px]">
+                          P
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-[#0B1218]">pipedrive.com</span>
+                          </div>
+                          <span class="text-[11px] text-[#5C6B76] font-normal">pipedrive.com/features</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 font-medium">
+                      <div class="flex items-center gap-2">
+                        <div class="w-16 bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden">
+                          <div class="bg-[#5C6B76] h-full" style="width: 36.5%"></div>
+                        </div>
+                        <span class="text-[#0B1218]">36.5%</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-[#0B1218]">31.2%</span>
+                        <span class="text-[10px] text-[#5C6B76] font-normal">(89 calls)</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1218] bg-[#F5F7F8] border border-[#E3E9ED] px-2 py-0.5 rounded-md">
+                        Competitor
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-3 text-right font-semibold text-[#0B1218]">89</td>
+                    <td class="py-3.5 px-4 text-right">
+                      <span class="text-[11px] font-semibold text-[#0F766E] bg-[#F0FDFA] px-2 py-0.5 rounded">-33.0% lead</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                      <button class="p-1 text-[#5C6B76] hover:text-[#0F766E] rounded">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Pagination -->
+            <div class="p-3 border-t border-[#E3E9ED] bg-[#F8FAFB] flex items-center justify-between text-xs text-[#5C6B76]">
+              <div class="flex items-center gap-2">
+                <span>Rows per page:</span>
+                <select class="bg-white border border-[#E3E9ED] rounded px-2 py-1 text-[#0B1218] font-medium outline-none">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-1">
+                <button class="p-1.5 rounded border border-[#E3E9ED] bg-white text-[#5C6B76] hover:text-[#0B1218] disabled:opacity-50" disabled>
+                  <span class="material-symbols-outlined text-[14px]">chevron_left</span>
+                </button>
+                <button class="w-6 h-6 rounded bg-[#0F766E] text-white font-bold text-xs flex items-center justify-center">1</button>
+                <button class="w-6 h-6 rounded hover:bg-white text-[#0B1218] font-medium text-xs flex items-center justify-center">2</button>
+                <button class="w-6 h-6 rounded hover:bg-white text-[#0B1218] font-medium text-xs flex items-center justify-center">3</button>
+                <span class="px-1 text-[#5C6B76]">&hellip;</span>
+                <button class="w-6 h-6 rounded hover:bg-white text-[#0B1218] font-medium text-xs flex items-center justify-center">42</button>
+                <button class="p-1.5 rounded border border-[#E3E9ED] bg-white text-[#5C6B76] hover:text-[#0B1218]">
+                  <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Synthetic Prompt Grounding Callout -->
+          <div class="bg-white border border-[#E3E9ED] rounded-xl p-4 flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1] flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-[#0B1218]">Uncaptured Review Authority Detected</h4>
+                <p class="text-[11px] text-[#5C6B76] mt-0.5">
+                  <strong>G2.com</strong> and <strong>Capterra</strong> account for 34.8% of third-party citations in Google AI Overviews and ChatGPT. Attio is cited in only 42% of comparison matrix snippets on these domains.
+                </p>
+              </div>
+            </div>
+            <button class="shrink-0 text-xs font-semibold text-[#0F766E] bg-[#F0FDFA] border border-[#CCFBF1] hover:bg-[#CCFBF1]/40 px-3 py-1.5 rounded-lg transition-colors">
+              View Citation Matrix
+            </button>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: SIDEBAR (TOP CITED BARS & CLASSIFY CTA) (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          
+          <!-- Card: Top Cited Domains Bars -->
+          <div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-xs">
+            <div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+              <div>
+                <h3 class="text-xs font-bold text-[#0B1218] uppercase tracking-wider">Top Cited Domains</h3>
+                <p class="text-[11px] text-[#5C6B76] mt-0.5 font-medium">Relative share across 2,840 AI answer generations</p>
+              </div>
+              <span class="material-symbols-outlined text-[#5C6B76] text-[18px]">leaderboard</span>
+            </div>
+
+            <div class="mt-4 space-y-4">
+              
+              <!-- Item 1: G2 -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-[#0B1218]">1. g2.com</span>
+                    <span class="text-[10px] text-[#5C6B76] bg-[#F5F7F8] px-1 rounded">Review</span>
+                  </div>
+                  <span class="font-bold text-[#0B1218]">81.5%</span>
+                </div>
+                <div class="w-full bg-[#F5F7F8] h-2 rounded-full overflow-hidden">
+                  <div class="bg-[#5C6B76] h-full rounded-full" style="width: 81.5%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+                  <span>232 direct citations</span>
+                  <span>Primary source: Perplexity, SGE</span>
+                </div>
+              </div>
+
+              <!-- Item 2: HubSpot -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-[#0B1218]">2. hubspot.com</span>
+                    <span class="text-[10px] text-[#5C6B76] bg-[#F5F7F8] px-1 rounded">Competitor</span>
+                  </div>
+                  <span class="font-bold text-[#0B1218]">71.0%</span>
+                </div>
+                <div class="w-full bg-[#F5F7F8] h-2 rounded-full overflow-hidden">
+                  <div class="bg-[#5C6B76] h-full rounded-full" style="width: 71.0%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+                  <span>202 direct citations</span>
+                  <span>Dominates generic CRM comparisons</span>
+                </div>
+              </div>
+
+              <!-- Item 3: Attio (You) -->
+              <div class="p-2.5 rounded-lg bg-[#F0FDFA] border border-[#CCFBF1]">
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-[#0F766E]">3. attio.com (You)</span>
+                    <span class="text-[9px] font-bold text-[#0F766E] bg-white border border-[#CCFBF1] px-1 rounded">Own</span>
+                  </div>
+                  <span class="font-bold text-[#0F766E]">64.2%</span>
+                </div>
+                <div class="w-full bg-[#CCFBF1] h-2 rounded-full overflow-hidden">
+                  <div class="bg-[#0F766E] h-full rounded-full" style="width: 64.2%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-[#0F766E] mt-1 font-medium">
+                  <span>182 direct citations</span>
+                  <span>+18% in tech CRM prompts</span>
+                </div>
+              </div>
+
+              <!-- Item 4: Salesforce -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-[#0B1218]">4. salesforce.com</span>
+                    <span class="text-[10px] text-[#5C6B76] bg-[#F5F7F8] px-1 rounded">Competitor</span>
+                  </div>
+                  <span class="font-bold text-[#0B1218]">52.4%</span>
+                </div>
+                <div class="w-full bg-[#F5F7F8] h-2 rounded-full overflow-hidden">
+                  <div class="bg-[#5C6B76] h-full rounded-full" style="width: 52.4%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+                  <span>149 direct citations</span>
+                  <span>Legacy enterprise queries</span>
+                </div>
+              </div>
+
+              <!-- Item 5: Reddit -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-[#0B1218]">5. reddit.com</span>
+                    <span class="text-[10px] text-[#5C6B76] bg-[#F5F7F8] px-1 rounded">Community</span>
+                  </div>
+                  <span class="font-bold text-[#0B1218]">48.9%</span>
+                </div>
+                <div class="w-full bg-[#F5F7F8] h-2 rounded-full overflow-hidden">
+                  <div class="bg-[#5C6B76] h-full rounded-full" style="width: 48.9%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-[#5C6B76] mt-1">
+                  <span>139 direct citations</span>
+                  <span>Unfiltered founder feedback</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Side Card Action -->
+            <div class="mt-5 pt-4 border-t border-[#E3E9ED]">
+              <a href="#" class="flex items-center justify-between text-xs font-semibold text-[#0F766E] hover:text-[#0B5953] transition-colors">
+                <span>View all 418 source domains</span>
+                <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </a>
+            </div>
+
+          </div>
+
+          <!-- Card: Domain Classification & Management CTA -->
+          <div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-xs">
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-lg bg-[#F0FDFA] border border-[#CCFBF1] text-[#0F766E] flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[20px]">tune</span>
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-[#0B1218]">Domain Classification</h3>
+                <p class="text-[11px] text-[#5C6B76] mt-1 leading-relaxed">
+                  34 unclassified domains were retrieved in the last 7 days. Tag them as Own, Competitor, Partner, or Editorial Media to refine gap calculations.
+                </p>
+              </div>
+            </div>
+
+            <!-- Stats Mini Bar -->
+            <div class="mt-4 p-3 bg-[#F8FAFB] rounded-lg border border-[#E3E9ED] space-y-2">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-[#5C6B76]">Classification status:</span>
+                <span class="font-bold text-[#0B1218]">384 / 418 (91.8%)</span>
+              </div>
+              <div class="w-full bg-[#E3E9ED] h-1.5 rounded-full overflow-hidden flex">
+                <div class="bg-[#0F766E] h-full" style="width: 21%" title="Own Domain"></div>
+                <div class="bg-[#5C6B76] h-full" style="width: 38%" title="Competitor"></div>
+                <div class="bg-[#D1D9DE] h-full" style="width: 32%" title="Other / Media"></div>
+              </div>
+              <div class="flex items-center justify-between text-[10px] text-[#5C6B76] pt-1">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>Own</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#5C6B76]"></span>Competitor</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#D1D9DE]"></span>Media/Other</span>
+              </div>
+            </div>
+
+            <!-- CTA button -->
+            <button class="mt-4 w-full flex items-center justify-center gap-2 bg-[#0F766E] hover:bg-[#0B5953] active:bg-[#084540] text-white text-xs font-semibold py-2.5 px-3 rounded-lg shadow-xs transition-colors duration-150">
+              <span class="material-symbols-outlined text-[16px]">category</span>
+              <span>Classify Domains</span>
+            </button>
+          </div>
+
+          <!-- Card: Citation Integrity / Engine Split -->
+          <div class="bg-white border border-[#E3E9ED] rounded-xl p-5 shadow-xs">
+            <h3 class="text-xs font-bold text-[#0B1218] uppercase tracking-wider mb-3">Engine Retrieval Frequency</h3>
+            
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>
+                  <span class="text-[#0B1218] font-medium">Perplexity Pro</span>
+                </div>
+                <span class="font-bold text-[#0B1218]">4.2 citations / answer</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#0F766E]/70"></span>
+                  <span class="text-[#0B1218] font-medium">Google AI Overviews</span>
+                </div>
+                <span class="font-bold text-[#0B1218]">3.8 citations / answer</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#0F766E]/50"></span>
+                  <span class="text-[#0B1218] font-medium">ChatGPT-4o</span>
+                </div>
+                <span class="font-bold text-[#0B1218]">2.4 citations / answer</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#0F766E]/30"></span>
+                  <span class="text-[#0B1218] font-medium">Gemini 1.5 Pro</span>
+                </div>
+                <span class="font-bold text-[#0B1218]">1.9 citations / answer</span>
+              </div>
+            </div>
+
+            <p class="text-[10px] text-[#5C6B76] mt-3 pt-3 border-t border-[#E3E9ED]">
+              Perplexity Pro has the highest citation density, attributing 84% of claims to verified index sources.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

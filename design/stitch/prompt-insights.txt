@@ -1,0 +1,23 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — Brand Performance page inside the AI Visibility suite.
+
+Brand (must match existing GeoLens system):
+- Accent teal #0F766E only — NO purple, NO dark mode default
+- Neutrals: white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED
+- Font: Plus Jakarta Sans
+- Soft mint wash background; white panels; 12–16px radius
+
+Chrome (same as other GeoLens app screens):
+- Left: AI Visibility secondary nav with Brand Performance ACTIVE under Brand Performance group
+  Groups: AI Analysis (Visibility Overview, Competitor Research, Prompt Research), Brand Performance (Brand Performance active, Perception & Sentiment, Fact-checking), Boost & Monitor
+- Top bar: Attio · Demo, filters Last 7 days / All models, Export, teal New Analysis
+
+Main content — Brand Performance (insights / matrix):
+- Title: Brand Performance
+- Subtitle: Where you win and lose across topics, models, and markets
+- KPI row: Overall visibility, Strongest channel, Weakest channel, Opportunity score
+- Main: Performance matrix heatmap or 2-axis grid (Topic × Model) with teal→warm intensity
+- Side or below: Strongest / weakest callouts with short rationale
+- Secondary: Top winning prompts vs losing prompts lists
+- CTA: Create action from gap
+
+Professional B2B analytics. No emoji. Light theme only in mock. 1440px desktop.

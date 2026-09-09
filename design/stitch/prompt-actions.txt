@@ -1,0 +1,14 @@
+Design a DESKTOP light-theme SaaS product screen for GeoLens — Actions & Fixes page.
+
+Brand: teal #0F766E only, Plus Jakarta Sans, light theme (white/#F5F7F8/#0B1218/#5C6B76/#E3E9ED). No purple. Soft mint wash.
+
+Chrome: left AI Visibility nav with Actions & Fixes ACTIVE under Boost & Monitor. Top: Attio · Demo, Last 7 days, All models, Export, teal New Analysis.
+
+Main — Actions & Fixes:
+- Title: Actions & Fixes · Opportunity queue badge
+- Subtitle: Ranked recommendations grounded in evidence (R1–R10)
+- KPIs: Open actions, High opportunity, In progress, Completed
+- Filters: All / New / In progress / Done · group SITE_AUDIT / OWNED / EARNED
+- Dense cards or table: Overview | Opportunity score bar | Group | Status | Evidence snippet | Open
+- Side: Why this matters tips + link to Impact
+- Professional B2B. No emoji. 1440px.

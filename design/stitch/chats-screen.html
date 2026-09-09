@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens — Chats Results Telemetry</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#daeaf7",
+            "on-primary-fixed-variant": "#00504a",
+            "on-primary": "#ffffff",
+            "background": "#f5faff",
+            "secondary-fixed": "#cce5ff",
+            "surface-bright": "#f5faff",
+            "primary-fixed-dim": "#80d5cb",
+            "outline": "#6e7977",
+            "inverse-primary": "#80d5cb",
+            "primary-fixed": "#9cf2e8",
+            "outline-variant": "#bdc9c6",
+            "on-secondary-fixed": "#001d31",
+            "tertiary-fixed": "#ffdbca",
+            "surface-tint": "#006a63",
+            "surface-variant": "#d5e5f1",
+            "surface-dim": "#ccdce9",
+            "surface-container": "#e0f0fd",
+            "inverse-surface": "#24323c",
+            "surface-container-highest": "#d5e5f1",
+            "secondary": "#006398",
+            "tertiary-fixed-dim": "#ffb690",
+            "surface-container-low": "#eaf5ff",
+            "error-container": "#ffdad6",
+            "on-primary-fixed": "#00201d",
+            "on-error": "#ffffff",
+            "on-secondary-container": "#00476e",
+            "secondary-container": "#5bb8fe",
+            "on-secondary-fixed-variant": "#004b73",
+            "on-tertiary": "#ffffff",
+            "on-background": "#0e1d26",
+            "on-tertiary-container": "#ffe6da",
+            "on-primary-container": "#a3faef",
+            "on-tertiary-fixed": "#341100",
+            "tertiary": "#893a00",
+            "on-secondary": "#ffffff",
+            "on-surface-variant": "#3e4947",
+            "error": "#ba1a1a",
+            "surface": "#f5faff",
+            "secondary-fixed-dim": "#93ccff",
+            "primary-container": "#0f766e",
+            "tertiary-container": "#af4c00",
+            "inverse-on-surface": "#e4f3ff",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#783200",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#005c55",
+            "on-surface": "#0e1d26"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-base": "1rem",
+            "gutter-desktop": "1.5rem",
+            "space-xl": "1.5rem",
+            "space-3xl": "3rem",
+            "space-md": "0.75rem",
+            "panel-padding-compact": "0.75rem",
+            "panel-padding-standard": "1.25rem",
+            "space-2xs": "0.125rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "1rem",
+            "space-sm": "0.5rem",
+            "space-2xl": "2rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "500" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "500" }],
+            "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "data-mono": ["13px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+      vertical-align: middle;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary selection:text-on-primary">
+<!-- TOP APP BAR -->
+<header class="flex justify-between items-center w-full px-space-lg py-space-sm sticky top-0 z-40 bg-surface border-b border-outline-variant shadow-sm backdrop-blur-md bg-opacity-95">
+<div class="flex items-center gap-space-lg">
+<!-- Workspace Brand Switcher -->
+<div class="flex items-center gap-space-sm pl-0">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold text-body-lg shadow-sm">
+          A
+        </div>
+<div class="flex items-center gap-space-xs cursor-pointer group">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Attio · Demo</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">unfold_more</span>
+</div>
+</div>
+<div class="h-5 w-px bg-outline-variant"></div>
+<!-- Breadcrumbs -->
+<nav class="hidden lg:flex items-center gap-space-xs text-body-sm text-on-surface-variant font-body-sm">
+<span class="hover:text-primary cursor-pointer transition-colors">AI Visibility Suite</span>
+<span class="text-outline-variant">/</span>
+<span class="hover:text-primary cursor-pointer transition-colors">Results</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-semibold">Chats</span>
+</nav>
+</div>
+<!-- Center Control Bar: Filters & Model Scope -->
+<div class="hidden xl:flex items-center gap-space-sm">
+<!-- Date Range Pill Switcher -->
+<div class="flex items-center p-space-2xs bg-surface-container-low rounded-lg border border-outline-variant">
+<button class="px-space-md py-space-2xs rounded-lg text-label-md font-label-md font-bold bg-primary-container text-on-primary shadow-sm">Last 7 days</button>
+<button class="px-space-md py-space-2xs rounded-lg text-label-md font-label-md font-medium text-on-surface-variant hover:text-on-surface transition-colors">Last 30 days</button>
+<button class="px-space-md py-space-2xs rounded-lg text-label-md font-label-md font-medium text-on-surface-variant hover:text-on-surface transition-colors">90 days</button>
+</div>
+<!-- Model Scope Pill -->
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-lowest border border-outline-variant rounded-lg text-label-lg font-label-lg text-on-surface hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary" style="font-size: 16px;">hub</span>
+<span>All Models (4 Engines)</span>
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">arrow_drop_down</span>
+</button>
+<!-- Trial Status Pill -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-low border border-outline-variant rounded-lg text-body-sm font-body-sm text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span>14 days left in trial</span>
+<a class="font-bold text-primary underline ml-1 hover:text-on-primary-fixed-variant" href="#">Upgrade</a>
+</div>
+</div>
+<!-- Trailing Actions & User Utility -->
+<div class="flex items-center gap-space-sm">
+<!-- Export CSV Button -->
+<button class="hidden md:flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant rounded-lg text-label-lg font-label-lg text-on-surface transition-all active:scale-95">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">download</span>
+<span>Export CSV / Report</span>
+</button>
+<!-- Primary Action: Run Live Crawl -->
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-primary-container hover:bg-primary text-on-primary rounded-lg text-label-lg font-label-lg font-bold shadow-sm transition-all active:scale-95">
+<span class="material-symbols-outlined" style="font-size: 16px;">bolt</span>
+<span>+ Run Live Crawl</span>
+</button>
+<div class="h-5 w-px bg-outline-variant mx-space-2xs"></div>
+<!-- Icon Actions -->
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<button class="p-space-xs rounded-lg hover:bg-surface-container hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+</button>
+<button class="p-space-xs rounded-lg hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-label-lg font-label-lg font-bold text-primary cursor-pointer hover:ring-2 hover:ring-primary transition-all ml-space-2xs">
+        AL
+      </div>
+</div>
+</header>
+<div class="flex flex-1 w-full relative">
+<!-- LEFT SIDEBAR NAVIGATION -->
+<aside class="w-64 flex-shrink-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between h-[calc(100vh-57px)] sticky top-[57px] p-space-md overflow-y-auto">
+<div class="flex flex-col gap-space-lg">
+<!-- Brand Platform Header -->
+<div class="flex items-center gap-space-sm px-space-xs py-space-2xs">
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 22px;">explore</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-bold text-primary leading-tight">GeoLens</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">v2.4 Spatial &amp; Search AI</div>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md bg-primary-container hover:bg-primary text-on-primary rounded-lg text-label-lg font-label-lg font-bold shadow-sm transition-all active:scale-95">
+<span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
+<span>New Analysis</span>
+</button>
+<!-- Navigation Clusters -->
+<nav class="flex flex-col gap-space-md">
+<!-- GROUP 1: AI ANALYSIS -->
+<div class="flex flex-col gap-space-2xs">
+<span class="px-space-md text-label-md font-label-md uppercase tracking-wider text-outline">AI Analysis</span>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">visibility</span>
+<span>Visibility Overview</span>
+</a>
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline">monitoring</span>
+<span>Competitor Research</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-md text-label-md">5</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">chat</span>
+<span>Prompt Research</span>
+</a>
+</div>
+<!-- GROUP 2: BRAND PERFORMANCE -->
+<div class="flex flex-col gap-space-2xs">
+<span class="px-space-md text-label-md font-label-md uppercase tracking-wider text-outline">Brand Performance</span>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">brand_awareness</span>
+<span>Brand Performance</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">sentiment_satisfied</span>
+<span>Perception &amp; Sentiment</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">verified</span>
+<span>Fact-checking</span>
+</a>
+</div>
+<!-- GROUP 3: RESULTS / AUDIT (ACTIVE CONTAINER) -->
+<div class="flex flex-col gap-space-2xs">
+<span class="px-space-md text-label-md font-label-md uppercase tracking-wider text-outline">Results / Audit</span>
+<!-- ACTIVE TAB: CHATS -->
+<a class="flex items-center justify-between px-space-md py-space-sm bg-primary-container text-on-primary-container rounded-lg font-semibold text-body-md font-body-md shadow-sm" href="#">
+<div class="flex items-center gap-space-sm text-on-primary">
+<span class="material-symbols-outlined text-on-primary">forum</span>
+<span class="font-bold text-on-primary">Chats</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-on-primary-container"></span>
+</a>
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline">track_changes</span>
+<span>Prompt Tracking</span>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary text-on-primary uppercase">LIVE</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">link</span>
+<span>Sources &amp; Citations</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-on-surface-variant rounded-lg font-medium text-body-md font-body-md hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">task_alt</span>
+<span>Actions &amp; Fixes</span>
+</a>
+</div>
+</nav>
+</div>
+<!-- SIDEBAR FOOTER & QUOTA WIDGET -->
+<div class="flex flex-col gap-space-md pt-space-md border-t border-outline-variant">
+<!-- Crawl Quota Card -->
+<div class="p-space-sm rounded-lg bg-surface border border-outline-variant flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="font-medium text-on-surface">Crawl Quota</span>
+<a class="text-label-md font-label-md font-bold text-primary hover:underline" href="#">Manage</a>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary-container h-1.5 rounded-full" style="width: 28.4%"></div>
+</div>
+<div class="flex justify-between items-center text-label-md font-label-md text-outline">
+<span>28.4% used</span>
+<span>1,420 / 5,000</span>
+</div>
+</div>
+<!-- Global Utilities -->
+<div class="flex flex-col gap-space-2xs text-body-sm font-body-sm text-on-surface-variant">
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">support_agent</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- MAIN CONTENT VIEWPORT (1440px desktop baseline) -->
+<main class="flex-1 flex flex-col bg-background min-w-0 pb-space-3xl overflow-x-hidden">
+<!-- HERO / PAGE HEADER -->
+<section class="px-space-xl pt-space-lg pb-space-md border-b border-outline-variant bg-surface-container-lowest">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Chats</h1>
+<div class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container text-primary border border-primary-fixed-dim text-label-md font-label-md font-bold">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span>Atomic measurements</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-4xl">
+              One prompt × channel × country × day — granular synthetic and real-time conversational crawls recorded across generative models.
+            </p>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant rounded-lg text-label-lg font-label-lg text-on-surface transition-all">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">bookmark_border</span>
+<span>Saved Filters</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant rounded-lg text-label-lg font-label-lg text-on-surface transition-all">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">share</span>
+<span>Share View</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs bg-primary-container hover:bg-primary text-on-primary rounded-lg text-label-lg font-label-lg font-bold transition-all shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">dynamic_feed</span>
+<span>Trigger Batch Crawl</span>
+</button>
+</div>
+</div>
+<!-- 4-KPI SUMMARY BENTO GRID -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md mt-space-lg">
+<!-- Card 1 -->
+<div class="p-space-md rounded-xl bg-surface border border-outline-variant shadow-sm flex flex-col justify-between hover:border-primary transition-all">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-md text-label-md uppercase tracking-wider font-semibold">Total Chats</span>
+<span class="material-symbols-outlined text-primary">chat_bubble_outline</span>
+</div>
+<div class="my-space-xs">
+<div class="text-display-lg font-display-lg font-bold text-on-surface tracking-tight">2,840</div>
+</div>
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="inline-flex items-center font-bold text-primary">
+<span class="material-symbols-outlined" style="font-size: 16px;">trending_up</span> +18%
+              </span>
+<span class="text-outline">vs prior 7d</span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant truncate">Evaluated query executions</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-space-md rounded-xl bg-surface border border-outline-variant shadow-sm flex flex-col justify-between hover:border-primary transition-all">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-md text-label-md uppercase tracking-wider font-semibold">Total Mentions</span>
+<span class="material-symbols-outlined text-primary">record_voice_over</span>
+</div>
+<div class="my-space-xs">
+<div class="text-display-lg font-display-lg font-bold text-on-surface tracking-tight">1,642</div>
+</div>
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="inline-flex items-center font-bold text-primary">
+                57.8% mention rate
+              </span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant truncate">Attio referenced in answer</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-space-md rounded-xl bg-surface border border-outline-variant shadow-sm flex flex-col justify-between hover:border-primary transition-all">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-md text-label-md uppercase tracking-wider font-semibold">Models Covered</span>
+<span class="material-symbols-outlined text-primary">smart_toy</span>
+</div>
+<div class="my-space-xs">
+<div class="text-display-lg font-display-lg font-bold text-on-surface tracking-tight">4 / 4 Engines</div>
+</div>
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="inline-flex items-center font-bold text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container mr-1"></span> 100% uptime
+              </span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant truncate">GPT-4o, Perplexity, AIO, Gemini</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="p-space-md rounded-xl bg-surface border border-outline-variant shadow-sm flex flex-col justify-between hover:border-primary transition-all">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-md text-label-md uppercase tracking-wider font-semibold">Countries Monitored</span>
+<span class="material-symbols-outlined text-primary">public</span>
+</div>
+<div class="my-space-xs">
+<div class="text-display-lg font-display-lg font-bold text-on-surface tracking-tight">18 Geos</div>
+</div>
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="font-bold text-on-surface">US, UK, DE, FR, CA</span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant truncate">Localized proxies active</span>
+</div>
+</div>
+</div>
+</section>
+<!-- FILTER & SEARCH TOOLBAR -->
+<section class="px-space-xl py-space-md bg-surface-container-lowest border-b border-outline-variant flex flex-col gap-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<!-- Universal Search Input -->
+<div class="relative flex-1 max-w-xl">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-outline transition-all" placeholder="Search prompt text, entity, model output, or citation..." type="text" value="relational database OR scalable CRM"/>
+</div>
+<!-- Dropdowns & Secondary Tools -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<!-- Model Filter Dropdown -->
+<div class="relative">
+<button class="flex items-center gap-space-xs px-space-md py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface hover:border-primary transition-all">
+<span class="text-outline">Engine:</span>
+<span class="font-semibold text-on-surface">All Models (4)</span>
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">keyboard_arrow_down</span>
+</button>
+</div>
+<!-- Country Filter Dropdown -->
+<div class="relative">
+<button class="flex items-center gap-space-xs px-space-md py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface hover:border-primary transition-all">
+<span class="text-outline">Geo:</span>
+<span class="font-semibold text-on-surface">Global (18 Geos)</span>
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">keyboard_arrow_down</span>
+</button>
+</div>
+<div class="h-6 w-px bg-outline-variant mx-1"></div>
+<!-- Table Utility Icons -->
+<button class="p-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-primary hover:border-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-primary hover:border-primary transition-colors">
+<span class="material-symbols-outlined">view_column</span>
+</button>
+<button class="flex items-center gap-space-2xs px-space-md py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-label-lg font-label-lg text-on-surface hover:border-primary transition-all">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">tune</span>
+<span>Filter Presets</span>
+</button>
+</div>
+</div>
+<!-- Status Filter Segmented Pill Bar -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 text-label-md font-label-md">
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-low border border-outline-variant text-on-surface-variant hover:bg-surface-variant font-semibold">
+            All (2,840)
+          </button>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container text-primary border border-primary-fixed-dim font-bold flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Cited &amp; Mentioned (1,642)
+          </button>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low font-medium">
+            Direct Recommendation (948)
+          </button>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low font-medium">
+            Absent / Gap (1,198)
+          </button>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant text-error hover:bg-error-container font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-error" style="font-size: 14px;">warning</span>
+            Hallucination Risk (14)
+          </button>
+</div>
+</section>
+<!-- RESULTS DATA TABLE (High Density Analytical Grid) -->
+<section class="px-space-xl py-space-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant text-label-md font-label-md uppercase tracking-wider text-outline select-none">
+<th class="py-space-sm px-space-md font-semibold">Date &amp; UTC</th>
+<th class="py-space-sm px-space-md font-semibold">Prompt Query</th>
+<th class="py-space-sm px-space-md font-semibold">Model Engine</th>
+<th class="py-space-sm px-space-md font-semibold">Country</th>
+<th class="py-space-sm px-space-md font-semibold">Detected Mentions</th>
+<th class="py-space-sm px-space-md font-semibold">Status / Signal</th>
+<th class="py-space-sm px-space-md font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-body-md font-body-md text-on-surface">
+<!-- ROW 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 24, 2025 · 14:32
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      What is the best modern CRM with a relational database architecture for engineering teams?
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px;">terminal</span>
+                      ChatGPT-4o
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">US</span>
+                      United States
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-primary">Attio (#1 Pick)</span>
+<span class="text-outline">, Notion</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-primary font-bold text-label-md border border-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
+                      Direct Recommendation
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-bright">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 24, 2025 · 13:18
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      How much does Attio enterprise cost and does it have HIPAA compliance?
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">travel_explore</span>
+                      Perplexity Pro
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">US</span>
+                      United States
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-semibold text-tertiary">Attio (Flagged Contradiction)</span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-bold text-label-md">
+<span class="material-symbols-outlined" style="font-size: 14px;">error</span>
+                      Contradiction Flag
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 24, 2025 · 11:45
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      Best scalable CRM for fast-growing YC seed to Series A startups in 2025
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px;">radar</span>
+                      Google AI Overviews
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">GB</span>
+                      United Kingdom
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="font-bold text-primary">Attio</span>,
+                      <span>HubSpot, Folk</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-primary font-bold text-label-md border border-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-size: 14px;">format_quote</span>
+                      Primary Citation
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 24, 2025 · 09:12
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      HubSpot vs Salesforce alternative for 20 person dev-led sales team
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">auto_awesome</span>
+                      Gemini 1.5 Pro
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">DE</span>
+                      Germany
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="text-outline line-through">Attio absent</span>
+<span class="text-body-sm text-outline-variant">(HubSpot, Salesforce)</span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-dim text-on-surface-variant font-medium text-label-md">
+<span class="material-symbols-outlined text-outline" style="font-size: 14px;">visibility_off</span>
+                      Uncited / Gap
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 5 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 24, 2025 · 08:04
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      Which CRMs offer flexible GraphQL APIs and automatic contact enrichment?
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px;">terminal</span>
+                      ChatGPT-4o
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">US</span>
+                      United States
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1">
+<span class="font-bold text-primary">Attio (#1)</span>,
+                      <span class="text-outline">Close CRM</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-primary font-bold text-label-md border border-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-size: 14px;">verified</span>
+                      Direct Recommendation
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 6 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 23, 2025 · 22:50
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      Modern CRM with flexible relational data model and real-time sync
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">travel_explore</span>
+                      Perplexity Pro
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">CA</span>
+                      Canada
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1">
+<span class="font-bold text-primary">Attio</span>,
+                      <span class="text-outline">Airtable</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-primary font-bold text-label-md border border-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-size: 14px;">link</span>
+                      Primary Citation
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 7 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 23, 2025 · 19:35
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      Lightweight Notion-like CRM with automatic email enrichment
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px;">radar</span>
+                      Google AI Overviews
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">FR</span>
+                      France
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-1">
+<span>Folk, </span>
+<span class="font-semibold text-primary">Attio</span>,
+                      <span>Clay</span>
+</div>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-semibold text-label-md">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">visibility</span>
+                      Secondary Mention
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- ROW 8 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-sm px-space-md whitespace-nowrap text-body-sm font-data-mono text-outline">
+                    Oct 23, 2025 · 17:20
+                  </td>
+<td class="py-space-sm px-space-md max-w-sm">
+<p class="font-medium text-on-surface truncate group-hover:text-primary transition-colors">
+                      Salesforce alternative for Series A startup with developer founders
+                    </p>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-low border border-outline-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px;">terminal</span>
+                      ChatGPT-4o
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 text-body-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-variant font-bold text-[10px]">US</span>
+                      United States
+                    </span>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="text-outline line-through">Attio absent</span>
+<span class="text-body-sm text-outline-variant">(HubSpot, Pipedrive)</span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-dim text-on-surface-variant font-medium text-label-md">
+<span class="material-symbols-outlined text-outline" style="font-size: 14px;">visibility_off</span>
+                      Uncited / Gap
+                    </span>
+</td>
+<td class="py-space-sm px-space-md whitespace-nowrap text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg border border-outline-variant text-body-sm font-medium text-primary hover:bg-surface-container transition-all">
+<span>Inspect</span>
+<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- TABLE PAGINATION FOOTER -->
+<div class="px-space-md py-space-sm bg-surface border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-space-sm text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-space-md">
+<span>Showing <strong class="font-semibold text-on-surface">1–8</strong> of <strong class="font-semibold text-on-surface">2,840</strong> chats</span>
+<div class="flex items-center gap-space-xs">
+<span>Rows per page:</span>
+<select class="py-0.5 pl-2 pr-6 border border-outline-variant rounded bg-surface-container-lowest text-on-surface text-body-sm font-body-sm focus:ring-1 focus:ring-primary">
+<option>10</option>
+<option>25</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+</div>
+<!-- Page Steppers -->
+<div class="flex items-center gap-1">
+<button class="p-1 rounded border border-outline-variant bg-surface-container-lowest text-outline hover:text-on-surface disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span>
+</button>
+<button class="px-2.5 py-1 rounded bg-primary-container text-on-primary font-bold text-label-md">1</button>
+<button class="px-2.5 py-1 rounded hover:bg-surface-container-low text-on-surface font-medium text-label-md">2</button>
+<button class="px-2.5 py-1 rounded hover:bg-surface-container-low text-on-surface font-medium text-label-md">3</button>
+<span class="px-1 text-outline">...</span>
+<button class="px-2.5 py-1 rounded hover:bg-surface-container-low text-on-surface font-medium text-label-md">284</button>
+<button class="p-1 rounded border border-outline-variant bg-surface-container-lowest text-outline hover:text-on-surface">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SELECTED CHAT TELEMETRY INSPECTION DRAWER PREVIEW -->
+<section class="px-space-xl pt-space-xs">
+<div class="p-space-lg rounded-xl bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-xs border-b border-outline-variant gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="p-1.5 rounded-lg bg-surface-container text-primary">
+<span class="material-symbols-outlined">troubleshoot</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Selected Chat Detail Preview</h3>
+<p class="text-body-sm font-body-sm text-outline">Telemetry payload captured via US-East proxy crawl cluster</p>
+</div>
+</div>
+<!-- Telemetry Meta Badges -->
+<div class="flex flex-wrap items-center gap-space-xs text-body-sm font-data-mono">
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-primary font-semibold">Model: gpt-4o-2024-08-06</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-primary font-semibold">Latency: 780ms</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-primary font-semibold">Confidence: 0.94</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-primary font-semibold">Tokens: 412 out</span>
+</div>
+</div>
+<!-- Inspector Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+<!-- Col 1: Prompt & Synthetic Context -->
+<div class="flex flex-col gap-space-xs">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline font-semibold">Target Query Prompt</span>
+<div class="p-space-md rounded-lg bg-surface border border-outline-variant text-body-md font-body-md text-on-surface">
+                "What is the best modern CRM with a relational database architecture for engineering teams?"
+              </div>
+<div class="flex flex-col gap-1 text-body-sm font-body-sm text-on-surface-variant mt-space-xs">
+<div class="flex justify-between">
+<span class="text-outline">Crawl Origin:</span>
+<span class="font-data-mono font-medium">198.51.100.42 (Ashburn, VA)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Search Grounding:</span>
+<span class="font-medium text-primary">Web Browsing Active</span>
+</div>
+</div>
+</div>
+<!-- Col 2: Exact Generative Response Excerpt -->
+<div class="lg:col-span-2 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-label-md uppercase tracking-wider text-outline font-semibold">Synthesized Model Output (Verbatim)</span>
+<span class="text-label-md font-label-md text-primary font-bold">Attio identified at offset #1</span>
+</div>
+<div class="p-space-md rounded-lg bg-surface border border-outline-variant text-body-md font-body-md leading-relaxed text-on-surface font-body-md">
+                "If you are looking for a CRM built with a true relational database architecture tailored for engineering-led teams, 
+                <mark class="bg-primary-fixed text-on-primary-fixed font-bold px-1 rounded">Attio is widely regarded as the premier solution</mark>. 
+                Unlike legacy platforms like Salesforce or HubSpot which rely on rigid predefined schemas, Attio permits arbitrary object mapping, bidirectional syncs via modern REST and GraphQL APIs, and custom computation attributes directly modeled on PostgreSQL paradigms."
+              </div>
+<div class="flex flex-wrap items-center gap-space-md mt-space-2xs text-body-sm font-body-sm">
+<span class="text-outline">Citation Anchors:</span>
+<a class="text-primary hover:underline flex items-center gap-0.5" href="#">
+<span class="material-symbols-outlined" style="font-size: 14px;">open_in_new</span> attio.com/platform/database
+                </a>
+<a class="text-primary hover:underline flex items-center gap-0.5" href="#">
+<span class="material-symbols-outlined" style="font-size: 14px;">open_in_new</span> techcrunch.com/attio-series-b
+                </a>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

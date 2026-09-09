@@ -1,0 +1,49 @@
+{
+  "projectId": "8355541918828779128",
+  "sessionId": "13167907228274798748",
+  "outputComponents": [
+    {
+      "design": {
+        "screens": [
+          {
+            "screenshot": {
+              "name": "projects/8355541918828779128/files/b9c4fc2396f64836bfea4c1017dd32dd",
+              "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1XaPqCCbdRpvMl2LY6I5E0DBBmmeVNfmR96nzGv4lcFc_dhzitSVCtPTJveahPHABF-lXzSBPqdklPXN9xWXn3zjUSJwE5944BYhMOlJzDECDzIDfoKAvzfuz38dU0QBNMBaFOk1P2tIOx_h5qoCNM55UG8X5hCPzouzShj4b-w7QsEYpMmcNryPR_Ki2jEjO2jwKI1cLdKUGU0qkSWV2T_bNQL9wCXHu1332PnqEshA1kvJ8vvBG_scA"
+            },
+            "htmlCode": {
+              "name": "projects/8355541918828779128/files/5fe0594bf9d240cd84b95bde479be907",
+              "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ6Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpZCiVodG1sXzAwZGM0MmMyMDU2MjQ3YTdhZTQzZDU1ZmVlMzMyZGUwEgoSBhDioPqSDRgBkgEjCgpwcm9qZWN0X2lkEhVCEzgzNTU1NDE5MTg4Mjg3NzkxMjg&filename=&opi=96797242",
+              "mimeType": "text/html"
+            },
+            "id": "268a902afc02483c8aacb7338839c9a3",
+            "generatedBy": "create_datastore_entry",
+            "width": "2560",
+            "height": "2818",
+            "title": "GeoLens — Sources & Citations",
+            "name": "projects/8355541918828779128/screens/268a902afc02483c8aacb7338839c9a3",
+            "theme": {},
+            "deviceType": "DESKTOP",
+            "screenType": "DESIGN",
+            "screenMetadata": {
+              "agentType": "PRO_AGENT",
+              "status": "COMPLETE"
+            }
+          }
+        ],
+        "theme": {}
+      }
+    },
+    {
+      "text": "I have designed and built the **GeoLens — Sources & Citations** desktop product screen within the AI Visibility suite, adhering strictly to your color system, brand rules, and B2B SaaS interface guidelines.\n\n### What Was Designed & Implemented:\n\n1. **Brand Identity & Strict Color System:**\n   - **Primary Accent:** Teal (`#0F766E`) exclusively applied for primary actions, active state indicators, and benchmark highlights. No purple or unwanted tones.\n   - **Neutrals:** Crisp white surfaces (`#FFFFFF`), light platform background (`#F5F7F8`), ink dark text (`#0B1218`), muted metadata text (`#5C6B76`), and borders (`#E3E9ED`).\n   - **Typography:** **Plus Jakarta Sans** with clean B2B hierarchy and strict standard icon glyphs (no emojis).\n\n2. **Persistent App Chrome:**\n   - **Left Navigation:** Fully synchronized with the GeoLens suite structure. **Sources & Citations** is active under the *Boost & Monitor* section with teal pill styling and live indicator.\n   - **Top Bar:** Project switcher displaying `Attio · Demo`, `Last 7 days` (active) / `Last 30 days` / `90 days`, `All Models (4)`, `Export`, and the prominent teal `New Analysis` button.\n\n3. **Core Sources & Citations Workspace:**\n   - **Header & Subtitle:** *\"Sources & Citations: Domains AI retrieves and cites when answering buyer questions\"*.\n   - **4 KPI Metric Cards:**\n     - **Domains Retrieved:** `418` (+34 trend, 2,840 queries in crawl surface).\n     - **Citation Rate:** `38.2%` (+4.1%, top decile across 4 foundation engines).\n     - **Own-Domain Share:** `21.4%` (182 direct citations for `attio.com`).\n     - **Gap Domains:** `64` (with 18 flagged as critical rival-dominated domains).\n\n4. **Telemetry & Citation Data Table:**\n   - **Filters:** Domain search bar, segment filters (`All`, `Own`, `Competitor`, `Other`), and `Cited only (exclude unverified retrievals)` toggle.\n   - **Columns:** `Domain` (with favicon monogram & sub-paths), `Retrieved %` (with progress visualization), `Citation Rate`, `Classification` badge, `Mentions`, and `Gap vs You` (showing positive baseline/leads vs gaps).\n   - Real benchmark records for `attio.com` (Own), `hubspot.com`, `salesforce.com`, `g2.com` (Review Platform), `reddit.com` (Community), `techcrunch.com` (Media), and `pipedrive.com`.\n\n5. **Right-Hand Intelligence Rail:**\n   - **Top Cited Domains:** Visual horizontal bar chart ranking the top 5 citation leaders across 2,840 AI answer generations.\n   - **Domain Classification Card & CTA:** Classification completion bar (91.8% categorized) with the primary button **\"Classify Domains\"** to tag unclassified sources.\n   - **Engine Retrieval Breakdown:** Citation density comparison across Perplexity Pro, Google AI Overviews, ChatGPT-4o, and Gemini."
+    },
+    {
+      "suggestion": "Create a drawer modal for inspecting citation URLs within a specific domain"
+    },
+    {
+      "suggestion": "Design the 'Classify Domains' batch-tagging workflow modal"
+    },
+    {
+      "suggestion": "Build the exportable Citation Audit PDF report view"
+    }
+  ]
+}

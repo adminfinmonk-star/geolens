@@ -1,0 +1,21 @@
+Design ONLY the left navigation chrome for GeoLens AI Visibility suite — DESKTOP light theme. No main content workspace (empty mint canvas on the right is fine).
+
+Brand: teal #0F766E, white panels, ink #0B1218, muted #5C6B76, borders #E3E9ED, Plus Jakarta Sans. Soft mint page wash. NO purple. NO dark mode.
+
+Layout — Semrush-style dual rail:
+1) Far-left slim icon rail (~64px): GeoLens mark, AI Visibility active (mint teal), placeholder icons for Home/Reports/Settings at bottom.
+2) Secondary sidebar (~256px) titled "AI Visibility" with live pulse and small version chip.
+
+Navigation groups MUST be expandable/collapsible accordion sections with chevron:
+- AI Analysis (expanded): Visibility Overview, Competitor Research, Prompt Research
+- Brand Performance (expanded): Brand Performance, Perception & Sentiment, Fact-checking
+- Boost & Monitor (expanded): Prompt Tracking ACTIVE with Live badge (teal filled row, white text), Sources & Citations, Actions & Fixes
+- Results (collapsed): shows chevron only
+- Settings (collapsed)
+
+Active link: solid teal #0F766E background, white text, 10–12px radius.
+Inactive: muted text, soft hover #F5F7F8.
+Section headers: uppercase 10–11px muted, with expand_more / expand_less chevron on the right.
+Bottom of secondary: Prompt Quota progress widget (teal bar).
+
+Professional B2B. No emoji. 1440px desktop showing both rails clearly.

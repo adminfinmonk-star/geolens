@@ -1,0 +1,16 @@
+Design a DESKTOP light-theme SaaS ACTION DETAIL screen for GeoLens Actions & Fixes.
+
+Brand: teal #0F766E only — NO purple. Light theme. Plus Jakarta Sans. Soft mint wash.
+
+Chrome: Monitor suite active; secondary Actions & Fixes active.
+
+Main — Action detail:
+- Back to Actions & Fixes
+- Title from action overview · Opportunity score badge
+- Status pills: New / In progress / Done / Declined with teal primary Update status
+- Sections: Why this matters · Competitor evidence · Brief · Steps checklist · Expected outcome
+- Evidence table or cards
+- Opportunity score bar
+- Link to Impact
+
+Professional B2B. No emoji. 1440px.
