@@ -4,6 +4,7 @@ import {
   coverageOverview,
   extractBrandProfile,
   generateDiscoveryPrompts,
+  inferMarketFromDomain,
   parsePromptsCsv,
   promptVolumeScore,
   suggestCompetitors,
@@ -16,6 +17,28 @@ describe("extractBrandProfile", () => {
     expect(p.name).toBe("Acme");
     expect(p.industry).toMatch(/CRM/i);
     expect(p.personas.length).toBeGreaterThan(0);
+  });
+
+  it("classifies LLM routers as AI infrastructure, not CRM", () => {
+    const p = extractBrandProfile("https://openrouter.ai");
+    expect(p.industry).toMatch(/AI/i);
+    expect(p.industry).not.toMatch(/CRM/i);
+  });
+});
+
+describe("inferMarketFromDomain", () => {
+  it("maps Indian fintech .com brands to India, not US", () => {
+    const m = inferMarketFromDomain("thefinmonk.com");
+    expect(m.country).toBe("IN");
+    expect(m.location).toBe("India");
+  });
+
+  it("maps .in ccTLD to India", () => {
+    expect(inferMarketFromDomain("example.in").country).toBe("IN");
+  });
+
+  it("keeps generic .com in the US", () => {
+    expect(inferMarketFromDomain("acme.example").country).toBe("US");
   });
 });
 

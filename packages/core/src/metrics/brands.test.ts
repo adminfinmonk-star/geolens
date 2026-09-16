@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  compareBrandRank,
+  competitiveVisibilityScore,
   computeBrandMetrics,
   domainMetrics,
   gapScore,
@@ -100,6 +102,56 @@ describe("domainMetrics §8.2 trap", () => {
     expect(m.retrievalRate).toBeCloseTo(3.0, 5);
     expect(m.retrievedPercentage).toBeCloseTo(1.0, 5);
     expect(m.citationRate).toBeCloseTo(4.0, 5);
+  });
+});
+
+describe("competitiveVisibilityScore", () => {
+  it("does not call 2/2 listicle presence a High 100", () => {
+    const score = competitiveVisibilityScore({
+      visibility: 1,
+      shareOfVoice: 1 / 3,
+      position: 3,
+      eligibleChats: 2,
+    });
+    expect(score.value).toBeLessThan(60);
+    expect(score.band).not.toBe("high");
+    expect(score.sampleThin).toBe(true);
+  });
+
+  it("stays High for a large sample with strong presence and SoV", () => {
+    const score = competitiveVisibilityScore({
+      visibility: 0.87,
+      shareOfVoice: 0.46,
+      position: 1.1,
+      eligibleChats: 210,
+    });
+    expect(score.value).toBeGreaterThanOrEqual(60);
+    expect(score.band).toBe("high");
+    expect(score.sampleThin).toBe(false);
+  });
+
+  it("is Low when the brand is absent", () => {
+    const score = competitiveVisibilityScore({
+      visibility: 0,
+      shareOfVoice: 0,
+      position: null,
+      eligibleChats: 20,
+    });
+    expect(score.band).toBe("low");
+    expect(score.value).toBeLessThan(35);
+  });
+});
+
+describe("compareBrandRank", () => {
+  it("ranks by share of voice, not tied presence", () => {
+    const rows = [
+      { share_of_voice: 0.22, position: 1, visibility: 1 },
+      { share_of_voice: 0.33, position: 3, visibility: 1 },
+      { share_of_voice: 0.22, position: 2, visibility: 1 },
+    ];
+    rows.sort(compareBrandRank);
+    expect(rows[0]?.share_of_voice).toBeCloseTo(0.33);
+    expect(rows[1]?.position).toBe(1);
   });
 });
 

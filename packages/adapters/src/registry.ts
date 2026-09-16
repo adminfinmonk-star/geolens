@@ -8,6 +8,11 @@ import {
   PerplexityApiAdapter,
 } from "./api/providers.js";
 import { CHANNEL_PROVIDER_ROUTE } from "./api/fixtures.js";
+import { CursorRoutedAdapter, shouldUseCursor } from "./api/cursor.js";
+import {
+  OpenRouterRoutedAdapter,
+  shouldUseOpenRouter,
+} from "./api/openrouter.js";
 
 const cache = new Map<string, EngineAdapter>();
 
@@ -83,18 +88,25 @@ export function getAdapter(channelId: string): EngineAdapter {
     if (!route) {
       throw new Error(`no_adapter_for_channel:${channelId}`);
     }
-    const inner = buildProviderAdapter(route.provider);
-    // Canonical provider channels use the concrete adapter; aliases are routed.
-    if (
+    // Prefer OpenRouter (fast chat completions), then Cursor, then native vendor APIs
+    if (shouldUseOpenRouter(route.provider)) {
+      adapter = new OpenRouterRoutedAdapter(channelId, route.provider);
+    } else if (shouldUseCursor(route.provider)) {
+      adapter = new CursorRoutedAdapter(channelId, route.provider);
+    } else if (
       (route.provider === "openai" && channelId === "openai-1") ||
       (route.provider === "perplexity" && channelId === "perplexity-1") ||
       (route.provider === "anthropic" && channelId === "anthropic-1") ||
       (route.provider === "google" && channelId === "google-3") ||
       (route.provider === "copilot" && channelId === "copilot-1")
     ) {
-      adapter = inner;
+      adapter = buildProviderAdapter(route.provider);
     } else {
-      adapter = new RoutedChannelAdapter(channelId, inner, route.note);
+      adapter = new RoutedChannelAdapter(
+        channelId,
+        buildProviderAdapter(route.provider),
+        route.note,
+      );
     }
   }
 

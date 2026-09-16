@@ -47,7 +47,7 @@ export function shouldUseCursor(
   if (!cursorKeyPresent(env)) return false;
   if (env.GEO_ADAPTER_MODE === "fixture") return false;
   const backend = (env.GEO_COLLECTION_BACKEND ?? "auto").toLowerCase();
-  if (backend === "native") return false;
+  if (backend === "native" || backend === "openrouter") return false;
   if (backend === "cursor") return true;
   // auto: Cursor fills in when the native vendor key is absent
   return resolveProviderMode(provider, env) === "fixture";
@@ -100,27 +100,36 @@ export class CursorRoutedAdapter implements EngineAdapter {
 
   async run(req: EngineRequest): Promise<EngineResponse> {
     if (this.effectiveMode() === "fixture" || !this.apiKey) {
+      const tracked = req.trackedBrands?.filter(Boolean) ?? [];
       return fixtureEngineResponse(req, {
         provider: this.provider,
         modelReported: `cursor-fixture:${this.modelId()}`,
         brandBias:
-          this.provider === "anthropic"
-            ? ["CloudNine", "BetaSoft", "DataPeak", "Acme"]
-            : this.provider === "google"
-              ? ["DataPeak", "Acme", "CloudNine", "BetaSoft"]
-              : ["Acme", "CloudNine", "BetaSoft", "Northwind"],
+          tracked.length > 0
+            ? tracked
+            : this.provider === "anthropic"
+              ? ["CloudNine", "BetaSoft", "DataPeak", "Acme"]
+              : this.provider === "google"
+                ? ["DataPeak", "Acme", "CloudNine", "BetaSoft"]
+                : ["Acme", "CloudNine", "BetaSoft", "Northwind"],
       });
     }
 
     const t0 = Date.now();
     const model = this.modelId();
+    const tracked = req.trackedBrands?.filter(Boolean) ?? [];
     const prompt = [
       "You are simulating an AI search / assistant answer for brand analytics.",
-      "Answer the user question helpfully. Name relevant brands and products when natural.",
+      "Answer the user question helpfully. Name relevant real-world brands and products when natural.",
+      tracked.length
+        ? `When relevant, consider these tracked brands: ${tracked.join(", ")}.`
+        : "",
       "Do not mention that you are Cursor or an API.",
       "",
       `Question: ${req.prompt}`,
-    ].join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
 
     try {
       const result = await Agent.prompt(prompt, {

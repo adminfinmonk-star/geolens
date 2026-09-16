@@ -25,9 +25,12 @@ export {
 
 import { runCollectEnrichJob } from "./collect.js";
 import { startCollectWorker, queueMode } from "./queue.js";
+import { loadRepoEnv, clearAdapterCache } from "@geo/adapters";
 
 async function main() {
-  process.env.GEO_ADAPTER_MODE = process.env.GEO_ADAPTER_MODE ?? "fixture";
+  loadRepoEnv();
+  clearAdapterCache();
+  process.env.GEO_ADAPTER_MODE = process.env.GEO_ADAPTER_MODE ?? "auto";
   const args = process.argv.slice(2);
 
   if (args[0] === "worker") {

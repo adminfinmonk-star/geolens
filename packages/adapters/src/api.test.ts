@@ -14,6 +14,7 @@ import {
   resetChannelHealth,
   resetRateLimiters,
   resolveProviderMode,
+  shouldUseOpenRouter,
   withRetry,
   HttpStatusError,
 } from "./index.js";
@@ -137,6 +138,16 @@ describe("API-first Peec channel adapters", () => {
     }
   });
 
+  it("routes through OpenRouter when backend=openrouter and the key is set", () => {
+    process.env.GEO_ADAPTER_MODE = "auto";
+    process.env.GEO_COLLECTION_BACKEND = "openrouter";
+    process.env.OPENROUTER_API_KEY = "sk-or-test";
+    clearAdapterCache();
+    expect(shouldUseOpenRouter("openai")).toBe(true);
+    const a = getAdapter("openai-0");
+    expect(a.constructor.name).toBe("OpenRouterRoutedAdapter");
+  });
+
   it("describeAdapterRuntime never claims live without a key", () => {
     const rt = describeAdapterRuntime({
       GEO_ADAPTER_MODE: "auto",
@@ -148,6 +159,6 @@ describe("API-first Peec channel adapters", () => {
     expect(
       rt.channels.find((c) => c.channel_id === "perplexity-1")?.mode,
     ).toBe("fixture");
-    expect(rt.routing_policy).toMatch(/API-first/i);
+    expect(rt.routing_policy).toMatch(/OPENROUTER_API_KEY/i);
   });
 });

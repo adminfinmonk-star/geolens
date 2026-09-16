@@ -7,4 +7,6 @@ export * from "./degraded.js";
 export * from "./api/fixtures.js";
 export * from "./api/providers.js";
 export * from "./api/cursor.js";
+export * from "./api/openrouter.js";
 export * from "./registry.js";
+export * from "./loadEnv.js";

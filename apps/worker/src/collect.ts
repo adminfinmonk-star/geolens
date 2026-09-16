@@ -93,6 +93,7 @@ export async function runCollectEnrichJob(input: {
       modelId: meta.currentModel,
       runDate: input.runDate,
       seed: input.seed ?? "worker",
+      trackedBrands: input.brands.map((b) => b.name),
     });
 
     if (raw.status !== "ok") {

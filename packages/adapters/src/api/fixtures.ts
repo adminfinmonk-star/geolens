@@ -68,7 +68,10 @@ export function fixtureEngineResponse(
     return empty(opts, t0, "GROUNDING_TIMEOUT");
   }
 
-  const brands = [...opts.brandBias];
+  const brands =
+    req.trackedBrands && req.trackedBrands.length > 0
+      ? [...req.trackedBrands]
+      : [...opts.brandBias];
   if (rng() < 0.35 && brands.length > 1) {
     const i = 1 + Math.floor(rng() * (brands.length - 1));
     const tmp = brands[0]!;
@@ -76,7 +79,7 @@ export function fixtureEngineResponse(
     brands[i] = tmp;
   }
 
-  const lead = brands[0] ?? "BetaSoft";
+  const lead = brands[0] ?? opts.brandBias[0] ?? "Unknown";
   const rest = brands.slice(1, 4);
   let text = `${lead} is frequently recommended for ${req.prompt}`;
   if (rest.length) {
@@ -186,7 +189,8 @@ function anyProviderKey(
       env.GOOGLE_API_KEY ||
       env.GEMINI_API_KEY ||
       env.AZURE_OPENAI_API_KEY ||
-      env.CURSOR_API_KEY,
+      env.CURSOR_API_KEY ||
+      env.OPENROUTER_API_KEY,
   );
 }
 
@@ -286,27 +290,40 @@ export function describeAdapterRuntime(
     GEO_ADAPTER_MODE: env.GEO_ADAPTER_MODE ?? "auto",
     GEO_COLLECTION_BACKEND: env.GEO_COLLECTION_BACKEND ?? "auto",
     cursor_key_present: Boolean(env.CURSOR_API_KEY),
+    openrouter_key_present: Boolean(env.OPENROUTER_API_KEY),
     global_resolved: resolveAdapterMode(env),
     providers: rows,
     channels: Object.entries(CHANNEL_PROVIDER_ROUTE).map(
-      ([channel_id, route]) => ({
-        channel_id,
-        provider: route.provider,
-        key_present: providerKeyPresent(route.provider, env),
-        mode: resolveProviderMode(route.provider, env),
-        surface_kind: "api" as const,
-        route_note: route.note,
-        via_cursor:
+      ([channel_id, route]) => {
+        const backend = (env.GEO_COLLECTION_BACKEND ?? "auto").toLowerCase();
+        const missingNative = !providerKeyPresent(route.provider, env);
+        const via_openrouter =
+          Boolean(env.OPENROUTER_API_KEY) &&
+          backend !== "native" &&
+          backend !== "cursor" &&
+          (backend === "openrouter" || missingNative) &&
+          env.GEO_ADAPTER_MODE !== "fixture";
+        const via_cursor =
           Boolean(env.CURSOR_API_KEY) &&
-          (env.GEO_COLLECTION_BACKEND ?? "auto") !== "native" &&
-          ((env.GEO_COLLECTION_BACKEND ?? "auto") === "cursor" ||
-            !providerKeyPresent(route.provider, env)) &&
-          env.GEO_ADAPTER_MODE !== "fixture",
-      }),
+          !via_openrouter &&
+          backend !== "native" &&
+          (backend === "cursor" || missingNative) &&
+          env.GEO_ADAPTER_MODE !== "fixture";
+        return {
+          channel_id,
+          provider: route.provider,
+          key_present: providerKeyPresent(route.provider, env),
+          mode: resolveProviderMode(route.provider, env),
+          surface_kind: "api" as const,
+          route_note: route.note,
+          via_openrouter,
+          via_cursor,
+        };
+      },
     ),
     routing_policy:
-      "API-first Peec parity: GPT→OpenAI, Claude→Anthropic, Gemini/AI Mode/Overviews→Google, Perplexity→Sonar, Copilot→Azure. With CURSOR_API_KEY and GEO_COLLECTION_BACKEND=auto, Cursor fills channels missing a native vendor key.",
+      "OPENROUTER_API_KEY with GEO_COLLECTION_BACKEND=openrouter|auto fills channels missing native keys. CURSOR_API_KEY is the fallback. Native vendor keys still preferred when set.",
     honesty:
-      "surface_kind is always api (or simulator). We do not scrape consumer UIs. Cursor routing is multi-model text only (not AI-search citations). Native keys preferred when set; otherwise Cursor or fixtures.",
+      "surface_kind is always api (or simulator). We do not scrape consumer UIs. OpenRouter/Cursor are multi-model text, not identical to consumer AI-search UIs.",
   };
 }

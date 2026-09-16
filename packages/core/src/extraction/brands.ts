@@ -51,6 +51,7 @@ export function findBrandMentions(
   for (const { brand, regex } of compiled) {
     regex.lastIndex = 0;
     let m: RegExpExecArray | null;
+    // biome-ignore lint/suspicious/noAssignInExpressions: canonical exec loop for a global regex.
     while ((m = regex.exec(text)) !== null) {
       hits.push({
         brandId: brand.brandId,

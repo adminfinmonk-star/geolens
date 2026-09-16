@@ -51,6 +51,63 @@ export interface DiscoverySetup {
 }
 
 /** Offline brand profile from domain — no network (simulator path). */
+const CC_TLD: Record<string, { country: string; location: string }> = {
+  in: { country: "IN", location: "India" },
+  uk: { country: "GB", location: "United Kingdom" },
+  de: { country: "DE", location: "Germany" },
+  au: { country: "AU", location: "Australia" },
+  ca: { country: "CA", location: "Canada" },
+  fr: { country: "FR", location: "France" },
+  sg: { country: "SG", location: "Singapore" },
+  ae: { country: "AE", location: "United Arab Emirates" },
+  nz: { country: "NZ", location: "New Zealand" },
+};
+
+const INDIA_HOST =
+  /finmonk|zerodha|groww|paytm|phonepe|razorpay|upstox|angelone|fyers|kuvera|indiamart|flipkart|zomato|swiggy|policybazaar|jiomoney/;
+
+export function inferMarketFromDomain(domain: string): {
+  country: string;
+  location: string;
+  markets: string[];
+} {
+  const host = domain
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]!
+    .toLowerCase();
+  const parts = host.split(".");
+  const tld = parts[parts.length - 1] ?? "";
+  if (INDIA_HOST.test(host) || tld === "in" || host.endsWith(".co.in")) {
+    return { country: "IN", location: "India", markets: ["India"] };
+  }
+  if (host.endsWith(".co.uk") || tld === "uk") {
+    return {
+      country: "GB",
+      location: "United Kingdom",
+      markets: ["United Kingdom"],
+    };
+  }
+  const mapped = CC_TLD[tld];
+  if (mapped && tld !== "com") {
+    return { ...mapped, markets: [mapped.location] };
+  }
+  return {
+    country: "US",
+    location: "United States",
+    markets: ["United States"],
+  };
+}
+
+export function countryDisplayName(code: string): string {
+  const row = Object.values(CC_TLD).find((m) => m.country === code.toUpperCase());
+  if (row) return row.location;
+  if (code.toUpperCase() === "US") return "United States";
+  if (code.toUpperCase() === "IN") return "India";
+  if (code.toUpperCase() === "GB") return "United Kingdom";
+  return code.toUpperCase();
+}
+
 export function extractBrandProfile(domain: string): BrandProfile {
   const host = domain
     .replace(/^https?:\/\//, "")
@@ -58,34 +115,51 @@ export function extractBrandProfile(domain: string): BrandProfile {
     .split("/")[0]!
     .toLowerCase();
   const slug = host.split(".")[0] ?? "brand";
+  const market = inferMarketFromDomain(host);
   const name = slug.charAt(0).toUpperCase() + slug.slice(1);
 
   const industry =
     /crm|sales|hub/.test(slug) || host.includes("acme")
       ? "B2B CRM / sales software"
-      : /shop|store|commerce/.test(slug)
-        ? "E-commerce"
-        : /pay|fin|bank/.test(slug)
-          ? "Fintech"
-          : "B2B software";
+      : /warby|zenni|glasses|optics|eyewear|lens/.test(slug)
+        ? "Eyewear"
+        : /shop|store|commerce|allbirds|nike|adidas/.test(slug)
+          ? "E-commerce"
+          : /pay|fin|bank|stripe/.test(slug)
+            ? "Fintech"
+            : /router|openai|anthropic|groq|mistral|together|fireworks|huggingface|replicate|ollama/.test(
+                  slug,
+                )
+              ? "AI models / infrastructure"
+              : "B2B software";
 
   const products =
     industry.includes("CRM")
       ? ["Pipeline", "Contacts", "Reporting"]
-      : ["Platform", "Analytics", "Integrations"];
+      : industry.startsWith("AI")
+        ? ["Model routing", "API access", "Inference"]
+        : industry === "Eyewear"
+        ? ["Eyeglasses", "Sunglasses", "Home try-on"]
+        : industry === "E-commerce"
+          ? ["Online store", "Fulfillment", "Apparel"]
+          : ["Platform", "Analytics", "Integrations"];
 
   return {
     domain: host,
     name,
     industry,
     tagline: `${name} helps teams work faster in ${industry.toLowerCase()}.`,
-    description: `${name} is a ${industry.toLowerCase()} company helping teams choose and use the right tools.`,
+    description: `${name} is a ${industry.toLowerCase()} company helping people discover and choose the right products.`,
     identityTags: industry.includes("CRM")
       ? ["B2B", "SaaS", "Sales"]
-      : industry.includes("commerce")
+      : industry.startsWith("AI")
+        ? ["AI", "Infrastructure", "B2B"]
+        : industry === "Eyewear"
+        ? ["DTC", "Retail", "Eyewear"]
+      : industry.includes("commerce") || industry === "E-commerce"
         ? ["E-commerce", "Retail"]
         : ["B2B", "Software"],
-    targetMarkets: ["United States"],
+    targetMarkets: market.markets,
     products,
     personas: ["Agency owner", "RevOps lead", "Founder"],
     reviewed: false,

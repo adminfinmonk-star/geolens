@@ -6,6 +6,8 @@ export interface EngineRequest {
   modelId: string;
   runDate: string;
   seed?: string;
+  /** Tracked brand names — fixtures/Cursor bias should prefer these over Acme demo names. */
+  trackedBrands?: string[];
 }
 
 export interface RawSource {

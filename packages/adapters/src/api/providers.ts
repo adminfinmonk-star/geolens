@@ -231,7 +231,7 @@ export class PerplexityApiAdapter implements EngineAdapter {
       const res = await gatedFetch(
         "perplexity",
         this.channelId,
-        "https://api.perplexity.ai/chat/completions",
+        "https://api.perplexity.ai/v1/responses",
         {
           method: "POST",
           headers: {
@@ -239,25 +239,27 @@ export class PerplexityApiAdapter implements EngineAdapter {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "sonar",
-            messages: [{ role: "user", content: req.prompt }],
+            preset: process.env.PERPLEXITY_PRESET?.trim() || "fast",
+            input: req.prompt,
           }),
         },
       );
-      const raw = (await res.json()) as {
-        choices?: { message?: { content?: string } }[];
-        search_results?: { url: string; title?: string }[];
-        model?: string;
-      };
-      const text = raw.choices?.[0]?.message?.content ?? "";
-      const sources: RawSource[] = (raw.search_results ?? []).map((s, i) => ({
-        url: s.url,
-        title: s.title,
-        cited: true,
-        citationCount: 1,
-        citationPosition: i + 1,
-        retrievalRank: i + 1,
-      }));
+      const raw = (await res.json()) as AgentApiResponse;
+      const text = agentApiText(raw);
+      const sources: RawSource[] = agentApiResults(raw).map((s, i) => {
+        // §2: a source is retrieved; a citation is referenced in the answer.
+        // The Agent API marks references inline as [n] against result index.
+        const marker = new RegExp(`\\[${i + 1}\\]`, "g");
+        const citationCount = (text.match(marker) ?? []).length;
+        return {
+          url: s.url,
+          title: s.title,
+          cited: citationCount > 0,
+          citationCount,
+          citationPosition: citationCount > 0 ? i + 1 : undefined,
+          retrievalRank: i + 1,
+        };
+      });
       const out: EngineResponse = {
         status: text ? "ok" : "empty",
         text,
@@ -286,6 +288,64 @@ export class PerplexityApiAdapter implements EngineAdapter {
       );
     }
   }
+}
+
+/**
+ * Perplexity Agent API (`/v1/responses`) — replaced Sonar chat completions,
+ * which now 403s. Returns a typed `output` array: one `search_results` item
+ * holding the retrieved sources, one `message` item holding the answer.
+ */
+interface AgentApiResponse {
+  model?: string;
+  output_text?: string;
+  output?: {
+    type: string;
+    results?: { url: string; title?: string; snippet?: string }[];
+    content?: { type: string; text?: string }[];
+  }[];
+}
+
+function agentApiText(raw: AgentApiResponse): string {
+  const msg = raw.output?.find((o) => o.type === "message");
+  const fromParts = msg?.content
+    ?.filter((c) => c.type === "output_text")
+    .map((c) => c.text ?? "")
+    .join("")
+    .trim();
+  return fromParts || raw.output_text?.trim() || "";
+}
+
+function agentApiResults(
+  raw: AgentApiResponse,
+): { url: string; title?: string }[] {
+  const items = raw.output?.filter((o) => o.type === "search_results") ?? [];
+  const seen = new Set<string>();
+  const out: { url: string; title?: string }[] = [];
+  for (const item of items) {
+    for (const r of item.results ?? []) {
+      if (!r.url || seen.has(r.url)) continue;
+      seen.add(r.url);
+      out.push({ url: r.url, title: r.title });
+    }
+  }
+  return out;
+}
+
+/**
+ * Registry channels carry the stable id `gemini-grounded`, not a callable model.
+ * Google retires dated ids (2.0/2.5 flash now 404), and the `-latest` aliases
+ * track the newest release, which is the one most likely to return 503 under
+ * launch demand. Pin a known-good version instead; override with GEMINI_MODEL.
+ */
+export const DEFAULT_GEMINI_MODEL = "gemini-3.6-flash";
+
+export function resolveGeminiModel(currentModel?: string): string {
+  const pinned = process.env.GEMINI_MODEL?.trim();
+  if (pinned) return pinned;
+  if (!currentModel || currentModel === "gemini-grounded") {
+    return DEFAULT_GEMINI_MODEL;
+  }
+  return currentModel;
 }
 
 export class GoogleGeminiApiAdapter implements EngineAdapter {
@@ -342,20 +402,32 @@ export class GoogleGeminiApiAdapter implements EngineAdapter {
     }
 
     const t0 = Date.now();
-    const model =
-      getChannel(this.channelId)?.currentModel === "gemini-grounded"
-        ? "gemini-2.0-flash"
-        : (getChannel(this.channelId)?.currentModel ?? "gemini-2.0-flash");
+    const model = resolveGeminiModel(getChannel(this.channelId)?.currentModel);
+    let grounded = true;
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(this.apiKey!)}`;
-      const res = await gatedFetch("google", this.channelId, url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: req.prompt }] }],
-          tools: [{ google_search: {} }],
-        }),
-      });
+      const post = (useSearch: boolean) =>
+        gatedFetch("google", this.channelId, url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: req.prompt }] }],
+            ...(useSearch ? { tools: [{ google_search: {} }] } : {}),
+          }),
+        });
+
+      // Search grounding is billed separately and 429s on keys without that
+      // quota, even when plain generation is fine. Fall back to ungrounded text
+      // rather than losing the channel — sources stay empty and we flag it.
+      let res: Awaited<ReturnType<typeof post>>;
+      try {
+        res = await post(true);
+      } catch (err) {
+        const status = err instanceof HttpStatusError ? err.status : 0;
+        if (status !== 429 && status !== 403) throw err;
+        grounded = false;
+        res = await post(false);
+      }
       const raw = (await res.json()) as {
         candidates?: {
           content?: { parts?: { text?: string }[] };
@@ -396,8 +468,19 @@ export class GoogleGeminiApiAdapter implements EngineAdapter {
         ads: [],
         products: [],
         maps: [],
-        features: [{ type: "web_search" }],
-        raw: { ...raw, live: true, provider: "google" },
+        features: grounded ? [{ type: "web_search" }] : [],
+        raw: {
+          ...raw,
+          live: true,
+          provider: "google",
+          grounded,
+          ...(grounded
+            ? {}
+            : {
+                collection_note:
+                  "Search grounding unavailable for this key (no quota) — ungrounded text only, so no sources or citations.",
+              }),
+        },
         meta: {
           modelReported: raw.modelVersion ?? model,
           latencyMs: Date.now() - t0,

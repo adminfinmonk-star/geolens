@@ -14,6 +14,8 @@ export interface ScheduleCollectOptions {
   /** When true, process inline even if Redis is configured (tests). */
   forceInline?: boolean;
   seed?: string;
+  /** Max concurrent inline LLM/adapter calls (default 4). */
+  concurrency?: number;
 }
 
 /**
@@ -79,9 +81,27 @@ export async function scheduleProjectCollect(
           seed: opts?.seed,
         });
         payloads.push(payload);
-        enqueued.push(await enqueueCollectJob(payload));
       }
     }
+
+    // Run inline jobs in parallel (Cursor/LLM calls dominate latency)
+    const concurrency = Math.max(1, opts?.concurrency ?? 4);
+    const results: EnqueueResult[] = new Array(payloads.length);
+    let next = 0;
+    async function worker() {
+      while (next < payloads.length) {
+        const i = next++;
+        const payload = payloads[i]!;
+        results[i] = await enqueueCollectJob(payload);
+      }
+    }
+    await Promise.all(
+      Array.from(
+        { length: Math.min(concurrency, Math.max(1, payloads.length)) },
+        () => worker(),
+      ),
+    );
+    enqueued.push(...results);
   } finally {
     if (opts?.forceInline) {
       if (prevRedis !== undefined) process.env.REDIS_URL = prevRedis;
