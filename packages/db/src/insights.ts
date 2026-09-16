@@ -3,6 +3,7 @@ import {
   computePerformanceMatrix,
   type MatrixAxis,
 } from "@geo/core";
+import { dataState } from "./fixtures.js";
 import { newId, type SharedView } from "./schema.js";
 import type { DemoStore } from "./seed.js";
 
@@ -145,6 +146,11 @@ export function fanoutsFromStore(store: DemoStore) {
     .map(([term, count]) => ({ term, count }));
 
   return {
+    data_state: dataState(store, store.fanouts.length > 0),
+    empty_reason:
+      store.fanouts.length > 0
+        ? null
+        : "No fanout queries captured yet. Only engines that expose their follow-up searches report fanouts.",
     distinct_queries: rows.length,
     total_occurrences: store.fanouts.length,
     rows: rows.slice(0, 200),
@@ -169,6 +175,11 @@ export function adsFromStore(store: DemoStore) {
   }
   const chatsWithAds = new Set(store.ads.map((a) => a.chat_id));
   return {
+    data_state: dataState(store, store.ads.length > 0),
+    empty_reason:
+      store.ads.length > 0
+        ? null
+        : "No sponsored placements observed yet. Ads are only visible on UI surfaces, not API channels.",
     advertisers_in_market: byAdvertiser.size,
     prompts_with_ads: chatsWithAds.size,
     total_ads_seen: store.ads.length,
@@ -179,7 +190,7 @@ export function adsFromStore(store: DemoStore) {
         creatives: [...a.titles],
       }))
       .sort((a, b) => b.times_seen - a.times_seen),
-    note: "Ad tracking is richest on UI surfaces; simulator injects sparse ads for demo.",
+    note: "Ad tracking requires a UI surface — API channels never return sponsored placements.",
   };
 }
 

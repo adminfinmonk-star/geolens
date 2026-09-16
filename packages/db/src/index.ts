@@ -6,6 +6,7 @@ export * from "./migrate.js";
 export * from "./auth.js";
 export * from "./authz.js";
 export * from "./bootstrap.js";
+export * from "./fixtures.js";
 export * from "./repository.js";
 export * from "./prompts.js";
 export * from "./sources.js";

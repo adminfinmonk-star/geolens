@@ -7,6 +7,7 @@ import {
   extractExtension,
   type ProjectExtensionPayload,
 } from "./bootstrap.js";
+import { purgeLegacyFixtures } from "./fixtures.js";
 import {
   brand,
   chat,
@@ -83,7 +84,15 @@ export async function persistSpineAdds(
         aliasesJson: JSON.stringify(b.aliases),
         patternsJson: JSON.stringify(b.patterns),
       })
-      .onConflictDoNothing();
+      .onConflictDoUpdate({
+        target: brand.id,
+        set: {
+          name: b.name,
+          isOwn: b.is_own,
+          aliasesJson: JSON.stringify(b.aliases),
+          patternsJson: JSON.stringify(b.patterns),
+        },
+      });
   }
   for (const pr of store.prompts) {
     await db
@@ -95,7 +104,14 @@ export async function persistSpineAdds(
         countryCode: pr.country_code,
         status: pr.status,
       })
-      .onConflictDoNothing();
+      .onConflictDoUpdate({
+        target: prompt.id,
+        set: {
+          text: pr.text,
+          countryCode: pr.country_code,
+          status: pr.status,
+        },
+      });
   }
   for (const c of store.chats) {
     await db
@@ -110,6 +126,7 @@ export async function persistSpineAdds(
         status: c.status,
         text: c.text,
         rawUri: c.raw_uri,
+        surfaceKind: c.surface_kind,
       })
       .onConflictDoNothing();
   }
@@ -141,6 +158,166 @@ export async function persistSpineAdds(
       retrievalRank: s.retrieval_rank,
     });
   }
+}
+
+/** Normalized brand identity — "Warby Parker" and "warbyparker" are one brand. */
+function brandKey(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Collapse duplicate brand names in the store, keeping the first (own brand wins)
+ * and repointing mentions at the survivor so no counts are lost.
+ */
+export function dedupeStoreBrands(store: DemoStore): number {
+  const bySlug = new Map<string, string>();
+  const remap = new Map<string, string>();
+  const kept: typeof store.brands = [];
+
+  for (const b of [...store.brands].sort((x, y) => Number(y.is_own) - Number(x.is_own))) {
+    const key = brandKey(b.name);
+    const winner = bySlug.get(key);
+    if (winner == null) {
+      bySlug.set(key, b.id);
+      kept.push(b);
+      continue;
+    }
+    remap.set(b.id, winner);
+    const survivor = kept.find((k) => k.id === winner)!;
+    survivor.aliases = [...new Set([...survivor.aliases, ...b.aliases])];
+    survivor.patterns = [...new Set([...survivor.patterns, ...b.patterns])];
+  }
+  if (remap.size === 0) return 0;
+
+  store.brands = kept;
+
+  // Merge mentions onto the surviving brand, summing per (chat, brand).
+  const merged = new Map<string, (typeof store.mentions)[number]>();
+  const liveIds = new Set(store.brands.map((b) => b.id));
+  for (const m of store.mentions) {
+    const brandId = remap.get(m.brand_id) ?? m.brand_id;
+    if (!liveIds.has(brandId)) continue;
+    const key = `${m.chat_id}|${brandId}`;
+    const cur = merged.get(key);
+    if (!cur) {
+      merged.set(key, { ...m, brand_id: brandId });
+      continue;
+    }
+    cur.mention_count += m.mention_count;
+    cur.position = Math.min(cur.position, m.position);
+    cur.sentiment = (cur.sentiment + m.sentiment) / 2;
+  }
+  store.mentions = [...merged.values()];
+  return remap.size;
+}
+
+/**
+ * Replace chats/mentions/sources for a project (used after domain Analyze).
+ * Also upserts brands/prompts and project extension.
+ */
+export async function replaceProjectCollection(
+  db: Db,
+  store: DemoStore,
+): Promise<void> {
+  dedupeStoreBrands(store);
+
+  for (const b of store.brands) {
+    await db
+      .insert(brand)
+      .values({
+        id: b.id,
+        projectId: b.project_id,
+        name: b.name,
+        isOwn: b.is_own,
+        aliasesJson: JSON.stringify(b.aliases),
+        patternsJson: JSON.stringify(b.patterns),
+      })
+      .onConflictDoUpdate({
+        target: brand.id,
+        set: {
+          name: b.name,
+          isOwn: b.is_own,
+          aliasesJson: JSON.stringify(b.aliases),
+          patternsJson: JSON.stringify(b.patterns),
+        },
+      });
+  }
+
+  // Archive-replace brands too. Analyze mints fresh brand ids each run, so
+  // upsert-by-id alone left every previous run's rows behind — inflating total
+  // mentions and skewing share of voice.
+  const keep = new Set(store.brands.map((b) => b.id));
+  const persisted = await db
+    .select({ id: brand.id })
+    .from(brand)
+    .where(eq(brand.projectId, store.project.id));
+  for (const row of persisted) {
+    if (keep.has(row.id)) continue;
+    await db.delete(chatBrandMention).where(eq(chatBrandMention.brandId, row.id));
+    await db.delete(brand).where(eq(brand.id, row.id));
+  }
+
+  // Archive-replace prompts: delete project prompts then insert current set
+  await db.delete(prompt).where(eq(prompt.projectId, store.project.id));
+  for (const pr of store.prompts) {
+    await db.insert(prompt).values({
+      id: pr.id,
+      projectId: pr.project_id,
+      text: pr.text,
+      countryCode: pr.country_code,
+      status: pr.status,
+    });
+  }
+
+  const existingChats = await db
+    .select({ id: chat.id })
+    .from(chat)
+    .where(eq(chat.projectId, store.project.id));
+  for (const c of existingChats) {
+    await db.delete(chatBrandMention).where(eq(chatBrandMention.chatId, c.id));
+    await db.delete(chatSource).where(eq(chatSource.chatId, c.id));
+  }
+  await db.delete(chat).where(eq(chat.projectId, store.project.id));
+
+  for (const c of store.chats) {
+    await db.insert(chat).values({
+      id: c.id,
+      projectId: c.project_id,
+      promptId: c.prompt_id,
+      modelChannelId: c.model_channel_id,
+      countryCode: c.country_code,
+      runDate: c.run_date,
+      status: c.status,
+      text: c.text,
+      rawUri: c.raw_uri,
+      surfaceKind: c.surface_kind,
+    });
+  }
+
+  for (const m of store.mentions) {
+    await db.insert(chatBrandMention).values({
+      chatId: m.chat_id,
+      brandId: m.brand_id,
+      mentionCount: m.mention_count,
+      position: m.position,
+      sentiment: m.sentiment,
+    });
+  }
+
+  for (const s of store.sources) {
+    await db.insert(chatSource).values({
+      id: newId("src"),
+      chatId: s.chat_id,
+      url: s.url,
+      domain: s.domain,
+      cited: s.cited,
+      citationCount: s.citation_count,
+      retrievalRank: s.retrieval_rank,
+    });
+  }
+
+  await saveProjectExtension(db, store);
+  storeCache.set(store.project.id, store);
 }
 
 export async function loadProjectStore(
@@ -234,6 +411,8 @@ export async function loadProjectStore(
       status: c.status as "ok" | "empty" | "error" | "blocked",
       text: c.text,
       raw_uri: c.rawUri ?? undefined,
+      surface_kind:
+        (c.surfaceKind as "ui" | "api" | "simulator" | null) ?? undefined,
     })),
     mentions: mentions.map((m) => ({
       chat_id: m.chatId,
@@ -280,17 +459,44 @@ export async function loadProjectStore(
   const ext = await loadExtension(db, projectId);
   applyExtension(store, ext);
 
+  // Earlier builds persisted demo fixtures into real projects. Remove them so
+  // feature surfaces report an honest empty state instead of Acme/BetaSoft rows.
+  const purged = purgeLegacyFixtures(store);
+
   const hadExtension =
     !!ext &&
     ((ext.facts?.length ?? 0) > 0 ||
       (ext.products?.length ?? 0) > 0 ||
       (ext.actions?.length ?? 0) > 0);
 
+  // Heal historical duplicates written before brands were archive-replaced.
+  const collapsed = dedupeStoreBrands(store);
+
+  // Reconcile persisted brands against the store: rows dropped by the dedupe or
+  // the fixture purge above must not survive in Postgres. Safe because the store
+  // was just loaded from these same rows, so any absence here is deliberate.
+  const keep = new Set(store.brands.map((b) => b.id));
+  const persisted = await db
+    .select({ id: brand.id })
+    .from(brand)
+    .where(eq(brand.projectId, projectId));
+  const stale = persisted.filter((row) => !keep.has(row.id));
+  for (const row of stale) {
+    await db.delete(brand).where(eq(brand.id, row.id));
+  }
+
+  if (collapsed > 0) {
+    // Drop merged mention rows so persistSpineAdds rewrites the summed counts.
+    for (const id of chatIds) {
+      await db.delete(chatBrandMention).where(eq(chatBrandMention.chatId, id));
+    }
+  }
+
   const { spineChanged, featuresSeeded } = bootstrapProjectFeatures(store);
-  if (spineChanged) {
+  if (spineChanged || collapsed > 0) {
     await persistSpineAdds(db, store);
   }
-  if (!hadExtension || featuresSeeded || spineChanged) {
+  if (!hadExtension || featuresSeeded || spineChanged || purged) {
     await saveProjectExtension(db, store);
   }
 
@@ -393,6 +599,7 @@ export async function seedPostgresFromDemo(
       status: c.status,
       text: c.text,
       rawUri: c.raw_uri,
+      surfaceKind: c.surface_kind,
     });
   }
 

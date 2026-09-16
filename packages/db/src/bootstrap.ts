@@ -1,6 +1,7 @@
 import { ensureAgentAnalytics } from "./agentAnalytics.js";
 import { generateActionsForStore } from "./actions.js";
 import { ensureCommercial } from "./commercial.js";
+import { demoFixturesEnabled } from "./fixtures.js";
 import { ensurePerception } from "./perception.js";
 import { ensureShopping } from "./shopping.js";
 import { newId } from "./schema.js";
@@ -19,6 +20,8 @@ export type ProjectExtensionPayload = Pick<
   | "actions"
   | "actionEvents"
   | "robotsTxt"
+  | "robotsFetchedAt"
+  | "robotsSource"
   | "agentLogs"
   | "gaReferrals"
   | "logIntegrations"
@@ -50,6 +53,8 @@ export function extractExtension(store: DemoStore): ProjectExtensionPayload {
     actions: store.actions,
     actionEvents: store.actionEvents,
     robotsTxt: store.robotsTxt,
+    robotsFetchedAt: store.robotsFetchedAt,
+    robotsSource: store.robotsSource,
     agentLogs: store.agentLogs,
     gaReferrals: store.gaReferrals,
     logIntegrations: store.logIntegrations,
@@ -87,6 +92,8 @@ export function applyExtension(
     actions: ext.actions ?? store.actions,
     actionEvents: ext.actionEvents ?? store.actionEvents,
     robotsTxt: ext.robotsTxt ?? store.robotsTxt,
+    robotsFetchedAt: ext.robotsFetchedAt ?? store.robotsFetchedAt,
+    robotsSource: ext.robotsSource ?? store.robotsSource,
     agentLogs: ext.agentLogs ?? store.agentLogs,
     gaReferrals: ext.gaReferrals ?? store.gaReferrals,
     logIntegrations: ext.logIntegrations ?? store.logIntegrations,
@@ -117,10 +124,15 @@ export function bootstrapProjectFeatures(store: DemoStore): {
   featuresSeeded: boolean;
 } {
   let spineChanged = false;
+  const fixtures = demoFixturesEnabled(store);
 
+  // The tracked brand is real (it is the project itself). Competitors are not
+  // invented — they are discovered from collected answers.
   if (store.brands.length === 0) {
     const name =
-      store.project.name.replace(/\s+project$/i, "").trim() || "Acme";
+      store.project.name.replace(/\s+project$/i, "").trim() ||
+      store.project.domain?.replace(/^www\./, "").split(".")[0] ||
+      "My brand";
     store.brands.push({
       id: newId("br"),
       project_id: store.project.id,
@@ -129,18 +141,20 @@ export function bootstrapProjectFeatures(store: DemoStore): {
       aliases: [name.toLowerCase()],
       patterns: [],
     });
-    store.brands.push({
-      id: newId("br"),
-      project_id: store.project.id,
-      name: "BetaSoft",
-      is_own: false,
-      aliases: ["betasoft"],
-      patterns: [],
-    });
+    if (fixtures) {
+      store.brands.push({
+        id: newId("br"),
+        project_id: store.project.id,
+        name: "BetaSoft",
+        is_own: false,
+        aliases: ["betasoft"],
+        patterns: [],
+      });
+    }
     spineChanged = true;
   }
 
-  if (store.prompts.length === 0) {
+  if (store.prompts.length === 0 && fixtures) {
     store.prompts.push({
       id: newId("pr"),
       project_id: store.project.id,
@@ -151,7 +165,8 @@ export function bootstrapProjectFeatures(store: DemoStore): {
     spineChanged = true;
   }
 
-  if (store.chats.length === 0) {
+  // Never fabricate chats: an un-collected project must read as un-collected.
+  if (fixtures && store.chats.length === 0 && !store.project.domain) {
     const own = store.brands.find((b) => b.is_own)!;
     const prompt = store.prompts[0]!;
     const runDate = new Date().toISOString().slice(0, 10);

@@ -5,11 +5,13 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import {
   DEFAULT_API_CHANNELS,
+  clearAdapterCache,
   getAdapter,
   getChannelHealth,
   listBuiltAdapters,
   listChannelHealth,
   describeAdapterRuntime,
+  loadRepoEnv,
 } from "@geo/adapters";
 import { buildOpenApiDocument } from "@geo/contracts";
 import { randomUUID } from "node:crypto";
@@ -25,6 +27,8 @@ import {
   brandsReportCsv,
   brandsReportPayload,
   chatsReportCsv,
+  overviewReportPayload,
+  parseOverviewFilters,
   checkApiFeature,
   checkBiFeature,
   checkCollect,
@@ -65,6 +69,7 @@ import {
   getAction,
   getChatDetail,
   getCrawlability,
+  refreshRobotsTxt,
   getDemoStore,
   getOrCreateProfile,
   getSessionUser,
@@ -105,6 +110,8 @@ import {
   runDiscovery,
   runMigrations,
   runUrlTester,
+  prepareDomainAnalysis,
+  replaceProjectCollection,
   saveBrandProfile,
   setDomainClassification,
   setEnabledChannels,
@@ -129,7 +136,34 @@ import {
   type DemoStore,
   type DomainClass,
 } from "@geo/db";
-import { queueMode, runProjectCollectAndApply } from "@geo/worker";
+import { queueMode, resetInlineJobState, runProjectCollectAndApply } from "@geo/worker";
+
+/** Fast Analyze: one strong channel × few prompts (parallel Cursor calls). */
+const ANALYZE_CHANNELS = [
+  "openai-0",
+  "perplexity-1",
+  "google-3",
+] as const;
+
+type AnalyzeJob = {
+  id: string;
+  project_id: string;
+  domain: string;
+  brand_name: string;
+  status: "running" | "done" | "error";
+  message?: string;
+  prompts_activated?: number;
+  collect?: {
+    chats_written: number;
+    run_date: string;
+    mode: string;
+    channels: string[];
+  };
+  started_at: string;
+  finished_at?: string;
+};
+
+const analyzeJobs = new Map<string, AnalyzeJob>();
 
 const COOKIE = "geo_session";
 /** Public demo project id — unauthenticated reads allowed in memory/fixture CI. */
@@ -430,6 +464,182 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     return { project };
   });
 
+  /**
+   * Semrush-style “enter website → Analyze”:
+   * bind domain to this project (brand profile + own brand) and return project id for overview.
+   * Body: { domain: string, create?: boolean }
+   * - create=true + authenticated Postgres: new project, then analyze
+   * - otherwise: update the current project
+   */
+  app.post("/v1/projects/:projectId/analyze", async (req, reply) => {
+    const { projectId } = req.params as { projectId: string };
+    const body = (req.body ?? {}) as { domain?: string; create?: boolean };
+    const raw = body.domain?.trim() ?? "";
+    if (!raw) {
+      return reply.code(400).send({
+        error: "domain_required",
+        message: "Enter a website domain to analyze.",
+      });
+    }
+
+    let targetId = projectId;
+
+    if (body.create) {
+      if (!db) {
+        return reply.code(503).send({
+          error: "postgres_required",
+          message: "Sign in with a Postgres-backed account to create a new project.",
+        });
+      }
+      const sessionUser = await getSessionUser(db, req.cookies[COOKIE]);
+      if (!sessionUser) {
+        return reply.code(401).send({
+          error: "unauthenticated",
+          message: "Sign in to analyze a new website as a separate project.",
+        });
+      }
+      try {
+        const created = await createProjectForUser(db, sessionUser.userId, {
+          name: "New project",
+          domain: raw,
+        });
+        targetId = created.id;
+      } catch (err) {
+        if (err instanceof AuthError) {
+          const code = err.code === "project_quota" ? 409 : 403;
+          return reply
+            .code(code)
+            .send({ error: err.code, message: err.message });
+        }
+        throw err;
+      }
+    }
+
+    const store = await resolveProjectStore(db, targetId);
+    if (!store) return reply.code(404).send({ error: "project_not_found" });
+
+    try {
+      const prepared = prepareDomainAnalysis(store, raw, { prompt_limit: 2 });
+      const gate = checkCollect(store);
+      if (!gate.ok) {
+        await persistProjectStore(db, store);
+        await persistCommercialSideEffects(db, store);
+        return reply.code(409).send({
+          error: gate.code,
+          message: gate.message,
+          project_id: store.project.id,
+          domain: prepared.domain,
+          brand_name: prepared.brand_name,
+        });
+      }
+
+      // Persist prepared domain/prompts immediately so Overview shows the new brand
+      // while collection runs in the background (avoids Next /backend proxy timeouts).
+      if (db) {
+        await replaceProjectCollection(db, store);
+        await persistCommercialSideEffects(db, store);
+      } else {
+        await persistProjectStore(db, store);
+      }
+
+      const jobId = `aj_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+      const job: AnalyzeJob = {
+        id: jobId,
+        project_id: store.project.id,
+        domain: prepared.domain,
+        brand_name: prepared.brand_name,
+        status: "running",
+        prompts_activated: prepared.prompts_activated,
+        started_at: new Date().toISOString(),
+      };
+      analyzeJobs.set(jobId, job);
+
+      const projectRef = store.project.id;
+      void (async () => {
+        try {
+          const live = await resolveProjectStore(db, projectRef);
+          if (!live) throw new Error("project_not_found");
+          resetInlineJobState();
+          const collect = await runProjectCollectAndApply(live, {
+            forceInline: true,
+            channelIds: [...ANALYZE_CHANNELS],
+            concurrency: 2,
+            seed: `analyze|${prepared.domain}|${Date.now()}`,
+            runDate: new Date().toISOString().slice(0, 10),
+          });
+          if (db) {
+            await replaceProjectCollection(db, live);
+            await persistCommercialSideEffects(db, live);
+          } else {
+            await persistProjectStore(db, live);
+          }
+          job.status = "done";
+          job.collect = {
+            chats_written: collect.chats_written,
+            run_date: collect.run_date,
+            mode: collect.mode,
+            channels: [...ANALYZE_CHANNELS],
+          };
+          job.finished_at = new Date().toISOString();
+        } catch (err) {
+          job.status = "error";
+          job.message =
+            err instanceof Error ? err.message : "Collection failed";
+          job.finished_at = new Date().toISOString();
+        }
+      })();
+
+      const runtime = describeAdapterRuntime();
+      return reply.code(202).send({
+        status: "running",
+        job_id: jobId,
+        project_id: store.project.id,
+        domain: prepared.domain,
+        brand_name: prepared.brand_name,
+        project: prepared.project,
+        created: body.create === true && targetId !== projectId,
+        prompts_activated: prepared.prompts_activated,
+        runtime: {
+          collection_backend: runtime.GEO_COLLECTION_BACKEND,
+          cursor_key_present: runtime.cursor_key_present,
+          openrouter_key_present: runtime.openrouter_key_present,
+          global_resolved: runtime.global_resolved,
+        },
+        note: "Collection runs in the background — poll GET …/analyze/jobs/:jobId",
+      });
+    } catch (err) {
+      const code =
+        err instanceof Error && (err as Error & { code?: string }).code
+          ? (err as Error & { code?: string }).code
+          : "invalid_domain";
+      return reply.code(400).send({
+        error: code,
+        message:
+          err instanceof Error ? err.message : "Enter a valid website domain.",
+      });
+    }
+  });
+
+  app.get("/v1/projects/:projectId/analyze/jobs/:jobId", async (req, reply) => {
+    const { projectId, jobId } = req.params as {
+      projectId: string;
+      jobId: string;
+    };
+    const job = analyzeJobs.get(jobId);
+    if (!job || job.project_id !== projectId) {
+      return reply.code(404).send({ error: "job_not_found" });
+    }
+    const store = await resolveProjectStore(db, projectId);
+    return {
+      ...job,
+      chats: store?.chats.length ?? 0,
+      overview:
+        job.status === "done" && store
+          ? overviewReportPayload(store)
+          : undefined,
+    };
+  });
+
   app.post("/v1/projects/:projectId/onboarding/complete", async (req, reply) => {
     const { projectId } = req.params as { projectId: string };
     const store = await resolveProjectStore(db, projectId);
@@ -499,6 +709,18 @@ export async function buildServer(options?: { databaseUrl?: string }) {
           "API channels have geo=none — country_code is the requested market, not true localization.",
       },
     };
+  });
+
+  app.get("/v1/projects/:projectId/reports/overview", async (req, reply) => {
+    const { projectId } = req.params as { projectId: string };
+    const q = req.query as { range?: string; channel?: string };
+    const store = await resolveProjectStore(db, projectId);
+    if (!store) return reply.code(404).send({ error: "project_not_found" });
+    const filters = parseOverviewFilters({
+      range: q.range,
+      channel: q.channel,
+    });
+    return overviewReportPayload(store, filters);
   });
 
   app.get("/v1/channels", async () => {
@@ -1181,8 +1403,31 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     const { projectId } = req.params as { projectId: string };
     const store = await resolveProjectStore(db, projectId);
     if (!store) return reply.code(404).send({ error: "project_not_found" });
+    // Fetch the real robots.txt once so the report reflects the live site
+    // rather than assuming "allow all" for an unknown file.
+    if (store.robotsTxt == null && store.project.domain) {
+      const res = await refreshRobotsTxt(store);
+      if (res.ok) await persistProjectStore(db, store);
+    }
     return getCrawlability(store);
   });
+
+  app.post(
+    "/v1/projects/:projectId/agent/crawlability/refresh",
+    async (req, reply) => {
+      const { projectId } = req.params as { projectId: string };
+      const store = await resolveProjectStore(db, projectId);
+      if (!store) return reply.code(404).send({ error: "project_not_found" });
+      const res = await refreshRobotsTxt(store);
+      if (!res.ok) {
+        return reply
+          .code(502)
+          .send({ error: res.error ?? "robots_fetch_failed", status: res.status });
+      }
+      await persistProjectStore(db, store);
+      return { fetched: true, status: res.status, ...getCrawlability(store) };
+    },
+  );
 
   app.post("/v1/projects/:projectId/agent/url-tester", async (req, reply) => {
     const { projectId } = req.params as { projectId: string };
@@ -1349,7 +1594,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     const result = await runProjectCollectAndApply(store, {
       runDate: body.run_date,
       channelIds: body.channel_ids,
-      forceInline: body.force_inline ?? queueMode() === "inline",
+      forceInline: body.force_inline ?? true,
       seed: `api|${projectId}|${body.run_date ?? "today"}`,
     });
     if (db) {
@@ -1910,6 +2155,12 @@ export async function buildServer(options?: { databaseUrl?: string }) {
 }
 
 async function main() {
+  const envFile = loadRepoEnv();
+  clearAdapterCache();
+  const runtime = describeAdapterRuntime();
+  console.log(
+    `collection env=${envFile ?? "process"} mode=${runtime.GEO_ADAPTER_MODE} backend=${runtime.GEO_COLLECTION_BACKEND} openrouter=${runtime.openrouter_key_present} cursor=${runtime.cursor_key_present} resolved=${runtime.global_resolved}`,
+  );
   if (!hasDatabaseUrl()) {
     console.warn("DATABASE_URL unset — API running in memory demo mode");
   }

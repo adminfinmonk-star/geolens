@@ -1,11 +1,14 @@
 "use client";
 
 import { apiBase } from "@/lib/api";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 import { useEffect, useState } from "react";
 
 const API_BASE = apiBase();
 
 type Summary = {
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
   engine_note: string;
   position_note: string;
   empty_state: string;
@@ -47,9 +50,7 @@ export function ShoppingClient({ projectId }: { projectId: string }) {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [source, setSource] = useState<"all" | "catalog">("all");
-  const [csv, setCsv] = useState(
-    "title,brand,price,currency,category\nAcme CRM Starter,Acme,19,USD,CRM > Starter\n",
-  );
+  const [csv, setCsv] = useState("title,brand,price,currency,category\n");
   const [uploadMsg, setUploadMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,9 +74,9 @@ export function ShoppingClient({ projectId }: { projectId: string }) {
     }
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reload on project change only; `load` is re-created every render.
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   async function upload() {
@@ -102,16 +103,33 @@ export function ShoppingClient({ projectId }: { projectId: string }) {
   if (error) return <p style={{ color: "var(--muted)" }}>{error}</p>;
   if (!summary) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
+  const isEmpty = summary.data_state === "empty";
+
   return (
     <div>
+      {summary.data_state === "demo_fixture" && (
+        <p style={{ margin: "0 0 0.75rem" }}>
+          <DemoDataBadge />
+        </p>
+      )}
       <p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.5 }}>
         {summary.engine_note}
       </p>
       <p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.5 }}>
         {summary.position_note}
       </p>
-      <p style={{ fontSize: 13, marginTop: 8 }}>{summary.empty_state}</p>
 
+      {isEmpty && (
+        <div style={{ marginTop: 16 }}>
+          <NoDataCallout
+            title="No products tracked yet"
+            reason={summary.empty_reason}
+          />
+        </div>
+      )}
+
+      {!isEmpty && (
+        <>
       <div
         style={{
           display: "grid",
@@ -248,6 +266,8 @@ export function ShoppingClient({ projectId }: { projectId: string }) {
           ))}
         </tbody>
       </table>
+        </>
+      )}
 
       <h2 style={{ marginTop: 28, fontSize: "1.1rem" }}>
         Upload catalog (CSV)
@@ -292,6 +312,11 @@ export function ShoppingClient({ projectId }: { projectId: string }) {
       )}
 
       <h2 style={{ marginTop: 28, fontSize: "1.1rem" }}>Shopping demand</h2>
+      {summary.shopping_queries.length === 0 && (
+        <p style={{ color: "var(--muted)", fontSize: 13 }}>
+          No shopping queries observed yet.
+        </p>
+      )}
       <ul style={{ listStyle: "none", padding: 0 }}>
         {summary.shopping_queries.map((q) => (
           <li

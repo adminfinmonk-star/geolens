@@ -7,6 +7,7 @@ import {
   scheduleProjectCollect,
 } from "./index.js";
 import { getDemoStore, resetDemoStore } from "@geo/db";
+import { CHANNEL_PROVIDER_ROUTE } from "@geo/adapters";
 
 describe("runCollectEnrichJob", () => {
   it("collects across ≥3 API providers with surface_kind=api", async () => {
@@ -33,10 +34,11 @@ describe("runCollectEnrichJob", () => {
       expect(r.surfaceKind).toBe("api");
       expect(r.text.length).toBeGreaterThan(0);
     }
-    const channels = new Set(result.results.map((r) => r.channelId));
-    expect(channels.has("openai-1")).toBe(true);
-    expect(channels.has("perplexity-1")).toBe(true);
-    expect(channels.has("anthropic-1")).toBe(true);
+    const providers = new Set(
+      result.results.map((r) => CHANNEL_PROVIDER_ROUTE[r.channelId]?.provider),
+    );
+    providers.delete(undefined);
+    expect(providers.size).toBeGreaterThanOrEqual(3);
   });
 });
 

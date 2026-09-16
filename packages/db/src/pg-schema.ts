@@ -124,6 +124,8 @@ export const chat = pgTable(
     status: text("status").notNull(),
     text: text("text").notNull().default(""),
     rawUri: text("raw_uri"),
+    /** Provenance of the answer: "api" | "ui" | "simulator". Drives live-vs-fixture honesty. */
+    surfaceKind: text("surface_kind"),
   },
   (t) => [uniqueIndex("chat_project_run_idx").on(t.projectId, t.runDate, t.id)],
 );

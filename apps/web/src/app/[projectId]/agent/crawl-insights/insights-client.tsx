@@ -1,17 +1,20 @@
 "use client";
 
 import { apiBase } from "@/lib/api";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 import { useCallback, useEffect, useState } from "react";
 
 const API_BASE = apiBase();
 
 type Dash = {
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
   kpis: {
     total_bot_visits: number;
     active_bots: number;
     failure_rate: number;
-    top_folder: string;
-    top_url: string;
+    top_folder: string | null;
+    top_url: string | null;
   };
   visited_urls: {
     url: string;
@@ -64,20 +67,56 @@ export function CrawlInsightsClient({ projectId }: { projectId: string }) {
     await load();
   }
 
-  async function uploadSample() {
-    const csv = `2026-08-11T12:00:00Z,GET,https://acme.example/never-cited-page,200,PerplexityBot/1.0\n`;
-    await fetch(`${API_BASE}/v1/projects/${projectId}/agent/crawl-insights/upload`, { credentials: "include", method: "POST",
+  async function uploadLogFile(file: File) {
+    const text = await file.text();
+    const res = await fetch(
+      `${API_BASE}/v1/projects/${projectId}/agent/crawl-insights/upload`,
+      {
+        credentials: "include",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: csv }) });
-    setMsg("Uploaded sample CSV log");
+        body: JSON.stringify({ text }),
+      },
+    );
+    const body = (await res.json()) as {
+      accepted?: unknown[];
+      errors?: unknown[];
+    };
+    if (!res.ok) {
+      setMsg("Upload failed — check the log format.");
+      return;
+    }
+    setMsg(
+      `Ingested ${body.accepted?.length ?? 0} bot request(s)${
+        body.errors?.length ? ` · ${body.errors.length} row(s) skipped` : ""
+      }`,
+    );
     await load();
   }
 
   if (error) return <p style={{ color: "var(--muted)" }}>{error}</p>;
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
+  const isEmpty = data.data_state === "empty";
+
   return (
     <div>
+      {data.data_state === "demo_fixture" && (
+        <p style={{ margin: "0.75rem 0 0" }}>
+          <DemoDataBadge />
+        </p>
+      )}
+
+      {isEmpty && (
+        <div style={{ marginTop: 16 }}>
+          <NoDataCallout
+            title="No AI bot crawl activity yet"
+            reason={data.empty_reason}
+          />
+        </div>
+      )}
+
+      {!isEmpty && (
       <div
         style={{
           display: "grid",
@@ -94,7 +133,7 @@ export function CrawlInsightsClient({ projectId }: { projectId: string }) {
               "Failure rate",
               `${(data.kpis.failure_rate * 100).toFixed(0)}%`,
             ],
-            ["Top folder", data.kpis.top_folder],
+            ["Top folder", data.kpis.top_folder ?? "—"],
           ] as const
         ).map(([label, value]) => (
           <div
@@ -113,10 +152,12 @@ export function CrawlInsightsClient({ projectId }: { projectId: string }) {
           </div>
         ))}
       </div>
+      )}
 
       <h2 style={{ marginTop: 28, fontSize: "1.1rem" }}>Ingestion paths</h2>
       <p style={{ color: "var(--muted)", fontSize: 13 }}>
-        Phase 7 ships webhook, file upload, and Cloudflare setup (≥3 paths).
+        Bot activity can arrive by webhook, access-log upload, or a Cloudflare
+        Worker.
       </p>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {data.integrations.map((i) => (
@@ -137,13 +178,23 @@ export function CrawlInsightsClient({ projectId }: { projectId: string }) {
           </li>
         ))}
       </ul>
-      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+      <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center" }}>
         <button type="button" onClick={connectCf} style={btnStyle}>
           Connect Cloudflare
         </button>
-        <button type="button" onClick={uploadSample} style={btnStyleMuted}>
-          Upload sample CSV
-        </button>
+        <label style={{ ...btnStyleMuted, display: "inline-block" }}>
+          Upload access log
+          <input
+            type="file"
+            accept=".csv,.log,.txt,.json"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void uploadLogFile(file);
+              e.target.value = "";
+            }}
+          />
+        </label>
       </div>
       {msg && (
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
@@ -155,6 +206,11 @@ export function CrawlInsightsClient({ projectId }: { projectId: string }) {
       <p style={{ color: "var(--muted)", fontSize: 13 }}>
         {data.prompt_columns_note}
       </p>
+      {data.visited_urls.length === 0 && (
+        <p style={{ color: "var(--muted)", fontSize: 13 }}>
+          No URLs recorded yet.
+        </p>
+      )}
       {data.crawled_never_cited.length > 0 && (
         <p style={{ color: "#d4a017", fontSize: 13 }}>
           {data.crawled_never_cited.length} URL(s) crawled but never cited —

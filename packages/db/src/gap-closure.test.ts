@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   bootstrapProjectFeatures,
+  buildDemoStore,
   createDb,
   loadProjectStore,
   marketPerceptionReport,
+  referralsOverview,
   resetProjectStoreCache,
   runMigrations,
   shoppingSummary,
@@ -15,8 +17,8 @@ const pgUrl =
   process.env.DATABASE_URL ?? "postgres://geo:geo@localhost:5432/geo";
 
 describe("gap closure: postgres bootstrap + extension", () => {
-  it("signup project gets perception + shopping after load", async () => {
-    let db;
+  it("signup project reports honest empty state, not demo fixtures", async () => {
+    let db: ReturnType<typeof createDb> | undefined;
     try {
       await runMigrations(pgUrl);
       db = createDb(pgUrl);
@@ -36,21 +38,48 @@ describe("gap closure: postgres bootstrap + extension", () => {
     resetProjectStoreCache(result.project.id);
     const store = await loadProjectStore(db, result.project.id);
     expect(store).not.toBeNull();
+
+    // The tracked brand is real; nothing else may be invented.
     expect(store!.brands.some((b) => b.is_own)).toBe(true);
-    expect(store!.chats.length).toBeGreaterThan(0);
+    expect(store!.chats).toHaveLength(0);
+    expect(store!.brands.some((b) => !b.is_own)).toBe(false);
+    expect(store!.products).toHaveLength(0);
+    expect(store!.facts).toHaveLength(0);
+    expect(store!.agentLogs).toHaveLength(0);
+    expect(store!.gaReferrals).toHaveLength(0);
 
     const market = marketPerceptionReport(store!);
-    expect(market.summary.biggest_gap?.statement).toMatch(/#1 → #9/);
+    expect(market.data_state).toBe("empty");
+    expect(market.empty_reason).toBeTruthy();
+    expect(market.attributes).toHaveLength(0);
 
     const shop = shoppingSummary(store!);
-    expect(shop.price_drift.length).toBeGreaterThan(0);
-    expect(store!.actions.length).toBeGreaterThan(0);
+    expect(shop.data_state).toBe("empty");
+    expect(shop.empty_reason).toBeTruthy();
+    expect(shop.price_drift).toHaveLength(0);
 
-    // Reload from DB (clear cache) — extension must survive
+    const refs = referralsOverview(store!);
+    expect(refs.data_state).toBe("empty");
+    expect(refs.kpis.revenue).toBe(0);
+
+    // Reload from DB (clear cache) — still empty, still no fabrication.
     resetProjectStoreCache(result.project.id);
     const again = await loadProjectStore(db, result.project.id);
-    expect(again!.facts.length).toBeGreaterThan(0);
-    expect(again!.products.length).toBeGreaterThan(0);
+    expect(again!.chats).toHaveLength(0);
+    expect(again!.products).toHaveLength(0);
+  }, 60_000);
+
+  it("demo fixtures still populate when explicitly enabled", async () => {
+    process.env.GEO_DEMO_FIXTURES = "on";
+    try {
+      const store = await buildDemoStore({ days: 7 });
+      const market = marketPerceptionReport(store);
+      expect(market.data_state).toBe("demo_fixture");
+      expect(market.summary.biggest_gap?.statement).toMatch(/#1 → #9/);
+      expect(shoppingSummary(store).price_drift.length).toBeGreaterThan(0);
+    } finally {
+      delete process.env.GEO_DEMO_FIXTURES;
+    }
   }, 60_000);
 
   it("bootstrap is idempotent on an empty in-memory shell", () => {

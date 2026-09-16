@@ -1,11 +1,14 @@
 "use client";
 
 import { apiBase } from "@/lib/api";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 import { useEffect, useState } from "react";
 
 const API_BASE = apiBase();
 
 type Ref = {
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
   kpis: {
     session_starts: number;
     conversions: number;
@@ -44,8 +47,27 @@ export function ReferralsClient({ projectId }: { projectId: string }) {
   if (error) return <p style={{ color: "var(--muted)" }}>{error}</p>;
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
+  if (data.data_state === "empty") {
+    return (
+      <div>
+        <NoDataCallout
+          title="No assistant referral traffic imported"
+          reason={data.empty_reason}
+        />
+        <p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.5 }}>
+          {data.honesty.floor_not_total}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
+      {data.data_state === "demo_fixture" && (
+        <p style={{ margin: "0 0 0.75rem" }}>
+          <DemoDataBadge />
+        </p>
+      )}
       <div
         style={{
           marginTop: 16,

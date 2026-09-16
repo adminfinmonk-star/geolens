@@ -1,11 +1,14 @@
 "use client";
 
 import { apiBase } from "@/lib/api";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 import { useEffect, useState } from "react";
 
 const API_BASE = apiBase();
 
 type Market = {
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
   snapshot_note: string;
   cards_note: string;
   run?: { finished_at: string; next_run_at: string; industry: string };
@@ -74,6 +77,15 @@ export function PerceptionClient({ projectId }: { projectId: string }) {
   if (error) return <p className="ob-error">{error}</p>;
   if (!data) return <p className="geo-vis-note">Loading…</p>;
 
+  if (data.data_state === "empty") {
+    return (
+      <NoDataCallout
+        title="No perception data for this project yet"
+        reason={data.empty_reason}
+      />
+    );
+  }
+
   const gap = data.summary.biggest_gap;
   const topAttrs = [...data.attributes]
     .sort((a, b) => b.association - a.association)
@@ -81,6 +93,11 @@ export function PerceptionClient({ projectId }: { projectId: string }) {
 
   return (
     <>
+      {data.data_state === "demo_fixture" && (
+        <p style={{ margin: "0 0 0.75rem" }}>
+          <DemoDataBadge />
+        </p>
+      )}
       <p className="geo-vis-note" style={{ marginTop: 0 }}>
         {data.snapshot_note}
         {data.run

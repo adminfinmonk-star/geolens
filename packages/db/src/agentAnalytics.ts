@@ -9,6 +9,7 @@ import {
   type AgentLogRow,
 } from "@geo/core";
 import { AI_BOTS, matchBot, classifyAssistantReferral } from "@geo/registry";
+import { dataState, demoFixturesEnabled } from "./fixtures.js";
 import type { DemoStore, GaReferralDaily } from "./seed.js";
 
 const DEFAULT_ROBOTS = `User-agent: OAI-SearchBot
@@ -23,14 +24,11 @@ Disallow: /admin
 `;
 
 export function ensureAgentAnalytics(store: DemoStore) {
-  if (!store.robotsTxt) {
-    store.robotsTxt = DEFAULT_ROBOTS;
-  }
   if (!store.agentLogs) store.agentLogs = [];
   if (!store.gaReferrals) store.gaReferrals = [];
   if (!store.logIntegrations) {
     store.logIntegrations = [
-      { id: "int_webhook", kind: "webhook", status: "connected", label: "Generic webhook" },
+      { id: "int_webhook", kind: "webhook", status: "ready", label: "Generic webhook" },
       { id: "int_upload", kind: "file_upload", status: "ready", label: "File upload" },
       {
         id: "int_cf",
@@ -42,6 +40,8 @@ export function ensureAgentAnalytics(store: DemoStore) {
       },
     ];
   }
+  if (!demoFixturesEnabled(store)) return;
+  if (store.robotsTxt == null) store.robotsTxt = DEFAULT_ROBOTS;
   if (store.agentLogs.length === 0) {
     seedAgentLogs(store);
   }
@@ -142,16 +142,64 @@ function seedGaReferrals(store: DemoStore) {
 
 export function getCrawlability(store: DemoStore) {
   ensureAgentAnalytics(store);
-  const report = crawlabilityReport(store.robotsTxt ?? null, AI_BOTS);
-  const blockedSearch = blockedSearchBots(report);
+  const known = store.robotsTxt != null;
+  const report = known ? crawlabilityReport(store.robotsTxt!, AI_BOTS) : [];
+  const blockedSearch = known ? blockedSearchBots(report) : [];
   return {
-    domain: store.project.domain ?? "acme.example",
-    robots_txt: store.robotsTxt,
+    domain: store.project.domain ?? null,
+    robots_txt: store.robotsTxt ?? null,
+    robots_fetched_at: store.robotsFetchedAt ?? null,
+    robots_source: store.robotsSource ?? (known ? "manual" : null),
+    data_state: dataState(store, known),
     rows: report,
     blocked_search_bots: blockedSearch,
+    empty_reason: known
+      ? null
+      : store.project.domain
+        ? "robots.txt has not been fetched for this domain yet."
+        : "Set a project domain to fetch robots.txt.",
     categorization_note:
       "Bot types are best-effort from published vendor documentation.",
   };
+}
+
+/**
+ * Fetch the live robots.txt for the project domain. A 404 is a real answer
+ * (allow all) and is recorded as such; a network failure leaves state unknown.
+ */
+export async function refreshRobotsTxt(
+  store: DemoStore,
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ ok: boolean; status: number | null; error?: string }> {
+  ensureAgentAnalytics(store);
+  const domain = store.project.domain?.trim();
+  if (!domain) return { ok: false, status: null, error: "no_project_domain" };
+  const host = domain.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  try {
+    const res = await fetchImpl(`https://${host}/robots.txt`, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (res.status === 404) {
+      store.robotsTxt = "";
+      store.robotsFetchedAt = new Date().toISOString();
+      store.robotsSource = "fetched_404";
+      return { ok: true, status: 404 };
+    }
+    if (!res.ok) {
+      return { ok: false, status: res.status, error: `http_${res.status}` };
+    }
+    store.robotsTxt = await res.text();
+    store.robotsFetchedAt = new Date().toISOString();
+    store.robotsSource = "fetched";
+    return { ok: true, status: res.status };
+  } catch (err) {
+    return {
+      ok: false,
+      status: null,
+      error: err instanceof Error ? err.message : "fetch_failed",
+    };
+  }
 }
 
 export function runUrlTester(store: DemoStore, pathOrUrl: string) {
@@ -237,14 +285,21 @@ export function crawlInsightsDashboard(store: DemoStore) {
   const crawledNeverCited = visited.filter((v) => v.crawled_never_cited);
 
   const bots = new Set(logs.map((l) => l.bot_token));
+  const connected = store.logIntegrations.some((i) => i.status === "connected");
   return {
+    data_state: dataState(store, logs.length > 0),
+    empty_reason:
+      logs.length > 0
+        ? null
+        : connected
+          ? "No AI bot visits recorded yet for the connected log source."
+          : "Connect a log source (webhook, file upload, or Cloudflare Worker) to see AI bot crawl activity.",
     kpis: {
       total_bot_visits: logs.length,
       active_bots: bots.size,
       failure_rate: failure,
-      top_folder:
-        mode(logs.map((l) => l.request_folder)) ?? "—",
-      top_url: visited[0]?.url ?? "—",
+      top_folder: mode(logs.map((l) => l.request_folder)),
+      top_url: visited[0]?.url ?? null,
     },
     status_codes: statusCodeHistogram(logs),
     visited_urls: visited,
@@ -280,6 +335,11 @@ export function referralsOverview(store: DemoStore) {
     );
   }
   return {
+    data_state: dataState(store, rows.length > 0),
+    empty_reason:
+      rows.length > 0
+        ? null
+        : "Connect GA4 to import assistant referral sessions. No traffic data is estimated on your behalf.",
     kpis: {
       session_starts,
       conversions,

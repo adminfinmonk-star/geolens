@@ -2,6 +2,7 @@ import {
   coverageOverview,
   extractBrandProfile,
   generateDiscoveryPrompts,
+  inferMarketFromDomain,
   parsePromptsCsv,
   suggestCompetitors,
   suggestTopics,
@@ -46,6 +47,263 @@ export function saveBrandProfile(
   return next;
 }
 
+/** Normalize a typed URL/host into a bare domain (lowercase, no scheme/www/path). */
+export function normalizeDomain(input: string): string | null {
+  const host = input
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .split("/")[0]!
+    .split("?")[0]!
+    .split("#")[0]!
+    .replace(/:\d+$/, "")
+    .toLowerCase();
+  if (!host || host.length < 2) return null;
+  // Allow localhost and dotted hosts; reject spaces / protocol leftovers
+  if (/\s/.test(host) || host.includes("://")) return null;
+  return host;
+}
+
+export function brandNameFromDomain(domain: string): string {
+  const base = (domain.split(".")[0] ?? domain).replace(/[-_]+/g, " ");
+  if (!base) return domain;
+  return base
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/**
+ * Bind a project to a website: set domain, sync brand profile + own brand name.
+ * Used by the Semrush-style “Enter domain → Analyze” flow.
+ */
+export function analyzeProjectDomain(store: DemoStore, rawDomain: string) {
+  const domain = normalizeDomain(rawDomain);
+  if (!domain) {
+    const err = new Error("Enter a valid website domain (e.g. warbyparker.com).");
+    (err as Error & { code?: string }).code = "invalid_domain";
+    throw err;
+  }
+  const brandName = brandNameFromDomain(domain);
+  const project = updateProjectSettings(store, {
+    domain,
+    name: `${brandName} Visibility`,
+  });
+  saveBrandProfile(store, {
+    domain,
+    name: brandName,
+  });
+  const ownExisting = store.brands.find((b) => b.is_own);
+  if (ownExisting) {
+    try {
+      updateBrand(store, ownExisting.id, { name: brandName });
+    } catch {
+      /* keep existing own brand name on collision */
+    }
+  } else {
+    const id = newId("br");
+    for (const b of store.brands) b.is_own = false;
+    store.brands.unshift({
+      id,
+      project_id: store.project.id,
+      name: brandName,
+      is_own: true,
+      aliases: [],
+      patterns: [],
+    });
+  }
+  const own = store.brands.find((b) => b.is_own);
+  if (own) {
+    own.aliases = Array.from(
+      new Set([...(own.aliases ?? []), brandName.toLowerCase(), domain]),
+    );
+  }
+  return {
+    project,
+    domain,
+    brand_name: brandName,
+    own_brand_id: own?.id ?? null,
+  };
+}
+
+const INDUSTRY_COMPETITORS: Record<string, string[]> = {
+  "B2B CRM / sales software": [
+    "Salesforce",
+    "HubSpot",
+    "Pipedrive",
+    "Zoho CRM",
+  ],
+  "AI models / infrastructure": [
+    "OpenAI",
+    "Anthropic",
+    "Together AI",
+    "Groq",
+    "Fireworks",
+  ],
+  "E-commerce": ["Nike", "Adidas", "Allbirds", "Everlane", "Shopify"],
+  Fintech: ["Stripe", "PayPal", "Square", "Wise"],
+  Eyewear: ["Warby Parker", "LensCrafters", "Zenni", "GlassesUSA"],
+  Apparel: ["Nike", "Adidas", "Everlane", "Uniqlo", "Zara"],
+  "Fintech IN": ["Groww", "Zerodha", "Paytm", "PhonePe"],
+  default: ["Google", "Microsoft", "Amazon", "Apple"],
+};
+
+function competitorPoolForProfile(industry: string, domain: string): string[] {
+  const host = domain.toLowerCase();
+  const market = inferMarketFromDomain(domain);
+  if (market.country === "IN" && (industry === "Fintech" || /fin|pay|bank/.test(host))) {
+    return INDUSTRY_COMPETITORS["Fintech IN"]!;
+  }
+  if (/warby|zenni|glasses|optics|eyewear|lens/.test(host + industry)) {
+    return INDUSTRY_COMPETITORS.Eyewear!;
+  }
+  if (/shop|store|commerce|allbirds|nike/.test(host + industry)) {
+    return INDUSTRY_COMPETITORS["E-commerce"]!;
+  }
+  if (
+    industry.startsWith("AI") ||
+    /router|openai|anthropic|groq|mistral|together|fireworks/.test(host)
+  ) {
+    return INDUSTRY_COMPETITORS["AI models / infrastructure"]!;
+  }
+  if (industry.includes("CRM") || industry.includes("sales software")) {
+    return INDUSTRY_COMPETITORS["B2B CRM / sales software"]!;
+  }
+  if (INDUSTRY_COMPETITORS[industry]) {
+    return INDUSTRY_COMPETITORS[industry]!;
+  }
+  return INDUSTRY_COMPETITORS.default!;
+}
+
+/**
+ * Full Semrush-style analyze prep: bind domain, wipe prior collection rows,
+ * seed domain prompts + competitors. Caller runs collect afterward.
+ */
+export function prepareDomainAnalysis(
+  store: DemoStore,
+  rawDomain: string,
+  opts?: { prompt_limit?: number },
+) {
+  const bound = analyzeProjectDomain(store, rawDomain);
+  const profile = extractBrandProfile(bound.domain);
+  const market = inferMarketFromDomain(bound.domain);
+  const slug = bound.domain.split(".")[0]!.toLowerCase();
+  const pool = competitorPoolForProfile(profile.industry, bound.domain);
+  const canonicalOwn =
+    pool.find(
+      (n) => n.toLowerCase().replace(/[^a-z0-9]/g, "") === slug,
+    ) ?? bound.brand_name;
+
+  profile.name = canonicalOwn;
+  profile.domain = bound.domain;
+  saveBrandProfile(store, profile);
+
+  // Drop prior answers — Overview must not show Acme/demo chats for a new domain
+  store.chats = [];
+  store.mentions = [];
+  store.sources = [];
+  store.fanouts = [];
+  store.ads = [];
+
+  // Keep own brand only; rename to canonical
+  const own = store.brands.find((b) => b.is_own);
+  store.brands = own ? [own] : [];
+  if (own) {
+    try {
+      updateBrand(store, own.id, {
+        name: canonicalOwn,
+        aliases: Array.from(
+          new Set([
+            canonicalOwn.toLowerCase(),
+            slug,
+            bound.domain,
+            canonicalOwn.replace(/\s+/g, "").toLowerCase(),
+          ]),
+        ),
+        patterns: [
+          // Match "WarbyParker" / "Warby Parker" style variants
+          canonicalOwn.replace(/\s+/g, "\\s*"),
+        ],
+      });
+    } catch {
+      own.name = canonicalOwn;
+    }
+  } else {
+    createBrand(store, {
+      name: canonicalOwn,
+      is_own: true,
+      aliases: [slug, bound.domain],
+      patterns: [canonicalOwn.replace(/\s+/g, "\\s*")],
+    });
+  }
+
+  const competitors = pool.filter(
+    (n) =>
+      n.toLowerCase().replace(/[^a-z0-9]/g, "") !==
+      canonicalOwn.toLowerCase().replace(/[^a-z0-9]/g, ""),
+  );
+  for (const name of competitors.slice(0, 4)) {
+    if (store.brands.some((b) => b.name.toLowerCase() === name.toLowerCase())) {
+      continue;
+    }
+    createBrand(store, { name, is_own: false, aliases: [name.toLowerCase()] });
+  }
+
+  // Domain-aware prompts (not generic topic stubs) so LLM answers mention real brands
+  store.prompts = [];
+  store.topics = [];
+  updateProjectSettings(store, {
+    default_country: market.country,
+    location: market.location,
+    timezone: market.country === "IN" ? "Asia/Kolkata" : store.project.timezone,
+  });
+  const country = store.project.default_country || market.country;
+  const industry = profile.industry;
+  const limit = Math.max(1, Math.min(opts?.prompt_limit ?? 3, 12));
+  const seedTexts = [
+    `best ${industry.toLowerCase()} apps in ${market.location} 2026`,
+    `${canonicalOwn} vs alternatives in ${market.location}`,
+    `best ${industry.toLowerCase()} for everyday use in ${market.location}`,
+    `top rated ${industry.toLowerCase()} companies in ${market.location}`,
+    `${canonicalOwn} reviews and competitors`,
+  ].slice(0, limit);
+
+  const topic = createTopic(store, industry);
+  const activated = [];
+  for (const text of seedTexts) {
+    const row = {
+      id: newId("pr"),
+      project_id: store.project.id,
+      text: text.slice(0, 200),
+      country_code: country,
+      topic_id: topic.id,
+      status: "active" as const,
+      branding: classifyBranding(text, canonicalOwn),
+      intent_type: classifyPromptIntent(text),
+      volume_score: 4,
+    };
+    store.prompts.push(row);
+    activated.push(row);
+  }
+
+  // Keep project name in sync
+  updateProjectSettings(store, {
+    name: `${canonicalOwn} Visibility`,
+    domain: bound.domain,
+  });
+
+  return {
+    project: store.project,
+    domain: bound.domain,
+    brand_name: canonicalOwn,
+    own_brand_id: store.brands.find((b) => b.is_own)?.id ?? null,
+    prompts_activated: activated.length,
+    competitor_count: store.brands.filter((b) => !b.is_own).length,
+    profile,
+  };
+}
+
 export function updateProjectSettings(
   store: DemoStore,
   patch: {
@@ -59,11 +317,7 @@ export function updateProjectSettings(
 ) {
   if (patch.name != null) store.project.name = patch.name.trim() || store.project.name;
   if (patch.domain != null) {
-    const host = patch.domain
-      .replace(/^https?:\/\//, "")
-      .replace(/^www\./, "")
-      .split("/")[0]!
-      .toLowerCase();
+    const host = normalizeDomain(patch.domain) ?? undefined;
     store.project.domain = host || undefined;
   }
   if (patch.location != null) store.project.location = patch.location.trim() || undefined;
@@ -112,6 +366,9 @@ export function rejectCompetitor(store: DemoStore, name: string) {
 }
 
 export function acceptCompetitor(store: DemoStore, name: string) {
+  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const existing = store.brands.find((b) => slug(b.name) === slug(name));
+  if (existing) return existing;
   const id = newId("br");
   store.brands.push({
     id,
@@ -139,9 +396,9 @@ export function createBrand(
 ) {
   const name = input.name.trim();
   if (!name) throw new Error("brand_name_required");
-  if (
-    store.brands.some((b) => b.name.toLowerCase() === name.toLowerCase())
-  ) {
+  // Compare on a normalized slug so "Warby Parker" and "warbyparker" collide.
+  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (store.brands.some((b) => slug(b.name) === slug(name))) {
     throw new Error("brand_name_exists");
   }
   if (input.is_own) {

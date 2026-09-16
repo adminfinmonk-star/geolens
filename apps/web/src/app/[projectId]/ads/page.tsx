@@ -1,7 +1,11 @@
 import { apiFetch } from "@/lib/api-server";
 import Link from "next/link";
+import { ApiDownCallout } from "@/components/api-down-callout";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 
 type Ads = {
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
   advertisers_in_market: number;
   prompts_with_ads: number;
   total_ads_seen: number;
@@ -38,6 +42,7 @@ export default async function AdsPage({
           <div className="geo-vis-title-row">
             <h1>Ads</h1>
             <span className="geo-badge geo-badge-neutral">Sponsored placements</span>
+            {data?.data_state === "demo_fixture" && <DemoDataBadge />}
           </div>
           <p className="geo-page-lede">
             Sponsored placements observed in AI answers.
@@ -59,9 +64,16 @@ export default async function AdsPage({
         </div>
       </header>
 
-      {!data && <p className="geo-vis-note">API unreachable.</p>}
+      {!data && <ApiDownCallout noun="ads" />}
 
-      {data && (
+      {data?.data_state === "empty" && (
+        <NoDataCallout
+          title="No sponsored placements observed yet"
+          reason={data.empty_reason}
+        />
+      )}
+
+      {data && data.data_state !== "empty" && (
         <>
           <p className="geo-vis-note" style={{ marginTop: 0 }}>
             {data.note}
@@ -116,7 +128,7 @@ export default async function AdsPage({
                     <tr>
                       <td colSpan={3}>
                         <p className="geo-vis-note">
-                          No ads in this seed window (simulator injects sparsely).
+                          No advertisers recorded in this window.
                         </p>
                       </td>
                     </tr>

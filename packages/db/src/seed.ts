@@ -77,6 +77,8 @@ export interface DemoStore {
   actions: ActionRecord[];
   actionEvents: ActionStatusEvent[];
   robotsTxt?: string;
+  robotsFetchedAt?: string;
+  robotsSource?: "fetched" | "fetched_404" | "manual";
   agentLogs: AgentLogRowStore[];
   gaReferrals: GaReferralDaily[];
   logIntegrations: LogIntegration[];
@@ -94,6 +96,11 @@ export interface DemoStore {
   pendingCategoryDraft: { name: string; path: string; parentPath: string | null }[];
   commercial?: import("./commercial.js").CommercialState;
   auditLog?: import("./commercial.js").AuditLogEntry[];
+  /**
+   * Marks the synthetic Acme/BetaSoft demo dataset. Only `buildDemoStore` sets it —
+   * Postgres-backed projects stay undefined so feature reports never fabricate rows.
+   */
+  demo_fixtures?: boolean;
 }
 
 function isoDate(d: Date): string {
@@ -389,6 +396,7 @@ export async function buildDemoStore(options?: {
     shoppingAttributes: [],
     productCategories: [],
     pendingCategoryDraft: [],
+    demo_fixtures: true,
   };
 }
 

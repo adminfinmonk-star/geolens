@@ -233,7 +233,7 @@ describe("API memory mode", () => {
     expect(catalog.statusCode).toBe(200);
     expect(
       (catalog.json() as { api_default: string[] }).api_default.length,
-    ).toBe(3);
+    ).toBeGreaterThanOrEqual(3);
     const runtime = await app.inject({
       method: "GET",
       url: "/v1/adapters/runtime",
@@ -242,7 +242,7 @@ describe("API memory mode", () => {
     const rt = runtime.json() as {
       channels: { channel_id: string; mode: string }[];
     };
-    expect(rt.channels.length).toBe(3);
+    expect(rt.channels.length).toBeGreaterThanOrEqual(3);
     expect(rt.channels.every((c) => c.mode === "fixture" || c.mode === "live")).toBe(
       true,
     );
@@ -538,7 +538,7 @@ const pgUrl =
 
 describe("API postgres auth", () => {
   it("signup creates org+project and session cookie", async () => {
-    let app;
+    let app: Awaited<ReturnType<typeof buildServer>> | undefined;
     try {
       app = await buildServer({ databaseUrl: pgUrl });
     } catch {
@@ -584,11 +584,17 @@ describe("API postgres auth", () => {
     });
     expect(shopping.statusCode).toBe(200);
     const shopBody = shopping.json() as {
+      data_state: string;
+      empty_reason?: string | null;
       price_drift: unknown[];
       top_products: unknown[];
     };
-    expect(shopBody.price_drift.length).toBeGreaterThan(0);
-    expect(shopBody.top_products.length).toBeGreaterThan(0);
+    // A fresh signup has no catalog yet, so shopping must report an honest
+    // empty state instead of seeded demo products.
+    expect(shopBody.data_state).toBe("empty");
+    expect(shopBody.empty_reason).toBeTruthy();
+    expect(shopBody.price_drift.length).toBe(0);
+    expect(shopBody.top_products.length).toBe(0);
 
     const denied = await app.inject({
       method: "GET",

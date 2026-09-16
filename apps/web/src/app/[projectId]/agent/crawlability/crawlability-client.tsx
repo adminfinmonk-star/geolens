@@ -1,6 +1,7 @@
 "use client";
 
 import { apiBase } from "@/lib/api";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 import { useCallback, useEffect, useState } from "react";
 
 const API_BASE = apiBase();
@@ -13,16 +14,46 @@ type Row = {
   reason: string;
 };
 
+type CrawlabilityPayload = {
+  domain: string | null;
+  rows: Row[];
+  blocked_search_bots: { bot: string }[];
+  categorization_note: string;
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
+  robots_fetched_at: string | null;
+  robots_source: string | null;
+};
+
 export function CrawlabilityClient({ projectId }: { projectId: string }) {
   const [rows, setRows] = useState<Row[]>([]);
-  const [domain, setDomain] = useState("");
+  const [domain, setDomain] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<{ bot: string }[]>([]);
   const [note, setNote] = useState("");
-  const [testUrl, setTestUrl] = useState("/docs/getting-started");
+  const [state, setState] = useState<"live" | "empty" | "demo_fixture" | null>(
+    null,
+  );
+  const [emptyReason, setEmptyReason] = useState<string | null>(null);
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
+  const [source, setSource] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [testUrl, setTestUrl] = useState("/");
   const [testRows, setTestRows] = useState<
     { bot: string; allowed: boolean; reason: string }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
+
+  const apply = useCallback((body: CrawlabilityPayload) => {
+    setDomain(body.domain);
+    setRows(body.rows);
+    setBlocked(body.blocked_search_bots);
+    setNote(body.categorization_note);
+    setState(body.data_state);
+    setEmptyReason(body.empty_reason);
+    setFetchedAt(body.robots_fetched_at);
+    setSource(body.robots_source);
+    setError(null);
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -31,25 +62,35 @@ export function CrawlabilityClient({ projectId }: { projectId: string }) {
         setError("Failed to load");
         return;
       }
-      const body = (await res.json()) as {
-        domain: string;
-        rows: Row[];
-        blocked_search_bots: { bot: string }[];
-        categorization_note: string;
-      };
-      setDomain(body.domain);
-      setRows(body.rows);
-      setBlocked(body.blocked_search_bots);
-      setNote(body.categorization_note);
-      setError(null);
+      apply((await res.json()) as CrawlabilityPayload);
     } catch {
       setError(`API unreachable at ${API_BASE}`);
     }
-  }, [projectId]);
+  }, [projectId, apply]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  async function refreshRobots() {
+    setRefreshing(true);
+    try {
+      const res = await fetch(
+        `${API_BASE}/v1/projects/${projectId}/agent/crawlability/refresh`,
+        { credentials: "include", method: "POST" },
+      );
+      if (!res.ok) {
+        const body = (await res.json()) as { error?: string };
+        setEmptyReason(
+          `Could not fetch robots.txt (${body.error ?? "unknown error"}).`,
+        );
+        return;
+      }
+      apply((await res.json()) as CrawlabilityPayload);
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   async function runTester() {
     const res = await fetch(`${API_BASE}/v1/projects/${projectId}/agent/url-tester`, { credentials: "include", method: "POST",
@@ -67,10 +108,56 @@ export function CrawlabilityClient({ projectId }: { projectId: string }) {
 
   return (
     <div>
-      <p style={{ color: "var(--muted)", fontSize: 13 }}>
-        Domain: <strong style={{ color: "var(--ink)" }}>{domain}</strong> · zero
-        setup — {note}
+      <p
+        style={{
+          color: "var(--muted)",
+          fontSize: 13,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flexWrap: "wrap",
+        }}
+      >
+        <span>
+          Domain:{" "}
+          <strong style={{ color: "var(--ink)" }}>{domain ?? "not set"}</strong>
+          {fetchedAt
+            ? ` · robots.txt ${
+                source === "fetched_404" ? "absent (404)" : "fetched"
+              } ${new Date(fetchedAt).toLocaleString()}`
+            : ""}
+        </span>
+        {state === "demo_fixture" && <DemoDataBadge />}
+        <button
+          type="button"
+          onClick={refreshRobots}
+          disabled={refreshing || !domain}
+          style={{
+            background: "transparent",
+            color: "var(--muted)",
+            border: "1px solid var(--line)",
+            borderRadius: 6,
+            padding: "0.25rem 0.6rem",
+            cursor: refreshing || !domain ? "default" : "pointer",
+            fontSize: 12,
+          }}
+        >
+          {refreshing ? "Fetching…" : "Re-fetch robots.txt"}
+        </button>
       </p>
+
+      {state === "empty" && (
+        <NoDataCallout
+          title="robots.txt has not been read yet"
+          reason={emptyReason}
+        />
+      )}
+
+      {state !== "empty" && (
+        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 0 }}>
+          {note}
+        </p>
+      )}
 
       {blocked.length > 0 && (
         <div

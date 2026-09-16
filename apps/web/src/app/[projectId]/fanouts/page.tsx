@@ -1,7 +1,11 @@
 import { apiFetch } from "@/lib/api-server";
 import Link from "next/link";
+import { ApiDownCallout } from "@/components/api-down-callout";
+import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 
 type Fanouts = {
+  data_state: "live" | "empty" | "demo_fixture";
+  empty_reason: string | null;
   distinct_queries: number;
   total_occurrences: number;
   rows: {
@@ -38,6 +42,7 @@ export default async function FanoutsPage({
           <div className="geo-vis-title-row">
             <h1>Fanouts</h1>
             <span className="geo-badge geo-badge-neutral">Follow-up queries</span>
+            {data?.data_state === "demo_fixture" && <DemoDataBadge />}
           </div>
           <p className="geo-page-lede">
             Queries engines issue while answering your prompts.
@@ -59,9 +64,16 @@ export default async function FanoutsPage({
         </div>
       </header>
 
-      {!data && <p className="geo-vis-note">API unreachable.</p>}
+      {!data && <ApiDownCallout noun="fanouts" />}
 
-      {data && (
+      {data?.data_state === "empty" && (
+        <NoDataCallout
+          title="No fanout queries captured yet"
+          reason={data.empty_reason}
+        />
+      )}
+
+      {data && data.data_state !== "empty" && (
         <>
           <div className="geo-vis-kpis">
             <article className="geo-vis-kpi">

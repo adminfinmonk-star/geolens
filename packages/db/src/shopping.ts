@@ -6,6 +6,7 @@ import {
   parseCatalogCsv,
   type AttributeTab,
 } from "@geo/core";
+import { dataState, demoFixturesEnabled } from "./fixtures.js";
 import { newId } from "./schema.js";
 import type { DemoStore } from "./seed.js";
 
@@ -64,7 +65,7 @@ export function ensureShopping(store: DemoStore) {
   if (!store.productCategories) store.productCategories = [];
   if (!store.pendingCategoryDraft) store.pendingCategoryDraft = [];
 
-  if (store.products.length === 0) {
+  if (demoFixturesEnabled(store) && store.products.length === 0) {
     seedShopping(store);
   }
 }
@@ -271,6 +272,11 @@ export function shoppingSummary(store: DemoStore) {
     });
 
   return {
+    data_state: dataState(store, store.products.length > 0),
+    empty_reason:
+      store.products.length > 0
+        ? null
+        : "No products detected in collected chats yet. Upload a catalog CSV to track your own products and price drift.",
     engine_note:
       "Shopping carousels are only collected on shopping-capable channels. Other engines show an explicit not-supported state rather than empty charts.",
     position_note:

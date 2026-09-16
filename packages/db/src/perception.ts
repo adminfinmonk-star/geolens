@@ -6,6 +6,7 @@ import {
   type AttributeScore,
   type ClaimVerdict,
 } from "@geo/core";
+import { dataState, demoFixturesEnabled } from "./fixtures.js";
 import { newId } from "./schema.js";
 import type { DemoStore } from "./seed.js";
 
@@ -53,9 +54,15 @@ export function ensurePerception(store: DemoStore) {
   if (!store.perceptionRuns) store.perceptionRuns = [];
   if (!store.perceptionObjections) store.perceptionObjections = [];
 
-  if (store.facts.length === 0) {
-    seedFactsAndClaims(store);
+  if (demoFixturesEnabled(store) && store.facts.length === 0) {
+    seedDemoFacts(store);
   }
+
+  // Real work: claims are extracted from collected chat text and judged against
+  // whatever facts the customer has asserted. Safe to run with zero facts.
+  extractClaimsFromChats(store);
+
+  if (!demoFixturesEnabled(store)) return;
   if (store.perceptionAttributes.length === 0) {
     seedMarketPerception(store);
   }
@@ -83,59 +90,46 @@ export function ensurePerception(store: DemoStore) {
   }
 }
 
-function seedFactsAndClaims(store: DemoStore) {
+function seedDemoFacts(store: DemoStore) {
   const now = new Date().toISOString();
   const own = store.brands.find((b) => b.is_own)!;
-  const factPrice: FactRecord = {
-    id: newId("fct"),
-    project_id: store.project.id,
-    statement: "Acme CRM starts at $49/mo",
-    is_active: true,
-    created_at: now,
-  };
-  const factInteg: FactRecord = {
-    id: newId("fct"),
-    project_id: store.project.id,
-    statement: "Acme integrates with Salesforce and HubSpot",
-    is_active: true,
-    created_at: now,
-  };
-  store.facts.push(factPrice, factInteg);
+  store.facts.push(
+    {
+      id: newId("fct"),
+      project_id: store.project.id,
+      statement: "Acme CRM starts at $49/mo",
+      is_active: true,
+      created_at: now,
+    },
+    {
+      id: newId("fct"),
+      project_id: store.project.id,
+      statement: "Acme integrates with Salesforce and HubSpot",
+      is_active: true,
+      created_at: now,
+    },
+  );
 
-  // Seed wrong price claim from a tracked chat (or synthetic)
   const chat =
     store.chats.find((c) => c.text.toLowerCase().includes("$9")) ??
-    store.chats[0]!;
+    store.chats[0];
+  if (!chat) return;
   const wrongText =
     "Acme starts at $9/mo, integrates with Salesforce, and has 10k customers.";
-  const atoms = extractAtomicClaims(wrongText);
-  for (const atom of atoms) {
-    const claim: ClaimRecord = {
-      id: newId("clm"),
-      project_id: store.project.id,
-      chat_id: chat.id,
-      prompt_id: chat.prompt_id,
-      model_channel_id: chat.model_channel_id,
-      brand_id: own.id,
-      statement: atom.statement,
-      category: atom.category,
-      claim_hash: claimHash(atom.statement),
-      created_at: now,
-    };
-    store.claims.push(claim);
-    const judged = judgeClaimAgainstFacts(atom, store.facts);
-    if (judged) {
-      store.claimVerdicts.push({
-        claim_id: claim.id,
-        fact_id: judged.fact.id,
-        verdict: judged.verdict,
-        fact_statement_at_verdict: judged.fact.statement,
-        created_at: now,
-      });
-    }
+  for (const atom of extractAtomicClaims(wrongText)) {
+    recordClaim(store, {
+      chat,
+      brandId: own.id,
+      atom,
+      createdAt: now,
+    });
   }
+}
 
-  // Also scan a sample of chats for more claims
+/** Extract atomic claims about the tracked brand from real collected chat text. */
+function extractClaimsFromChats(store: DemoStore) {
+  const own = store.brands.find((b) => b.is_own);
+  if (!own) return;
   for (const c of store.chats.slice(0, 40)) {
     if (!c.text) continue;
     const mentionsOwn = store.mentions.some(
@@ -143,32 +137,49 @@ function seedFactsAndClaims(store: DemoStore) {
     );
     if (!mentionsOwn) continue;
     for (const atom of extractAtomicClaims(c.text)) {
-      const hash = claimHash(atom.statement);
-      if (store.claims.some((x) => x.claim_hash === hash)) continue;
-      const claim: ClaimRecord = {
-        id: newId("clm"),
-        project_id: store.project.id,
-        chat_id: c.id,
-        prompt_id: c.prompt_id,
-        model_channel_id: c.model_channel_id,
-        brand_id: own.id,
-        statement: atom.statement,
-        category: atom.category,
-        claim_hash: hash,
-        created_at: c.run_date + "T12:00:00.000Z",
-      };
-      store.claims.push(claim);
-      const judged = judgeClaimAgainstFacts(atom, store.facts);
-      if (judged) {
-        store.claimVerdicts.push({
-          claim_id: claim.id,
-          fact_id: judged.fact.id,
-          verdict: judged.verdict,
-          fact_statement_at_verdict: judged.fact.statement,
-          created_at: claim.created_at,
-        });
-      }
+      recordClaim(store, {
+        chat: c,
+        brandId: own.id,
+        atom,
+        createdAt: c.run_date + "T12:00:00.000Z",
+      });
     }
+  }
+}
+
+function recordClaim(
+  store: DemoStore,
+  input: {
+    chat: DemoStore["chats"][number];
+    brandId: string;
+    atom: ReturnType<typeof extractAtomicClaims>[number];
+    createdAt: string;
+  },
+) {
+  const hash = claimHash(input.atom.statement);
+  if (store.claims.some((x) => x.claim_hash === hash)) return;
+  const claim: ClaimRecord = {
+    id: newId("clm"),
+    project_id: store.project.id,
+    chat_id: input.chat.id,
+    prompt_id: input.chat.prompt_id,
+    model_channel_id: input.chat.model_channel_id,
+    brand_id: input.brandId,
+    statement: input.atom.statement,
+    category: input.atom.category,
+    claim_hash: hash,
+    created_at: input.createdAt,
+  };
+  store.claims.push(claim);
+  const judged = judgeClaimAgainstFacts(input.atom, store.facts);
+  if (judged) {
+    store.claimVerdicts.push({
+      claim_id: claim.id,
+      fact_id: judged.fact.id,
+      verdict: judged.verdict,
+      fact_statement_at_verdict: judged.fact.statement,
+      created_at: input.createdAt,
+    });
   }
 }
 
@@ -230,19 +241,20 @@ function seedMarketPerception(store: DemoStore) {
 
 export function marketPerceptionReport(store: DemoStore) {
   ensurePerception(store);
-  const own = store.brands.find((b) => b.is_own)!;
+  const own = store.brands.find((b) => b.is_own);
   const run = store.perceptionRuns.find((r) => r.kind === "market");
+  const hasAttributes = store.perceptionAttributes.length > 0;
   const summary = computePerceptionSummary(
     store.perceptionAttributes,
-    own.name,
-    [
-      { brand: "BetaSoft", mean: 71 },
-      { brand: "CloudNine", mean: 63 },
-      { brand: "DataPeak", mean: 54 },
-    ],
+    own?.name ?? "your brand",
+    competitorProminence(store),
   );
   return {
     run,
+    data_state: dataState(store, hasAttributes),
+    empty_reason: hasAttributes
+      ? null
+      : "Attribute association requires a perception run. Nothing is inferred from tracked prompts.",
     snapshot_note:
       "Perception is snapshot-per-run with no date range. Tracked prompt edits do not change these results.",
     attributes: store.perceptionAttributes,
@@ -252,10 +264,38 @@ export function marketPerceptionReport(store: DemoStore) {
   };
 }
 
+/**
+ * Rival strength from real competitor mentions rather than invented constants:
+ * mean sentiment-weighted prominence on a 0-100 scale.
+ */
+function competitorProminence(
+  store: DemoStore,
+): { brand: string; mean: number }[] {
+  const byBrand = new Map<string, { total: number; n: number }>();
+  for (const m of store.mentions) {
+    const brand = store.brands.find((b) => b.id === m.brand_id);
+    if (!brand || brand.is_own) continue;
+    const cur = byBrand.get(brand.name) ?? { total: 0, n: 0 };
+    const placement = m.position == null ? 0.5 : Math.max(0, 1 - (m.position - 1) / 4);
+    cur.total += 100 * placement;
+    cur.n += 1;
+    byBrand.set(brand.name, cur);
+  }
+  return [...byBrand.entries()]
+    .map(([brand, v]) => ({ brand, mean: v.total / v.n }))
+    .sort((a, b) => b.mean - a.mean)
+    .slice(0, 5);
+}
+
 export function objectionsReport(store: DemoStore) {
   ensurePerception(store);
   return {
     rows: store.perceptionObjections,
+    data_state: dataState(store, store.perceptionObjections.length > 0),
+    empty_reason:
+      store.perceptionObjections.length > 0
+        ? null
+        : "Objection clustering requires a perception run over collected chats.",
     guidance:
       "Separate false objections (content/PR) from true ones (product feedback). Mid-range scores are ambiguous — expand and filter by model.",
   };
@@ -308,6 +348,11 @@ export function factcheckReport(store: DemoStore) {
   }
 
   return {
+    data_state: dataState(store, store.claims.length > 0),
+    empty_reason:
+      store.claims.length > 0
+        ? null
+        : "No claims about your brand have been extracted from collected chats yet.",
     honesty:
       "AI can be wrong about you for months with nothing here if you never asserted the catching fact. Add starting price, integrations, and guarantees first.",
     contradicted,
