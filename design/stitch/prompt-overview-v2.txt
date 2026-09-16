@@ -1,0 +1,40 @@
+Design a DESKTOP light-theme SaaS VISIBILITY OVERVIEW dashboard for GeoLens AI Visibility — inspired by Semrush AI Visibility Overview layout, but original GeoLens brand (NOT Semrush purple).
+
+Brand (strict):
+- Accent teal #0F766E ONLY — NO purple, NO indigo
+- Neutrals: white, #F5F7F8, ink #0B1218, muted #5C6B76, borders #E3E9ED
+- Font: Plus Jakarta Sans
+- Soft mint wash background; white panels; 12–16px radius; light theme only
+- Semrush-style dual-rail chrome: Analysis suite active; Visibility Overview active in secondary
+
+Page structure (main content, 1440px):
+1) Header: "Visibility Overview" + Live index badge · subtitle with brand domain · Export / Share (teal primary)
+2) Optional filter row: Worldwide · All AI platforms · Last 7 days (ghost selects — chrome already has filters)
+
+3) TOP GRID (2 columns):
+   LEFT — AI Visibility Score card:
+   - Semi-circular gauge 0–100 (teal arc)
+   - Large score e.g. 67/100
+   - Band label: High / Medium / Low (teal/warm)
+   - One-line insight: how often brand appears vs competitors
+
+   RIGHT — Metrics trend card:
+   - Tabs: Main metrics | Mentions | Visibility
+   - Range chips: 7D · 30D · 6M
+   - KPI strip: Mentions · Citations · Cited pages (with % delta)
+   - Multi-line chart area (teal + muted series)
+
+4) BOTTOM GRID (2 columns):
+   LEFT — Distribution by LLM:
+   - Tabs: Mentions | Cited pages
+   - Horizontal bars: ChatGPT, Perplexity, AI Overviews, Gemini with % and counts
+
+   RIGHT — Mentions by country:
+   - Stacked bar + table: US, GB, IN, Other with % and counts
+
+5) BELOW fold — Topics & Sources strip (compact):
+   - Tabs: Performing topics · Opportunities · Cited sources
+   - Mini table: Topic | Visibility | Mentions | AI volume | Monitor CTA
+   - Honesty note if illustrative: "Platform & country mix illustrative until history rollups ship"
+
+Professional B2B analytics. No emoji. Dense but airy. 1440px desktop.

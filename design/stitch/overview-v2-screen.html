@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GeoLens — AI Visibility Overview</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#bdc9c6",
+            "on-tertiary": "#ffffff",
+            "secondary-container": "#5bb8fe",
+            "on-secondary-container": "#00476e",
+            "secondary-fixed-dim": "#93ccff",
+            "on-tertiary-container": "#ffe6da",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#ffdad6",
+            "background": "#f5faff",
+            "surface-tint": "#006a63",
+            "tertiary-fixed-dim": "#ffb690",
+            "inverse-on-surface": "#e4f3ff",
+            "on-primary": "#ffffff",
+            "outline": "#6e7977",
+            "inverse-primary": "#80d5cb",
+            "primary-container": "#0f766e",
+            "tertiary": "#893a00",
+            "on-surface-variant": "#3e4947",
+            "tertiary-container": "#af4c00",
+            "surface-container-high": "#daeaf7",
+            "on-primary-fixed-variant": "#00504a",
+            "secondary": "#006398",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed": "#341100",
+            "inverse-surface": "#24323c",
+            "on-secondary-fixed-variant": "#004b73",
+            "surface-container-highest": "#d5e5f1",
+            "on-secondary": "#ffffff",
+            "primary": "#005c55",
+            "on-tertiary-fixed-variant": "#783200",
+            "surface-dim": "#ccdce9",
+            "tertiary-fixed": "#ffdbca",
+            "surface-variant": "#d5e5f1",
+            "on-primary-container": "#a3faef",
+            "secondary-fixed": "#cce5ff",
+            "surface-container-low": "#eaf5ff",
+            "primary-fixed": "#9cf2e8",
+            "on-surface": "#0e1d26",
+            "primary-fixed-dim": "#80d5cb",
+            "on-error-container": "#93000a",
+            "surface-container": "#e0f0fd",
+            "on-background": "#0e1d26",
+            "surface-bright": "#f5faff",
+            "surface": "#f5faff",
+            "on-primary-fixed": "#00201d",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#001d31",
+            "brand-teal": "#0f766e",
+            "brand-teal-hover": "#115e59",
+            "brand-teal-active": "#134e4a",
+            "mint-light": "#ecfdf5",
+            "mint-tint": "#f0fdfa",
+            "mint-badge": "#e6f4f1",
+            "mint-wash": "#f5f9f8",
+            "ink": "#0b1218",
+            "slate-muted": "#5c6b76",
+            "border-subtle": "#e3e9ed"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-desktop": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "panel-padding-compact": "0.75rem",
+            "gutter-mobile": "1rem",
+            "space-base": "1rem",
+            "space-lg": "1.25rem",
+            "space-2xs": "0.125rem",
+            "space-2xl": "2rem",
+            "space-xl": "1.5rem",
+            "space-3xl": "3rem",
+            "space-sm": "0.5rem",
+            "panel-padding-standard": "1.25rem"
+          },
+          "fontFamily": {
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "data-mono": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "500" }],
+            "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "500" }],
+            "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "data-mono": ["13px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      vertical-align: middle;
+      display: inline-block;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-[#f5f9f8] text-[#0B1218] font-body-md text-body-md antialiased min-h-screen selection:bg-[#ecfdf5] selection:text-[#0f766e]">
+<div class="flex h-screen w-full overflow-hidden">
+<!-- PRIMARY LEFT RAIL (~64px) -->
+<aside class="w-16 flex-shrink-0 bg-surface-container-lowest border-r border-[#E3E9ED] flex flex-col justify-between items-center py-4 z-50 select-none">
+<!-- Top Brand Icon & Suite Stack -->
+<div class="flex flex-col items-center w-full gap-5">
+<!-- GeoLens Compass / Radar Logo Mark -->
+<a class="w-10 h-10 rounded-xl bg-[#0F766E] flex items-center justify-center text-white shadow-sm hover:bg-[#115E59] transition-colors" href="#" title="GeoLens Platform">
+<span class="material-symbols-outlined text-[24px]">explore</span>
+</a>
+<!-- Suite Stack Navigation -->
+<nav class="flex flex-col items-center gap-1.5 w-full px-2">
+<!-- Active Analysis Tab with teal pill -->
+<a class="w-11 h-11 rounded-xl bg-[#0F766E] text-white flex items-center justify-center shadow-sm relative group" href="#" title="Spatial Analysis">
+<span class="material-symbols-outlined text-[20px] fill">query_stats</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">
+              Spatial Analysis
+            </div>
+</a>
+<a class="w-11 h-11 rounded-xl text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] flex items-center justify-center transition-colors relative group" href="#" title="Brand &amp; Perception">
+<span class="material-symbols-outlined text-[20px]">corporate_fare</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">
+              Brand Performance
+            </div>
+</a>
+<a class="w-11 h-11 rounded-xl text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] flex items-center justify-center transition-colors relative group" href="#" title="Live Monitor">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">
+              Real-time Monitor
+            </div>
+</a>
+<a class="w-11 h-11 rounded-xl text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] flex items-center justify-center transition-colors relative group" href="#" title="Synthetic Results">
+<span class="material-symbols-outlined text-[20px]">lab_profile</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">
+              Audit Results
+            </div>
+</a>
+<a class="w-11 h-11 rounded-xl text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] flex items-center justify-center transition-colors relative group" href="#" title="Engine Settings">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">
+              Configuration
+            </div>
+</a>
+</nav>
+</div>
+<!-- Bottom Utility Stack -->
+<div class="flex flex-col items-center gap-2 w-full px-2">
+<a class="w-10 h-10 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] flex items-center justify-center transition-colors relative group" href="#" title="Documentation">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">Documentation</div>
+</a>
+<a class="w-10 h-10 rounded-lg text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] flex items-center justify-center transition-colors relative group" href="#" title="Support">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+<div class="absolute left-full ml-3 px-2 py-1 bg-[#0B1218] text-white text-[11px] rounded shadow-md opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap font-medium">Enterprise Support</div>
+</a>
+<!-- Quota Pill Mini Indicator -->
+<div class="w-8 h-8 rounded-full border border-[#0F766E]/30 bg-[#ecfdf5] text-[#0F766E] flex items-center justify-center font-label-md text-[10px] font-bold mt-1" title="28% Quota Used">
+          28%
+        </div>
+</div>
+</aside>
+<!-- SECONDARY LEFT RAIL (~220px Semrush style) -->
+<aside class="w-[224px] flex-shrink-0 bg-surface-container-lowest border-r border-[#E3E9ED] flex flex-col justify-between py-4 px-3 select-none overflow-y-auto">
+<div>
+<!-- Rail Header -->
+<div class="flex items-center justify-between px-2 pb-3 mb-2 border-b border-[#E3E9ED]">
+<div>
+<div class="font-headline-sm text-headline-sm font-bold text-[#0F766E] tracking-tight">GeoLens</div>
+<div class="font-label-md text-[10px] text-[#5C6B76] tracking-wider uppercase font-semibold">AI ANALYSIS v2.4</div>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-[#ECFDF5] text-[#0F766E] text-[10px] font-bold border border-[#0F766E]/20">PRO</span>
+</div>
+<!-- Group 1: AI ANALYSIS -->
+<div class="mb-4">
+<div class="px-2 py-1 text-[10px] font-bold tracking-wider text-[#5C6B76] uppercase">AI Analysis</div>
+<nav class="mt-1 flex flex-col gap-0.5">
+<!-- ACTIVE TAB -->
+<a class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-[#0F766E] text-white font-label-lg text-label-lg font-semibold shadow-sm" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span>Visibility Overview</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+</a>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">monitoring</span>
+<span>Competitor Research</span>
+</div>
+<span class="px-1.5 py-0.2 bg-[#F1F5F9] text-[#5C6B76] rounded text-[10px] font-bold">5</span>
+</a>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span>Prompt Research</span>
+</div>
+</a>
+</nav>
+</div>
+<!-- Group 2: BRAND PERFORMANCE -->
+<div class="mb-4">
+<div class="px-2 py-1 text-[10px] font-bold tracking-wider text-[#5C6B76] uppercase">Brand Performance</div>
+<nav class="mt-1 flex flex-col gap-0.5">
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">insights</span>
+<span>Brand Performance</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">sentiment_satisfied</span>
+<span>Perception &amp; Sentiment</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Fact-checking &amp; Audit</span>
+</a>
+</nav>
+</div>
+<!-- Group 3: BOOST & MONITOR -->
+<div class="mb-4">
+<div class="px-2 py-1 text-[10px] font-bold tracking-wider text-[#5C6B76] uppercase">Boost &amp; Monitor</div>
+<nav class="mt-1 flex flex-col gap-0.5">
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">track_changes</span>
+<span>Prompt Tracking</span>
+</div>
+<span class="px-1.5 py-0.2 bg-[#ECFDF5] text-[#0F766E] rounded text-[9px] font-bold tracking-tight">LIVE</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">link</span>
+<span>Sources &amp; Citations</span>
+</a>
+<a class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] transition-colors font-label-lg text-label-lg font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">build</span>
+<span>Actions &amp; Fixes</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Bottom Quota Widget -->
+<div class="bg-[#F5F9F8] rounded-xl p-3 border border-[#E3E9ED]">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-md text-[11px] font-bold text-[#0B1218]">Crawl Quota</span>
+<span class="text-[11px] font-bold text-[#0F766E]">28.4%</span>
+</div>
+<div class="w-full bg-[#E2E8F0] h-1.5 rounded-full overflow-hidden mb-2">
+<div class="bg-[#0F766E] h-full rounded-full" style="width: 28.4%"></div>
+</div>
+<div class="text-[11px] text-[#5C6B76] mb-2 leading-tight">1,420 / 5,000 queries used</div>
+<button class="w-full py-1.5 bg-white border border-[#E3E9ED] text-[#0F766E] hover:border-[#0F766E] hover:bg-[#F0FDF4] rounded-lg text-[11px] font-bold transition-all text-center">
+          Upgrade Quota
+        </button>
+</div>
+</aside>
+<!-- MAIN DASHBOARD CONTENT AREA -->
+<div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F5F9F8]">
+<!-- GLOBAL TOP APP BAR -->
+<header class="h-14 bg-white border-b border-[#E3E9ED] px-6 flex items-center justify-between flex-shrink-0 z-40">
+<!-- Left: Workspace Switcher & Breadcrumbs -->
+<div class="flex items-center gap-4">
+<!-- Dropdown Switcher -->
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-lg border border-[#E3E9ED] bg-[#F5F9F8] cursor-pointer hover:border-[#0F766E] transition-colors">
+<div class="w-2 h-2 rounded-full bg-[#0F766E]"></div>
+<span class="font-label-lg text-[13px] font-bold text-[#0B1218]">nike.com (Global)</span>
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">check_circle</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">arrow_drop_down</span>
+</div>
+<div class="h-4 w-px bg-[#E3E9ED]"></div>
+<!-- Breadcrumb string -->
+<div class="flex items-center gap-1.5 text-[13px] text-[#5C6B76] font-medium">
+<span>AI Visibility Suite</span>
+<span class="text-[12px] text-[#A0AEC0]">/</span>
+<span class="text-[#0B1218] font-bold">Visibility Overview</span>
+</div>
+</div>
+<!-- Center / Right Actions -->
+<div class="flex items-center gap-3">
+<!-- Live Telemetry Badge -->
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#ECFDF5] border border-[#0F766E]/20 text-[#0F766E] text-[11px] font-bold">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0F766E] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-[#0F766E]"></span>
+</span>
+<span>Telemetry Active (4 Engines)</span>
+</div>
+<!-- Search Bar -->
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-[#5C6B76]">search</span>
+<input class="w-full bg-[#F5F9F8] border border-[#E3E9ED] rounded-lg pl-8 pr-3 py-1.5 text-[12px] text-[#0B1218] placeholder-[#94A3B8] focus:bg-white focus:outline-none focus:border-[#0F766E] focus:ring-1 focus:ring-[#0F766E] transition-all" placeholder="Search queries, models, cited domains... [Cmd+K]" type="text"/>
+</div>
+<div class="h-4 w-px bg-[#E3E9ED]"></div>
+<!-- Notification & Help Icons -->
+<button class="w-8 h-8 rounded-lg border border-[#E3E9ED] flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] transition-colors relative" title="Notifications">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="w-2 h-2 rounded-full bg-[#0F766E] absolute top-1.5 right-1.5 ring-2 ring-white"></span>
+</button>
+<button class="w-8 h-8 rounded-lg border border-[#E3E9ED] flex items-center justify-center text-[#5C6B76] hover:text-[#0B1218] hover:bg-[#F5F9F8] transition-colors" title="Workspace Help">
+<span class="material-symbols-outlined text-[18px]">help</span>
+</button>
+<!-- User Badge -->
+<div class="flex items-center gap-2 pl-2 cursor-pointer">
+<div class="w-8 h-8 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-xs">
+              SO
+            </div>
+<div class="text-left leading-tight hidden lg:block">
+<div class="font-bold text-[12px] text-[#0B1218]">Spatial Ops Admin</div>
+<div class="text-[10px] text-[#5C6B76]">Enterprise Tier</div>
+</div>
+</div>
+</div>
+</header>
+<!-- SCROLLABLE CANVAS WORKSPACE -->
+<main class="flex-1 overflow-y-auto px-6 py-5">
+<div class="max-w-[1440px] mx-auto flex flex-col gap-5">
+<!-- HEADER SECTION -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<div>
+<div class="flex items-center gap-2.5">
+<h1 class="font-headline-lg text-headline-lg font-bold text-[#0B1218] tracking-tight">Visibility Overview</h1>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-[#E6F4F1] border border-[#0F766E]/20 text-[#0F766E] text-[11px] font-bold">
+                  Live Spatial Index v4.8
+                </span>
+</div>
+<p class="font-body-md text-body-md text-[#5C6B76] mt-0.5">
+                Real-time AI visibility and generative recommendation share for nike.com across ChatGPT, Perplexity, Gemini, and Google AI Overviews.
+              </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-[#E3E9ED] text-[#0B1218] text-[13px] font-bold hover:bg-[#F0FDF4] hover:border-[#0F766E] transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-[#5C6B76]">download</span>
+<span>Export Report</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-[#E3E9ED] text-[#0B1218] text-[13px] font-bold hover:bg-[#F0FDF4] hover:border-[#0F766E] transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-[#5C6B76]">share</span>
+<span>Share View</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0F766E] text-white text-[13px] font-bold hover:bg-[#115E59] active:bg-[#134E4A] shadow-sm transition-all">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>+ Run Synthetic Audit</span>
+</button>
+</div>
+</div>
+<!-- FILTER CONTROL ROW (Ghost pill selects) -->
+<div class="flex flex-wrap items-center justify-between gap-3 bg-white p-2.5 rounded-xl border border-[#E3E9ED] shadow-sm">
+<div class="flex flex-wrap items-center gap-2">
+<!-- Geo Filter -->
+<button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E3E9ED] bg-[#F5F9F8] hover:border-[#0F766E] text-[12px] font-semibold text-[#0B1218] transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">public</span>
+<span>Worldwide (18 Geos)</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">arrow_drop_down</span>
+</button>
+<!-- Engines Filter -->
+<button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E3E9ED] bg-[#F5F9F8] hover:border-[#0F766E] text-[12px] font-semibold text-[#0B1218] transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">layers</span>
+<span>All AI Platforms (4 Engines)</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">arrow_drop_down</span>
+</button>
+<!-- Date Filter -->
+<button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E3E9ED] bg-[#F5F9F8] hover:border-[#0F766E] text-[12px] font-semibold text-[#0B1218] transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">calendar_month</span>
+<span>Last 7 Days (Oct 18 – Oct 24)</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">arrow_drop_down</span>
+</button>
+<!-- Intent Filter -->
+<button class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E3E9ED] bg-[#F5F9F8] hover:border-[#0F766E] text-[12px] font-semibold text-[#0B1218] transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]">tune</span>
+<span>Search Intent: All</span>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76]">arrow_drop_down</span>
+</button>
+</div>
+<!-- Reset Filter CTA -->
+<button class="inline-flex items-center gap-1 px-3 py-1 text-[12px] font-semibold text-[#5C6B76] hover:text-[#0F766E] transition-colors">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>Reset Filters</span>
+</button>
+</div>
+<!-- TOP GRID: 2 Balanced Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<!-- LEFT COLUMN: AI Visibility Score Card -->
+<div class="bg-white rounded-2xl p-6 border border-[#E3E9ED] shadow-sm flex flex-col justify-between">
+<div>
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0B1218]">AI Visibility Score</h2>
+<span class="material-symbols-outlined text-[16px] text-[#5C6B76] cursor-help" title="Composite weighted index measuring generative engine recommendation rate.">info</span>
+</div>
+<div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#ECFDF5] border border-[#0F766E]/20 text-[#0F766E] text-[12px] font-bold">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>vs. Last 30 Days (+4.2%)</span>
+</div>
+</div>
+<!-- Gauge & Score Centerpiece -->
+<div class="flex flex-col items-center justify-center pt-5 pb-2 relative">
+<!-- Custom Semi-Circular Arc Gauge SVG -->
+<div class="relative w-64 h-36 flex items-center justify-center">
+<svg class="w-64 h-36 overflow-visible" viewbox="0 0 200 115">
+<!-- Background Track Arc -->
+<path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#CCECE7" stroke-linecap="round" stroke-width="16"></path>
+<!-- Active Value Arc (67% of 180deg = ~120.6deg arc) -->
+<!-- Arc length: PI * 80 = 251.32. Dash offset = 251.32 * (1 - 0.67) = 82.93 -->
+<path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0F766E" stroke-dasharray="251.32" stroke-dashoffset="82.93" stroke-linecap="round" stroke-width="16"></path>
+</svg>
+<!-- Gauge Internal Score Display -->
+<div class="absolute bottom-2 flex flex-col items-center">
+<div class="flex items-baseline">
+<span class="font-display-lg text-[44px] font-extrabold text-[#0B1218] tracking-tight leading-none">67</span>
+<span class="text-[18px] text-[#5C6B76] font-bold ml-1">/100</span>
+</div>
+<span class="text-[11px] font-semibold text-[#5C6B76] tracking-wide uppercase mt-0.5">Composite Score</span>
+</div>
+</div>
+<!-- Tier Band Pill -->
+<div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E6F4F1] border border-[#0F766E]/30 text-[#0F766E] text-[12px] font-bold">
+<span class="w-2 h-2 rounded-full bg-[#0F766E]"></span>
+<span>High Visibility Tier (Top 10% Industry)</span>
+</div>
+</div>
+<!-- Qualitative Insight Strip -->
+<div class="mt-4 p-3 rounded-xl bg-[#F0FDF4] border-l-4 border-[#0F766E] text-[12px] text-[#0B1218] leading-relaxed">
+<span class="font-bold text-[#0F766E]">Key Insight:</span> Nike appears in <strong>67%</strong> of high-intent running and footwear buyer inquiries — outpacing Adidas (52%) and Puma (38%) across all monitored conversational engines.
+                </div>
+</div>
+<!-- Mini Benchmark Breakdown -->
+<div class="mt-5 pt-4 border-t border-[#E3E9ED]">
+<div class="text-[11px] font-bold text-[#5C6B76] uppercase tracking-wider mb-2.5">Engine Coverage Breakdown</div>
+<div class="grid grid-cols-4 gap-2">
+<div class="p-2.5 rounded-lg bg-[#F5F9F8] border border-[#E3E9ED] text-center">
+<div class="text-[11px] text-[#5C6B76] font-medium truncate">ChatGPT</div>
+<div class="text-[16px] font-bold text-[#0F766E] mt-0.5">72%</div>
+<div class="text-[10px] text-[#0F766E] font-semibold">Rank #1</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F5F9F8] border border-[#E3E9ED] text-center">
+<div class="text-[11px] text-[#5C6B76] font-medium truncate">Perplexity</div>
+<div class="text-[16px] font-bold text-[#0F766E] mt-0.5">68%</div>
+<div class="text-[10px] text-[#0F766E] font-semibold">Rank #1</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F5F9F8] border border-[#E3E9ED] text-center">
+<div class="text-[11px] text-[#5C6B76] font-medium truncate">Google AI</div>
+<div class="text-[16px] font-bold text-[#0B1218] mt-0.5">64%</div>
+<div class="text-[10px] text-[#5C6B76] font-semibold">Rank #2</div>
+</div>
+<div class="p-2.5 rounded-lg bg-[#F5F9F8] border border-[#E3E9ED] text-center">
+<div class="text-[11px] text-[#5C6B76] font-medium truncate">Gemini Pro</div>
+<div class="text-[16px] font-bold text-[#0B1218] mt-0.5">61%</div>
+<div class="text-[10px] text-[#5C6B76] font-semibold">Rank #2</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Metrics Trend Card -->
+<div class="bg-white rounded-2xl p-6 border border-[#E3E9ED] shadow-sm flex flex-col justify-between">
+<div>
+<!-- Header with segmented controls and range chips -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-[#E3E9ED] gap-2">
+<!-- Segmented Control Tabs -->
+<div class="inline-flex p-0.5 rounded-lg bg-[#F1F5F9] border border-[#E3E9ED]">
+<button class="px-3 py-1 rounded-md bg-white text-[#0F766E] font-bold text-[12px] shadow-sm">Main metrics</button>
+<button class="px-3 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-medium text-[12px] transition-colors">Mentions</button>
+<button class="px-3 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-medium text-[12px] transition-colors">Visibility</button>
+</div>
+<!-- Time Range Chips -->
+<div class="inline-flex items-center gap-1">
+<button class="px-2.5 py-1 rounded-md bg-[#0F766E] text-white text-[11px] font-bold shadow-sm">7D</button>
+<button class="px-2.5 py-1 rounded-md text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] text-[11px] font-semibold transition-colors">30D</button>
+<button class="px-2.5 py-1 rounded-md text-[#5C6B76] hover:bg-[#F5F9F8] hover:text-[#0B1218] text-[11px] font-semibold transition-colors">6M</button>
+</div>
+</div>
+<!-- KPI Summary Strip -->
+<div class="grid grid-cols-3 gap-4 py-4 border-b border-[#E3E9ED]">
+<div>
+<div class="text-[11px] text-[#5C6B76] font-bold uppercase tracking-wider">Total Mentions</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-[24px] font-extrabold text-[#0B1218]">34.6K</span>
+<span class="text-[11px] font-bold text-[#0F766E]">+16.4% YoY</span>
+</div>
+</div>
+<div>
+<div class="text-[11px] text-[#5C6B76] font-bold uppercase tracking-wider">Citations Count</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-[24px] font-extrabold text-[#0B1218]">106.2K</span>
+<span class="text-[11px] font-bold text-[#0F766E]">+8.1% MoM</span>
+</div>
+</div>
+<div>
+<div class="text-[11px] text-[#5C6B76] font-bold uppercase tracking-wider">Unique Cited Pages</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-[24px] font-extrabold text-[#0B1218]">52.9K</span>
+<span class="text-[11px] font-bold text-[#0F766E]">+5.3% MoM</span>
+</div>
+</div>
+</div>
+<!-- Vector Trend Chart -->
+<div class="mt-4 relative h-48 w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 540 180">
+<defs>
+<lineargradient id="tealFade" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0F766E" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#0F766E" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Grid Lines -->
+<line stroke="#E3E9ED" stroke-dasharray="3 3" x1="0" x2="540" y1="20" y2="20"></line>
+<line stroke="#E3E9ED" stroke-dasharray="3 3" x1="0" x2="540" y1="65" y2="65"></line>
+<line stroke="#E3E9ED" stroke-dasharray="3 3" x1="0" x2="540" y1="110" y2="110"></line>
+<line stroke="#E3E9ED" x1="0" x2="540" y1="155" y2="155"></line>
+<!-- Area fill under primary Nike curve -->
+<path d="M 10 120 Q 95 105 180 85 T 360 60 T 530 35 L 530 155 L 10 155 Z" fill="url(#tealFade)"></path>
+<!-- Competitor Baseline Line (Dotted Slate) -->
+<path d="M 10 135 Q 95 130 180 125 T 360 115 T 530 108" fill="none" stroke="#94A3B8" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- Citations Secondary Curve (Soft Cyan Line) -->
+<path d="M 10 145 Q 95 120 180 110 T 360 85 T 530 70" fill="none" stroke="#2DD4BF" stroke-width="2"></path>
+<!-- Nike Total Visibility Primary Curve (Solid Bold Teal #0F766E) -->
+<path d="M 10 120 Q 95 105 180 85 T 360 60 T 530 35" fill="none" stroke="#0F766E" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Point Nodes -->
+<circle cx="10" cy="120" fill="#0F766E" r="3.5"></circle>
+<circle cx="95" cy="108" fill="#0F766E" r="3.5"></circle>
+<circle cx="180" cy="85" fill="#0F766E" r="3.5"></circle>
+<circle cx="270" cy="72" fill="#0F766E" r="3.5"></circle>
+<circle cx="360" cy="60" fill="#0F766E" r="3.5"></circle>
+<circle cx="450" cy="48" fill="#0F766E" r="3.5"></circle>
+<circle cx="530" cy="35" fill="#0F766E" r="5" stroke="#FFFFFF" stroke-width="2"></circle>
+</svg>
+<!-- Peak Point Interactive Tooltip Display -->
+<div class="absolute right-4 top-2 bg-[#0B1218] text-white p-2.5 rounded-lg shadow-xl text-[11px] pointer-events-none border border-white/10 z-10">
+<div class="font-bold text-white border-b border-white/20 pb-1 mb-1 flex items-center justify-between gap-3">
+<span>Fri, Oct 24 (Peak)</span>
+<span class="text-[#2DD4BF] font-bold">Live</span>
+</div>
+<div class="flex items-center justify-between gap-4 text-white/90">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#0F766E]"></span> Nike Visibility:</span>
+<span class="font-bold text-white">67.4%</span>
+</div>
+<div class="flex items-center justify-between gap-4 text-white/90 mt-0.5">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#2DD4BF]"></span> Daily Citations:</span>
+<span class="font-bold text-white">5,120</span>
+</div>
+<div class="flex items-center justify-between gap-4 text-white/70 mt-0.5">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#94A3B8]"></span> Competitor Baseline:</span>
+<span class="font-bold">48.2%</span>
+</div>
+</div>
+</div>
+<!-- Chart Days Legend -->
+<div class="flex justify-between text-[11px] text-[#5C6B76] font-medium mt-1 px-1">
+<span>Oct 18</span>
+<span>Oct 19</span>
+<span>Oct 20</span>
+<span>Oct 21</span>
+<span>Oct 22</span>
+<span>Oct 23</span>
+<span class="font-bold text-[#0F766E]">Oct 24 (Today)</span>
+</div>
+</div>
+<!-- Benchmark Legend Footer -->
+<div class="flex items-center gap-4 mt-4 pt-3 border-t border-[#E3E9ED] text-[11px]">
+<div class="flex items-center gap-1.5 font-semibold text-[#0B1218]">
+<span class="w-3 h-1 bg-[#0F766E] rounded-full"></span>
+<span>Nike (Visibility Share)</span>
+</div>
+<div class="flex items-center gap-1.5 text-[#5C6B76]">
+<span class="w-3 h-1 bg-[#2DD4BF] rounded-full"></span>
+<span>Synthetic Citations</span>
+</div>
+<div class="flex items-center gap-1.5 text-[#5C6B76]">
+<span class="w-3 h-0.5 bg-[#94A3B8] border-b border-dashed border-[#94A3B8]"></span>
+<span>Peer Average Baseline</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BOTTOM GRID: 2 Balanced Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<!-- LEFT COLUMN: Distribution by AI Platform -->
+<div class="bg-white rounded-2xl p-6 border border-[#E3E9ED] shadow-sm flex flex-col justify-between">
+<div>
+<!-- Header with tab switch -->
+<div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0B1218]">Distribution by AI Platform</h2>
+<p class="text-[12px] text-[#5C6B76] mt-0.5">Volume and share of voice across top generative assistants.</p>
+</div>
+<div class="inline-flex p-0.5 rounded-lg bg-[#F1F5F9] border border-[#E3E9ED]">
+<button class="px-2.5 py-1 rounded-md bg-white text-[#0F766E] font-bold text-[11px] shadow-sm">Mentions</button>
+<button class="px-2.5 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-medium text-[11px]">Cited pages</button>
+</div>
+</div>
+<!-- 4 Horizontal Bar Items with Clean SVG Line Icons -->
+<div class="mt-4 flex flex-col gap-4">
+<!-- ChatGPT-4o -->
+<div class="p-3 rounded-xl bg-[#F5F9F8] border border-[#E3E9ED]">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<!-- Custom clean line badge -->
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E3E9ED] flex items-center justify-center text-[#0F766E] font-bold text-xs">
+<span class="material-symbols-outlined text-[16px]">smart_toy</span>
+</div>
+<div>
+<div class="text-[13px] font-bold text-[#0B1218]">ChatGPT-4o (OpenAI)</div>
+<div class="text-[11px] text-[#5C6B76]">14,532 mentions monitored</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[14px] font-extrabold text-[#0B1218]">42.0%</div>
+<span class="inline-block px-1.5 py-0.2 rounded bg-[#ECFDF5] text-[#0F766E] text-[10px] font-bold">Rank #1 cited</span>
+</div>
+</div>
+<!-- Bar Track -->
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#0F766E] h-full rounded-full transition-all duration-500" style="width: 42%"></div>
+</div>
+</div>
+<!-- Perplexity Pro -->
+<div class="p-3 rounded-xl bg-[#F5F9F8] border border-[#E3E9ED]">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E3E9ED] flex items-center justify-center text-[#14B8A6] font-bold text-xs">
+<span class="material-symbols-outlined text-[16px]">hub</span>
+</div>
+<div>
+<div class="text-[13px] font-bold text-[#0B1218]">Perplexity Pro</div>
+<div class="text-[11px] text-[#5C6B76]">9,688 mentions monitored</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[14px] font-extrabold text-[#0B1218]">28.0%</div>
+<span class="inline-block px-1.5 py-0.2 rounded bg-[#ECFDF5] text-[#0F766E] text-[10px] font-bold">Rank #1 cited</span>
+</div>
+</div>
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#14B8A6] h-full rounded-full transition-all duration-500" style="width: 28%"></div>
+</div>
+</div>
+<!-- Google AI Overviews (SGE) -->
+<div class="p-3 rounded-xl bg-[#F5F9F8] border border-[#E3E9ED]">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E3E9ED] flex items-center justify-center text-[#0D9488] font-bold text-xs">
+<span class="material-symbols-outlined text-[16px]">travel_explore</span>
+</div>
+<div>
+<div class="text-[13px] font-bold text-[#0B1218]">Google AI Overviews (SGE)</div>
+<div class="text-[11px] text-[#5C6B76]">6,228 mentions monitored</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[14px] font-extrabold text-[#0B1218]">18.0%</div>
+<span class="inline-block px-1.5 py-0.2 rounded bg-[#F1F5F9] text-[#5C6B76] text-[10px] font-bold">Rank #2 cited</span>
+</div>
+</div>
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#5EEAD4] h-full rounded-full transition-all duration-500" style="width: 18%"></div>
+</div>
+</div>
+<!-- Gemini 1.5 Pro -->
+<div class="p-3 rounded-xl bg-[#F5F9F8] border border-[#E3E9ED]">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-white border border-[#E3E9ED] flex items-center justify-center text-[#5C6B76] font-bold text-xs">
+<span class="material-symbols-outlined text-[16px]">cognition</span>
+</div>
+<div>
+<div class="text-[13px] font-bold text-[#0B1218]">Gemini 1.5 Pro</div>
+<div class="text-[11px] text-[#5C6B76]">4,152 mentions monitored</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-[14px] font-extrabold text-[#0B1218]">12.0%</div>
+<span class="inline-block px-1.5 py-0.2 rounded bg-[#F1F5F9] text-[#5C6B76] text-[10px] font-bold">Rank #2 cited</span>
+</div>
+</div>
+<div class="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#99F6E4] h-full rounded-full transition-all duration-500" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary Note -->
+<div class="mt-4 pt-3 border-t border-[#E3E9ED] flex items-center justify-between text-[11px] text-[#5C6B76]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-[#0F766E]">verified</span>
+<span>Total <strong>34,600 verified</strong> synthetic prompt mentions across 4 active engines.</span>
+</div>
+<a class="font-bold text-[#0F766E] hover:underline" href="#">Model Weights →</a>
+</div>
+</div>
+<!-- RIGHT COLUMN: Mentions by Country -->
+<div class="bg-white rounded-2xl p-6 border border-[#E3E9ED] shadow-sm flex flex-col justify-between">
+<div>
+<!-- Header -->
+<div class="flex items-center justify-between pb-3 border-b border-[#E3E9ED]">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0B1218]">Mentions by Country</h2>
+<p class="text-[12px] text-[#5C6B76] mt-0.5">Geographic recommendation penetration in primary markets.</p>
+</div>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#ECFDF5] border border-[#0F766E]/20 text-[#0F766E] text-[11px] font-bold">
+                    18 Geos Monitored
+                  </span>
+</div>
+<!-- Multi-segment Stacked Progress Bar -->
+<div class="mt-4 mb-4">
+<div class="flex justify-between text-[11px] font-bold text-[#5C6B76] mb-1.5">
+<span>Geographic Distribution (Share of Mentions)</span>
+<span class="text-[#0B1218]">100% Monitored</span>
+</div>
+<div class="w-full h-3 rounded-full overflow-hidden flex bg-[#E2E8F0] p-0.5 gap-0.5">
+<div class="bg-[#0F766E] h-full rounded-l-full" style="width: 52%" title="US: 52%"></div>
+<div class="bg-[#14B8A6] h-full" style="width: 21%" title="GB: 21%"></div>
+<div class="bg-[#5EEAD4] h-full" style="width: 14%" title="DE: 14%"></div>
+<div class="bg-[#99F6E4] h-full" style="width: 8%" title="FR: 8%"></div>
+<div class="bg-[#CBD5E1] h-full rounded-r-full" style="width: 5%" title="Other: 5%"></div>
+</div>
+<div class="flex items-center gap-3 mt-2 text-[10px] text-[#5C6B76] font-medium flex-wrap">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#0F766E]"></span> US (52%)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#14B8A6]"></span> GB (21%)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#5EEAD4]"></span> DE (14%)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#99F6E4]"></span> FR (8%)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#CBD5E1]"></span> Other (5%)</span>
+</div>
+</div>
+<!-- Detailed Geo Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left text-[12px]">
+<thead>
+<tr class="border-b border-[#E3E9ED] text-[#5C6B76] font-bold text-[10px] uppercase tracking-wider">
+<th class="py-2 font-semibold">Territory</th>
+<th class="py-2 font-semibold">Volume</th>
+<th class="py-2 font-semibold">Share</th>
+<th class="py-2 font-semibold">Top Engine</th>
+<th class="py-2 text-right font-semibold">Trend</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#E3E9ED]">
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-2 font-bold text-[#0B1218] flex items-center gap-2">
+<span class="w-5 h-3.5 rounded-sm bg-[#E2E8F0] border border-[#CBD5E1] text-[9px] font-extrabold flex items-center justify-center text-[#475569]">US</span>
+<span>United States</span>
+</td>
+<td class="py-2 text-[#0B1218] font-medium">17,992</td>
+<td class="py-2 font-bold text-[#0F766E]">52.0%</td>
+<td class="py-2 text-[#5C6B76]">ChatGPT</td>
+<td class="py-2 text-right font-bold text-[#0F766E]">+6.2%</td>
+</tr>
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-2 font-bold text-[#0B1218] flex items-center gap-2">
+<span class="w-5 h-3.5 rounded-sm bg-[#E2E8F0] border border-[#CBD5E1] text-[9px] font-extrabold flex items-center justify-center text-[#475569]">GB</span>
+<span>United Kingdom</span>
+</td>
+<td class="py-2 text-[#0B1218] font-medium">7,266</td>
+<td class="py-2 font-bold text-[#0F766E]">21.0%</td>
+<td class="py-2 text-[#5C6B76]">Perplexity</td>
+<td class="py-2 text-right font-bold text-[#0F766E]">+3.8%</td>
+</tr>
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-2 font-bold text-[#0B1218] flex items-center gap-2">
+<span class="w-5 h-3.5 rounded-sm bg-[#E2E8F0] border border-[#CBD5E1] text-[9px] font-extrabold flex items-center justify-center text-[#475569]">DE</span>
+<span>Germany</span>
+</td>
+<td class="py-2 text-[#0B1218] font-medium">4,844</td>
+<td class="py-2 font-bold text-[#0F766E]">14.0%</td>
+<td class="py-2 text-[#5C6B76]">Google AI</td>
+<td class="py-2 text-right font-bold text-[#0F766E]">+2.1%</td>
+</tr>
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-2 font-bold text-[#0B1218] flex items-center gap-2">
+<span class="w-5 h-3.5 rounded-sm bg-[#E2E8F0] border border-[#CBD5E1] text-[9px] font-extrabold flex items-center justify-center text-[#475569]">FR</span>
+<span>France</span>
+</td>
+<td class="py-2 text-[#0B1218] font-medium">2,768</td>
+<td class="py-2 font-bold text-[#0F766E]">8.0%</td>
+<td class="py-2 text-[#5C6B76]">Gemini</td>
+<td class="py-2 text-right font-bold text-[#0F766E]">+1.4%</td>
+</tr>
+<tr class="hover:bg-[#F0FDF4] transition-colors">
+<td class="py-2 font-bold text-[#0B1218] flex items-center gap-2">
+<span class="w-5 h-3.5 rounded-sm bg-[#E2E8F0] border border-[#CBD5E1] text-[9px] font-extrabold flex items-center justify-center text-[#475569]">GL</span>
+<span>Other (APAC/LATAM)</span>
+</td>
+<td class="py-2 text-[#0B1218] font-medium">1,730</td>
+<td class="py-2 font-bold text-[#5C6B76]">5.0%</td>
+<td class="py-2 text-[#5C6B76]">Distributed</td>
+<td class="py-2 text-right font-bold text-[#0F766E]">+0.9%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Map Link Footer -->
+<div class="mt-3 pt-3 border-t border-[#E3E9ED] flex items-center justify-between text-[11px]">
+<span class="text-[#5C6B76]">Regional latency normalized across Tier 1 CDN nodes.</span>
+<a class="font-bold text-[#0F766E] hover:underline flex items-center gap-1" href="#">
+<span>View Geospatial Heatmap</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- BELOW THE FOLD: Topics & Sources Intelligence Strip -->
+<div class="bg-white rounded-2xl p-6 border border-[#E3E9ED] shadow-sm mb-6">
+<!-- Header & Tabs -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#E3E9ED] gap-3">
+<div>
+<div class="flex items-center gap-3">
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#0B1218]">Topics &amp; Sources Intelligence</h2>
+<!-- Segmented tabs -->
+<div class="inline-flex p-0.5 rounded-lg bg-[#F1F5F9] border border-[#E3E9ED]">
+<button class="px-3 py-1 rounded-md bg-white text-[#0F766E] font-bold text-[12px] shadow-sm">Performing Topics</button>
+<button class="px-3 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-medium text-[12px] transition-colors flex items-center gap-1.5">
+<span>Opportunities &amp; Gaps</span>
+<span class="px-1.5 py-0.2 bg-[#ECFDF5] text-[#0F766E] rounded text-[10px] font-bold">6</span>
+</button>
+<button class="px-3 py-1 rounded-md text-[#5C6B76] hover:text-[#0B1218] font-medium text-[12px] transition-colors">Cited Sources</button>
+</div>
+</div>
+<p class="text-[12px] text-[#5C6B76] mt-1">High-yield conversational topic clusters driving brand authority and citation prominence.</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-2 text-[16px] text-[#5C6B76]">filter_alt</span>
+<input class="pl-7 pr-3 py-1.5 border border-[#E3E9ED] rounded-lg text-[12px] text-[#0B1218] bg-[#F5F9F8] focus:bg-white focus:outline-none focus:border-[#0F766E] w-48" placeholder="Filter clusters..." type="text"/>
+</div>
+<button class="p-1.5 border border-[#E3E9ED] rounded-lg bg-[#F5F9F8] text-[#5C6B76] hover:text-[#0B1218]">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<!-- Mini Data Table -->
+<div class="overflow-x-auto mt-2">
+<table class="w-full text-left text-[12px]">
+<thead>
+<tr class="border-b border-[#E3E9ED] text-[#5C6B76] font-bold text-[11px] uppercase tracking-wider">
+<th class="py-3 px-3 font-semibold">Topic Cluster</th>
+<th class="py-3 px-3 font-semibold">Intent Type</th>
+<th class="py-3 px-3 font-semibold">Visibility Rate</th>
+<th class="py-3 px-3 font-semibold">Mentions</th>
+<th class="py-3 px-3 font-semibold">AI Volume</th>
+<th class="py-3 px-3 font-semibold">Competitor Leader</th>
+<th class="py-3 px-3 text-right font-semibold">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#E3E9ED]">
+<!-- Row 1 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors group">
+<td class="py-3 px-3 font-bold text-[#0B1218]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]">sprint</span>
+<span>Marathon &amp; Carbon-Plate Racing Shoes</span>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-[#F1F5F9] text-[#0B1218] text-[11px] font-semibold">Commercial</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-20 bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#0F766E] h-full rounded-full" style="width: 84.2%"></div>
+</div>
+<span class="font-bold text-[#0F766E]">84.2%</span>
+</div>
+</td>
+<td class="py-3 px-3 font-semibold text-[#0B1218]">4,820</td>
+<td class="py-3 px-3 text-[#5C6B76]">12.4k/mo</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 font-bold text-[#0F766E]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span>
+                        Nike (#1)
+                      </span>
+</td>
+<td class="py-3 px-3 text-right">
+<button class="px-2.5 py-1 rounded-md border border-[#E3E9ED] bg-white text-[#0F766E] hover:border-[#0F766E] hover:bg-[#F0FDF4] text-[11px] font-bold transition-all shadow-2xs">
+                        Inspect Topic
+                      </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors group">
+<td class="py-3 px-3 font-bold text-[#0B1218]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]">directions_run</span>
+<span>Daily Neutral Road Cushioning</span>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-[#F1F5F9] text-[#0B1218] text-[11px] font-semibold">Informational</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-20 bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#0F766E] h-full rounded-full" style="width: 76.5%"></div>
+</div>
+<span class="font-bold text-[#0F766E]">76.5%</span>
+</div>
+</td>
+<td class="py-3 px-3 font-semibold text-[#0B1218]">3,910</td>
+<td class="py-3 px-3 text-[#5C6B76]">18.2k/mo</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 font-bold text-[#0F766E]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0F766E]"></span>
+                        Nike (#1)
+                      </span>
+</td>
+<td class="py-3 px-3 text-right">
+<button class="px-2.5 py-1 rounded-md border border-[#E3E9ED] bg-white text-[#0F766E] hover:border-[#0F766E] hover:bg-[#F0FDF4] text-[11px] font-bold transition-all shadow-2xs">
+                        Inspect Topic
+                      </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors group">
+<td class="py-3 px-3 font-bold text-[#0B1218]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#0F766E]">eco</span>
+<span>Sustainable Recycled Footwear Materials</span>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-[#F1F5F9] text-[#0B1218] text-[11px] font-semibold">Commercial</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-20 bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#0F766E] h-full rounded-full" style="width: 62.0%"></div>
+</div>
+<span class="font-bold text-[#0B1218]">62.0%</span>
+</div>
+</td>
+<td class="py-3 px-3 font-semibold text-[#0B1218]">2,140</td>
+<td class="py-3 px-3 text-[#5C6B76]">8.6k/mo</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 text-[#5C6B76] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-[#94A3B8]"></span>
+                        Adidas (#1)
+                      </span>
+</td>
+<td class="py-3 px-3 text-right">
+<button class="px-2.5 py-1 rounded-md border border-[#0F766E] bg-[#ECFDF5] text-[#0F766E] hover:bg-[#0F766E] hover:text-white text-[11px] font-bold transition-all shadow-2xs">
+                        Optimize Schema
+                      </button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors group">
+<td class="py-3 px-3 font-bold text-[#0B1218]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#F97316]">terrain</span>
+<span>Trail Running &amp; All-Weather Grip</span>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-[#F1F5F9] text-[#0B1218] text-[11px] font-semibold">Transactional</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-20 bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#F97316] h-full rounded-full" style="width: 48.4%"></div>
+</div>
+<span class="font-bold text-[#F97316]">48.4%</span>
+</div>
+</td>
+<td class="py-3 px-3 font-semibold text-[#0B1218]">1,650</td>
+<td class="py-3 px-3 text-[#5C6B76]">9.1k/mo</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 text-[#5C6B76] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-[#F97316]"></span>
+                        Hoka (#1)
+                      </span>
+</td>
+<td class="py-3 px-3 text-right">
+<button class="px-2.5 py-1 rounded-md border border-[#E3E9ED] bg-white text-[#0B1218] hover:border-[#0F766E] hover:text-[#0F766E] text-[11px] font-bold transition-all shadow-2xs">
+                        View Gap
+                      </button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-[#F0FDF4] transition-colors group">
+<td class="py-3 px-3 font-bold text-[#0B1218]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#F97316]">healing</span>
+<span>Recovery Slip-Ons &amp; Arch Support</span>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-[#F1F5F9] text-[#0B1218] text-[11px] font-semibold">Informational</span>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-20 bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+<div class="bg-[#F97316] h-full rounded-full" style="width: 38.0%"></div>
+</div>
+<span class="font-bold text-[#F97316]">38.0%</span>
+</div>
+</td>
+<td class="py-3 px-3 font-semibold text-[#0B1218]">1,120</td>
+<td class="py-3 px-3 text-[#5C6B76]">6.4k/mo</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 text-[#5C6B76] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-[#F97316]"></span>
+                        Brooks (#1)
+                      </span>
+</td>
+<td class="py-3 px-3 text-right">
+<button class="px-2.5 py-1 rounded-md border border-[#E3E9ED] bg-white text-[#0B1218] hover:border-[#0F766E] hover:text-[#0F766E] text-[11px] font-bold transition-all shadow-2xs">
+                        Fix Gap
+                      </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- MANDATORY FOOTER NOTE (Verbatim requirement) -->
+<div class="mt-4 pt-3 border-t border-[#E3E9ED] flex flex-col sm:flex-row sm:items-center sm:justify-between text-[11px] text-[#5C6B76] gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-[#0F766E]">info</span>
+<span>Platform &amp; country mix illustrative until history rollups ship · Engine crawl latency: 142ms · GeoLens Synthetic Crawler v4.8</span>
+</div>
+<div class="flex items-center gap-3">
+<a class="hover:text-[#0F766E] transition-colors" href="#">Audit Methodology</a>
+<span>·</span>
+<a class="hover:text-[#0F766E] transition-colors" href="#">API Diagnostics</a>
+<span>·</span>
+<span class="text-[#0F766E] font-semibold">Last sync: 2m ago</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { GeoLensMark } from "../geolens-mark";
 
 export const ONBOARDING_STEPS = [
   { id: "project", label: "Project", href: "/onboarding/project", n: 1 },
@@ -60,11 +61,7 @@ export function OnboardingShell({
         <section className="ob-pane-form">
           <header className="ob-pane-header">
             <Link href="/" className="ob-brand">
-              <span className="mk-logo-mark" aria-hidden>
-                <span />
-                <span />
-                <span />
-              </span>
+              <GeoLensMark className="ob-brand-mark" />
               <span className="ob-brand-text">
                 <strong>GeoLens</strong>
                 <small>AI visibility</small>

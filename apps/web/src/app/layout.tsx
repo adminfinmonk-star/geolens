@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   title: "GeoLens — AI Search Analytics",
   description:
     "Track, analyze, and improve brand performance on AI search platforms",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 /** Light is default. Dark only when the user explicitly chose it. */
@@ -42,6 +46,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: THEME_INIT is a
+            static local constant, not user input; it must run before paint to
+            avoid a theme flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>
       <body

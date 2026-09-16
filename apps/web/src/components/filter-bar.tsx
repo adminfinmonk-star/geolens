@@ -3,7 +3,7 @@
 import { apiBase } from "@/lib/api";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { DomainAnalyzeBar } from "./domain-analyze-bar";
 
 const API = apiBase();
 
@@ -15,6 +15,54 @@ const DATE_PRESETS = [
 
 type Channel = { id: string; label: string };
 
+function FilterIcon({ kind }: { kind: "range" | "channel" }) {
+  if (kind === "range") {
+    return (
+      <svg
+        className="geo-filter-pill-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        aria-hidden
+      >
+        <rect
+          x="2.5"
+          y="3.5"
+          width="11"
+          height="10"
+          rx="1.5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
+        <path
+          d="M2.5 6.5h11M5.5 2.5v2.5M10.5 2.5v2.5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg
+      className="geo-filter-pill-icon"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M2.5 4.5h11M4.5 8h7M6.5 11.5h3"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function FilterBar({ projectId }: { projectId: string }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -23,6 +71,7 @@ export function FilterBar({ projectId }: { projectId: string }) {
 
   const range = searchParams.get("range") ?? "7d";
   const channel = searchParams.get("channel") ?? "all";
+  const dirty = channel !== "all" || range !== "7d";
 
   useEffect(() => {
     try {
@@ -66,8 +115,14 @@ export function FilterBar({ projectId }: { projectId: string }) {
   const setParam = useCallback(
     (key: string, value: string) => {
       const next = new URLSearchParams(searchParams.toString());
-      if (key === "channel" && value === "all") next.delete("channel");
-      else next.set(key, value);
+      if (
+        (key === "channel" && value === "all") ||
+        (key === "range" && value === "7d")
+      ) {
+        next.delete(key);
+      } else {
+        next.set(key, value);
+      }
       const qs = next.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname);
     },
@@ -75,58 +130,51 @@ export function FilterBar({ projectId }: { projectId: string }) {
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "var(--space-2)",
-        alignItems: "center",
-        flexWrap: "wrap",
-        flex: 1,
-        minWidth: 0,
-      }}
-    >
-      <Link
-        href={`/${projectId}/profile`}
-        className="geo-chip"
-        title={`Project ${projectId} — open settings`}
-      >
-        Project
-      </Link>
+    <div className="geo-filter-bar">
+      <DomainAnalyzeBar projectId={projectId} variant="compact" />
 
-      <label className="sr-only" htmlFor="filter-range">
-        Date range
-      </label>
-      <select
-        id="filter-range"
-        className="geo-select"
-        value={range}
-        onChange={(e) => setParam("range", e.target.value)}
-      >
-        {DATE_PRESETS.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.label}
-          </option>
-        ))}
-      </select>
+      <div className="geo-filter-pill">
+        <FilterIcon kind="range" />
+        <label className="sr-only" htmlFor="filter-range">
+          Date range
+        </label>
+        <select
+          id="filter-range"
+          name="range"
+          className="geo-select"
+          value={range}
+          onChange={(e) => setParam("range", e.target.value)}
+        >
+          {DATE_PRESETS.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <label className="sr-only" htmlFor="filter-channel">
-        Model channel
-      </label>
-      <select
-        id="filter-channel"
-        className="geo-select"
-        value={channel}
-        onChange={(e) => setParam("channel", e.target.value)}
-      >
-        <option value="all">All models</option>
-        {channels.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.label}
-          </option>
-        ))}
-      </select>
+      <div className="geo-filter-pill">
+        <FilterIcon kind="channel" />
+        <label className="sr-only" htmlFor="filter-channel">
+          Model channel
+        </label>
+        <select
+          id="filter-channel"
+          name="channel"
+          className="geo-select"
+          value={channel}
+          onChange={(e) => setParam("channel", e.target.value)}
+        >
+          <option value="all">All models</option>
+          {channels.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {channel !== "all" || range !== "7d" ? (
+      {dirty ? (
         <button
           type="button"
           className="geo-btn geo-btn-quiet geo-btn-sm"

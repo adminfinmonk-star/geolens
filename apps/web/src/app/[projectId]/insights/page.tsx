@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api-server";
 import Link from "next/link";
+import { ApiDownCallout } from "@/components/api-down-callout";
 
 type Insights = {
   brand: { id: string; name: string; is_own: boolean };
@@ -106,7 +107,7 @@ export default async function BrandInsightsPage({
         </div>
       </header>
 
-      {!data && <p className="geo-vis-note">API unreachable.</p>}
+      {!data && <ApiDownCallout noun="brand performance" />}
 
       {data && (
         <>

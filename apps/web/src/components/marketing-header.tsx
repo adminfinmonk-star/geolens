@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { GeoLensMark } from "./geolens-mark";
 
 export function MarketingHeader() {
   const [solid, setSolid] = useState(false);
@@ -18,11 +19,7 @@ export function MarketingHeader() {
       <div className="mk-wrap mk-header-inner">
         <div className="mk-header-left">
           <Link href="/" className="mk-header-brand">
-            <span className="mk-logo-mark" aria-hidden>
-              <span />
-              <span />
-              <span />
-            </span>
+            <GeoLensMark className="mk-header-mark" />
             <span className="mk-header-brand-text">
               Geo<span>Lens</span>
             </span>

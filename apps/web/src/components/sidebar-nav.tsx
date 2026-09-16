@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { GeoLensMark } from "./geolens-mark";
 import { ThemeToggle } from "./theme-toggle";
 
 type NavItem = { href: string; label: string; badge?: string };
@@ -218,11 +219,7 @@ export function AppSideNav({ projectId }: { projectId: string }) {
     >
       <aside className="geo-icon-rail" aria-label="Suites">
         <Link href="/" className="geo-rail-logo" title="GeoLens home">
-          <span className="mk-logo-mark" aria-hidden>
-            <span />
-            <span />
-            <span />
-          </span>
+          <GeoLensMark className="geo-rail-mark" />
         </Link>
 
         <nav className="geo-rail-nav">

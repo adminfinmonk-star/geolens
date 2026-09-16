@@ -3,6 +3,7 @@
 import { apiBase } from "@/lib/api";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ApiDownCallout } from "@/components/api-down-callout";
 
 const API_BASE = apiBase();
 
@@ -33,6 +34,7 @@ export function ActionsClient({ projectId }: { projectId: string }) {
   const [group, setGroup] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [unreachable, setUnreachable] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -45,7 +47,8 @@ export function ActionsClient({ projectId }: { projectId: string }) {
         { credentials: "include" },
       );
       if (!res.ok) {
-        setMsg("Failed to load actions");
+        setUnreachable(true);
+        setMsg(null);
         return;
       }
       const body = (await res.json()) as {
@@ -58,9 +61,11 @@ export function ActionsClient({ projectId }: { projectId: string }) {
         OWNED: body.counts.OWNED,
         EARNED: body.counts.EARNED,
       });
+      setUnreachable(false);
       setMsg(null);
     } catch {
-      setMsg(`API unreachable at ${API_BASE}`);
+      setUnreachable(true);
+      setMsg(null);
     } finally {
       setLoading(false);
     }
@@ -108,6 +113,7 @@ export function ActionsClient({ projectId }: { projectId: string }) {
 
   return (
     <>
+      {unreachable ? <ApiDownCallout noun="actions" /> : null}
       <div className="geo-vis-kpis">
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Open (new)</p>

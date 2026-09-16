@@ -22,6 +22,8 @@ type Runtime = {
     key_present: boolean;
     provider?: string;
     route_note?: string;
+    via_openrouter?: boolean;
+    via_cursor?: boolean;
   }[];
   honesty: string;
   routing_policy?: string;
@@ -98,8 +100,11 @@ export default async function ChannelsPage({
   ).length;
   const live = rows.filter((r) => {
     const rt = modeById[r.channel_id];
-    const mode = rt?.mode ?? r.adapter_mode ?? "fixture";
-    return mode !== "fixture";
+    return Boolean(
+      rt?.via_openrouter ||
+        rt?.via_cursor ||
+        (rt?.mode ?? r.adapter_mode) === "live",
+    );
   }).length;
   const totalChats = rows.reduce((s, r) => s + r.chat_count, 0);
   const avgVis =
@@ -191,9 +196,18 @@ export default async function ChannelsPage({
                   <tbody>
                     {rows.map((r) => {
                       const rt = modeById[r.channel_id];
-                      const collection =
-                        rt?.mode ?? r.adapter_mode ?? "fixture";
-                      const keyOk = Boolean(rt?.key_present ?? r.key_present);
+                      const viaOpenRouter = Boolean(rt?.via_openrouter);
+                      const viaCursor = Boolean(rt?.via_cursor);
+                      const collection = viaOpenRouter
+                        ? "openrouter"
+                        : viaCursor
+                          ? "cursor"
+                          : (rt?.mode ?? r.adapter_mode ?? "fixture");
+                      const keyOk = Boolean(
+                        (rt?.key_present ?? r.key_present) ||
+                          viaOpenRouter ||
+                          viaCursor,
+                      );
                       const health = healthLabel(r.health.status);
                       return (
                         <tr key={r.channel_id}>
@@ -218,7 +232,13 @@ export default async function ChannelsPage({
                           <td>
                             {collection}
                             <small className="geo-pr-row-meta">
-                              {keyOk ? "API key set" : "Using fixtures"}
+                              {viaOpenRouter
+                                ? "OpenRouter key"
+                                : viaCursor
+                                  ? "Cursor key"
+                                  : keyOk
+                                    ? "API key set"
+                                    : "Using fixtures"}
                             </small>
                           </td>
                           <td>
