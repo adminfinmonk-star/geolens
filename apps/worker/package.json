@@ -7,9 +7,9 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "lint": "echo ok",
-    "dev": "tsx src/index.ts",
-    "worker": "tsx src/index.ts worker"
+    "lint": "biome lint src",
+    "dev": "tsx --env-file=../../.env src/index.ts",
+    "worker": "tsx --env-file=../../.env src/index.ts worker"
   },
   "exports": {
     ".": {

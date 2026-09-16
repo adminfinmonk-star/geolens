@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",
-    "build": "tsc -p tsconfig.json --noEmit",
+    "build": "next build",
     "start": "next start -p 3010",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "lint": "echo ok"
+    "lint": "biome lint src"
   },
   "dependencies": {
     "@geo/contracts": "workspace:*",

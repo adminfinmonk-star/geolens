@@ -17,7 +17,7 @@
     "test": "vitest run",
     "seed": "tsx src/seed-cli.ts",
     "migrate": "tsx src/migrate.ts",
-    "lint": "echo ok"
+    "lint": "biome lint src"
   },
   "dependencies": {
     "@geo/adapters": "workspace:*",

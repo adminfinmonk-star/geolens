@@ -11,6 +11,8 @@
     "seed": "pnpm --filter @geo/db seed"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@playwright/cli": "^0.1.19",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   }

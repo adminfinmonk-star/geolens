@@ -11,3 +11,16 @@ coverage
 apps/web/.next
 apps/*/dist
 packages/*/dist
+
+# Local MCP secrets (API keys in headers)
+.cursor/mcp.json
+
+# TS incremental build artifacts
+*.tsbuildinfo
+
+# Playwright CLI scratch output
+.playwright-cli/
+
+# Vendored skill packs (contain nested git repos)
+.cursor/skills/awesome-design-md/
+
