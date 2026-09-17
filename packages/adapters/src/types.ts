@@ -62,6 +62,7 @@ export interface EngineResponse {
   raw: unknown;
   meta: {
     modelReported?: string;
+    providerRequestId?: string;
     latencyMs: number;
     surfaceKind: "ui" | "api" | "simulator";
   };

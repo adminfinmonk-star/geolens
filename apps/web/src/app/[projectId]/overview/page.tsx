@@ -17,13 +17,41 @@ type Overview = {
     rank: number | null;
     of: number;
   } | null;
-  score: {
-    value: number;
-    band: string;
+  evidence: {
+    mentioned_answers: number;
+    eligible_answers: number;
+    observed_presence: number;
+    failed_attempts: number;
     label: string;
-    insight: string;
-    sample_thin?: boolean;
-    presence?: number;
+    note: string;
+  };
+  score: {
+    value: number | null;
+    label: string;
+    confidence: "insufficient" | "limited" | "directional" | "strong";
+    confidence_index: number;
+    range: { low: number; high: number } | null;
+    components: {
+      presence: number;
+      share_of_voice: number;
+      position: number;
+      citation_support: number;
+    };
+    weights: {
+      presence: number;
+      share_of_voice: number;
+      position: number;
+      citation_support: number;
+    };
+    methodology: string;
+  };
+  prompt_cohort: {
+    active_prompts: number;
+    score_prompts: number;
+    branded_prompts_excluded: number;
+    archived_prompts_excluded: number;
+    collected_answers: number;
+    score_answers: number;
   };
   kpis: {
     mentions: number;
@@ -34,12 +62,20 @@ type Overview = {
   channels: {
     channel_id: string;
     label: string;
+    models_reported: string[];
     chat_count: number;
     mention_count: number;
     visibility: number;
     share: number;
   }[];
-  countries: { code: string; count: number; share: number }[];
+  countries: {
+    code: string;
+    count: number;
+    attempt_count: number;
+    eligible_answers: number;
+    mentioned_answers: number;
+    presence: number;
+  }[];
   competitors: {
     brand_id: string;
     brand_name: string;
@@ -109,15 +145,12 @@ function fmt(n: number) {
   return String(n);
 }
 
-function channelLabel(id: string, fallback: string) {
-  if (id.startsWith("openai") || id.includes("chatgpt")) return "ChatGPT";
-  if (id.startsWith("perplexity")) return "Perplexity";
-  if (id.includes("overview") || id.includes("ai-overview"))
-    return "AI Overviews";
-  if (id.startsWith("google") || id.includes("gemini")) return "Gemini";
-  if (id.startsWith("anthropic") || id.includes("claude")) return "Claude";
-  if (id.startsWith("sim")) return "Simulator";
-  return fallback.charAt(0).toUpperCase() + fallback.slice(1);
+function channelLabel(channel: Overview["channels"][number]) {
+  const models = (channel.models_reported ?? []).filter(Boolean);
+  if (models.length > 0) {
+    return `${models.join(", ")} · ${channel.channel_id} route`;
+  }
+  return `Model unreported · ${channel.channel_id} route`;
 }
 
 function parseRange(raw: string | undefined): "7d" | "30d" | "90d" {
@@ -192,50 +225,6 @@ const COUNTRY_COLORS = [
   "var(--chart-4)",
   "var(--muted-2)",
 ];
-
-function VisibilityGauge({
-  value,
-  label,
-  band,
-}: {
-  value: number;
-  label: string;
-  band: string;
-}) {
-  const clamped = Math.max(0, Math.min(100, value));
-  const r = 54;
-  const c = 2 * Math.PI * r;
-  const half = c / 2;
-  const filled = (clamped / 100) * half;
-  return (
-    <div className="geo-gauge" data-band={band}>
-      <svg viewBox="0 0 140 88" className="geo-gauge-svg" aria-hidden>
-        <path
-          className="geo-gauge-track"
-          d="M 16 78 A 54 54 0 0 1 124 78"
-          fill="none"
-          strokeWidth="12"
-          strokeLinecap="round"
-        />
-        <path
-          className="geo-gauge-fill"
-          d="M 16 78 A 54 54 0 0 1 124 78"
-          fill="none"
-          strokeWidth="12"
-          strokeLinecap="round"
-          strokeDasharray={`${filled} ${half}`}
-        />
-      </svg>
-      <div className="geo-gauge-readout">
-        <strong>
-          {clamped}
-          <span>/100</span>
-        </strong>
-        <em>{label}</em>
-      </div>
-    </div>
-  );
-}
 
 export default async function OverviewPage({
   params,
@@ -322,34 +311,17 @@ export default async function OverviewPage({
   const citedDelta = overview
     ? seriesDelta(overview.series, "cited_pages")
     : null;
-  const visDelta = overview
-    ? seriesDelta(overview.series, "visibility")
-    : null;
-
-  const topCountries = (overview?.countries ?? []).slice(0, 4);
-  const otherShare = (overview?.countries ?? [])
-    .slice(4)
-    .reduce((s, c) => s + c.share, 0);
-  const countryRows =
-    otherShare > 0
-      ? [
-          ...topCountries,
-          {
-            code: "Other",
-            count: (overview?.countries ?? [])
-              .slice(4)
-              .reduce((s, c) => s + c.count, 0),
-            share: otherShare,
-          },
-        ]
-      : topCountries;
+  const countryRows = (overview?.countries ?? []).slice(0, 6);
 
   const windowFrom = overview?.filters?.from ?? overview?.honesty.from;
   const windowTo = overview?.filters?.to ?? overview?.honesty.to;
   const ledeRank =
-    brand?.rank != null
+    brand?.rank != null && (overview?.evidence.eligible_answers ?? 0) > 0
       ? ` Rank ${brand.rank}/${brand.of} among tracked brands.`
       : "";
+  const scoreValue = overview?.score.value ?? null;
+  const scoreBand =
+    scoreValue == null ? "low" : scoreValue >= 70 ? "high" : scoreValue >= 40 ? "medium" : "low";
 
   return (
     <div className="geo-vis">
@@ -362,7 +334,7 @@ export default async function OverviewPage({
             ) : null}
           </div>
           <p className="geo-page-lede">
-            How often AI platforms mention {brand ? brand.name : "your brand"}
+            How often collected API responses mention {brand ? brand.name : "your brand"}
             {projectDomain ? ` (${projectDomain})` : ""}.{ledeRank}
           </p>
         </div>
@@ -424,16 +396,11 @@ export default async function OverviewPage({
               <p className="geo-vis-kpi-meta">Unique URLs</p>
             </article>
             <article className="geo-vis-kpi">
-              <p className="geo-vis-kpi-label">Share of voice</p>
+              <p className="geo-vis-kpi-label">Collection failures</p>
               <p className="geo-vis-kpi-value">
-                {brand ? pct(brand.share_of_voice) : "—"}
+                {overview.evidence.failed_attempts}
               </p>
-              <p className="geo-vis-kpi-meta">
-                Sentiment{" "}
-                {brand?.sentiment != null
-                  ? Math.round(brand.sentiment)
-                  : "—"}
-              </p>
+              <p className="geo-vis-kpi-meta">Error or blocked attempts</p>
             </article>
           </div>
 
@@ -441,54 +408,86 @@ export default async function OverviewPage({
             <section className="geo-panel geo-vis-panel geo-vis-score-card">
               <div className="geo-vis-panel-head">
                 <h2 className="geo-section-title" style={{ margin: 0 }}>
-                  AI Visibility Score
+                  GeoLens Visibility Score
                 </h2>
-                {overview.score.sample_thin ||
-                overview.honesty.score_sample_thin ? (
-                  <span className="geo-badge geo-badge-warm">Limited sample</span>
-                ) : visDelta != null ? (
-                  <DeltaChip value={visDelta} suffix=" pts" />
-                ) : (
-                  <span
-                    className={`geo-badge ${
-                      overview.score.band === "high"
-                        ? "geo-badge-positive"
-                        : overview.score.band === "medium"
-                          ? "geo-badge-neutral"
-                          : "geo-badge-warm"
-                    }`}
-                  >
-                    {overview.score.label}
-                  </span>
-                )}
+                <span
+                  className={`geo-badge ${
+                    overview.score.confidence === "strong"
+                      ? "geo-badge-positive"
+                      : overview.score.confidence === "directional"
+                        ? "geo-badge-neutral"
+                        : "geo-badge-warm"
+                  }`}
+                >
+                  {overview.score.confidence} confidence
+                </span>
               </div>
-              <VisibilityGauge
-                value={overview.score.value}
-                label={overview.score.label}
-                band={overview.score.band}
-              />
-              <p className="geo-vis-insight">{overview.score.insight}</p>
-              {brand && (
-                <div className="geo-vis-score-meta">
-                  <span>
-                    Position{" "}
-                    <strong>
-                      {brand.position != null
-                        ? brand.position.toFixed(1)
-                        : "—"}
-                    </strong>
-                  </span>
-                  <span>
-                    SoV <strong>{pct(brand.share_of_voice)}</strong>
-                  </span>
-                  <span>
-                    Rank{" "}
-                    <strong>
-                      {brand.rank}/{brand.of}
-                    </strong>
-                  </span>
+              <div className="geo-gauge" data-band={scoreBand}>
+                <svg
+                  className="geo-gauge-svg"
+                  viewBox="0 0 240 126"
+                  role="img"
+                  aria-label={
+                    scoreValue == null
+                      ? "Visibility score unavailable"
+                      : `GeoLens Visibility Score ${scoreValue} out of 100`
+                  }
+                >
+                  <path
+                    className="geo-gauge-track"
+                    d="M24 108 A96 96 0 0 1 216 108"
+                    pathLength="100"
+                    fill="none"
+                    strokeWidth="18"
+                    strokeLinecap="round"
+                  />
+                  {scoreValue != null && scoreValue > 0 ? (
+                    <path
+                      className="geo-gauge-fill"
+                      d="M24 108 A96 96 0 0 1 216 108"
+                      pathLength="100"
+                      fill="none"
+                      strokeWidth="18"
+                      strokeLinecap="round"
+                      strokeDasharray={`${scoreValue} 100`}
+                    />
+                  ) : null}
+                </svg>
+                <div className="geo-gauge-readout">
+                  <strong>
+                    {scoreValue ?? "–"}<span>/100</span>
+                  </strong>
+                  <em>{scoreBand}</em>
                 </div>
-              )}
+              </div>
+              <p className="geo-vis-insight">
+                {overview.score.range
+                  ? `Estimated range ${overview.score.range.low}–${overview.score.range.high}. `
+                  : "Awaiting collection for the active discovery prompts. "}
+                {overview.evidence.eligible_answers > 0
+                  ? `Raw presence: ${overview.evidence.mentioned_answers}/${overview.evidence.eligible_answers} eligible answers (${pct(overview.evidence.observed_presence)}).`
+                  : "No previous prompt version is reused."}
+              </p>
+              <div className="geo-score-breakdown" aria-label="Score component breakdown">
+                <span><strong>{overview.score.components.presence}</strong> Presence · 55%</span>
+                <span><strong>{overview.score.components.share_of_voice}</strong> Share of voice · 25%</span>
+                <span><strong>{overview.score.components.position}</strong> Position support · 10%</span>
+                <span><strong>{overview.score.components.citation_support}</strong> Citation support · 10%</span>
+              </div>
+              <details className="geo-score-method">
+                <summary>How this score works</summary>
+                <p>{overview.score.methodology}</p>
+                <p>
+                  Cohort: {overview.prompt_cohort.score_prompts} active discovery prompts,
+                  {" "}{overview.prompt_cohort.score_answers} collected attempts.
+                  {overview.prompt_cohort.branded_prompts_excluded > 0
+                    ? ` ${overview.prompt_cohort.branded_prompts_excluded} branded prompts excluded.`
+                    : ""}
+                  {overview.prompt_cohort.archived_prompts_excluded > 0
+                    ? ` ${overview.prompt_cohort.archived_prompts_excluded} archived prompts excluded.`
+                    : ""}
+                </p>
+              </details>
             </section>
 
             <section className="geo-panel geo-vis-panel">
@@ -552,7 +551,7 @@ export default async function OverviewPage({
                             style={{ background: channelColor(ch.channel_id) }}
                             aria-hidden
                           />
-                          {channelLabel(ch.channel_id, ch.label)}
+                          {channelLabel(ch)}
                         </span>
                         <span className="mono">
                           {pct(ch.share, 1)} · {fmt(ch.mention_count)}
@@ -580,25 +579,14 @@ export default async function OverviewPage({
             <section className="geo-panel geo-vis-panel">
               <div className="geo-vis-panel-head">
                 <h2 className="geo-section-title" style={{ margin: 0 }}>
-                  Mentions by country
+                  Presence by requested market
                 </h2>
                 <span className="geo-badge geo-badge-neutral">
-                  Requested market
+                  Eligible answers
                 </span>
               </div>
               {countryRows.length > 0 ? (
                 <>
-                  <div className="geo-vis-country-bar" aria-hidden>
-                    {countryRows.map((c, i) => (
-                      <span
-                        key={c.code}
-                        style={{
-                          width: `${Math.max(1, c.share * 100)}%`,
-                          background: COUNTRY_COLORS[i % COUNTRY_COLORS.length],
-                        }}
-                      />
-                    ))}
-                  </div>
                   <ul className="geo-vis-country-list">
                     {countryRows.map((c, i) => (
                       <li key={c.code}>
@@ -610,16 +598,22 @@ export default async function OverviewPage({
                         />
                         <span>{c.code}</span>
                         <strong>
-                          {pct(c.share, 1)} · {fmt(c.count)}
+                          {c.eligible_answers > 0
+                            ? `${pct(c.presence, 1)} · ${c.mentioned_answers}/${c.eligible_answers}`
+                            : `No eligible answer · ${c.attempt_count} attempts`}
                         </strong>
                       </li>
                     ))}
                   </ul>
-                  <p className="geo-vis-note">{overview.honesty.note}</p>
+                  <p className="geo-vis-note">
+                    Presence is the share of eligible collected answers in each requested market
+                    that mention {brand?.name ?? "the analyzed brand"}. This is prompt-market
+                    coverage, not user location. {overview.honesty.note}
+                  </p>
                 </>
               ) : (
                 <EmptyBlock
-                  title="No country mix yet"
+                  title="No market presence yet"
                   body="Analyze a domain in the top bar to collect chats with a requested market."
                 />
               )}
@@ -630,24 +624,24 @@ export default async function OverviewPage({
             <section className="geo-panel geo-vis-panel">
               <div className="geo-vis-panel-head">
                 <h2 className="geo-section-title" style={{ margin: 0 }}>
-                  Who AI recommends
+                  Observed tracked-brand mentions
                 </h2>
                 <span className="geo-badge geo-badge-neutral">
-                  Share of voice
+                  Presence in eligible answers
                 </span>
               </div>
               {overview.competitors.length > 0 ? (
                 <RankBars
                   rows={overview.competitors.map((r) => ({
                     name: r.brand_name,
-                    pct: (r.share_of_voice ?? r.visibility) * 100,
+                    pct: r.visibility * 100,
                     highlight: r.is_own,
                   }))}
                 />
               ) : (
                 <EmptyBlock
-                  title="No competitor rankings yet"
-                  body="Add competitors, then Analyze to see who AI recommends."
+                  title="No tracked-brand comparison yet"
+                  body="Add tracked brands, then run analysis to compare observed mentions in this sample."
                 />
               )}
             </section>

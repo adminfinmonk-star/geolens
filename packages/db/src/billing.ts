@@ -1,7 +1,7 @@
-import { getPlan, planDisplayName, ONBOARDING_PLAN_CODES } from "@geo/core";
+import { getPlan, ONBOARDING_PLAN_CODES, planDisplayName } from "@geo/core";
+import { appendAuditLog, setOrgPlan } from "./commercial.js";
 import { newId } from "./schema.js";
 import type { DemoStore } from "./seed.js";
-import { appendAuditLog, setOrgPlan } from "./commercial.js";
 import { createStripeCheckoutSession } from "./stripe.js";
 
 /** Catalog prices for checkout (cents). Mock Stripe when STRIPE_SECRET_KEY unset. */
@@ -42,6 +42,9 @@ export async function createCheckoutSession(
   planCode: string,
   opts?: { success_url?: string; cancel_url?: string },
 ): Promise<CheckoutSession> {
+  if (process.env.NODE_ENV === "production" && billingMode() !== "stripe") {
+    throw new Error("stripe_not_configured");
+  }
   const plan = getPlan(planCode);
   if (plan.code === "trial") {
     throw new Error("trial_not_purchasable");
@@ -116,11 +119,22 @@ export function getCheckoutSession(id: string): CheckoutSession | null {
 export function completeCheckout(
   store: DemoStore,
   sessionId: string,
+  opts?: { verifiedByWebhook?: boolean },
 ): { session: CheckoutSession; summary_plan: string } {
   const session = sessions.get(sessionId);
   if (!session) throw new Error("session_not_found");
   if (session.organization_id !== store.organization.id) {
     throw new Error("session_org_mismatch");
+  }
+  if (process.env.NODE_ENV === "production" && session.mode !== "stripe") {
+    throw new Error("mock_checkout_disabled");
+  }
+  if (
+    process.env.NODE_ENV === "production" &&
+    session.mode === "stripe" &&
+    opts?.verifiedByWebhook !== true
+  ) {
+    throw new Error("stripe_checkout_requires_verified_webhook");
   }
   if (session.status === "complete") {
     return { session, summary_plan: store.organization.plan_code };
@@ -163,6 +177,7 @@ export function handleBillingWebhook(
     data?: {
       object?: {
         id?: string;
+        status?: string;
         client_reference_id?: string;
         metadata?: {
           checkout_session_id?: string;
@@ -175,30 +190,73 @@ export function handleBillingWebhook(
   opts?: { stripe_signature_ok?: boolean },
 ): { handled: boolean; plan_code?: string } {
   if (
+    process.env.NODE_ENV === "production" &&
+    !process.env.STRIPE_WEBHOOK_SECRET
+  ) {
+    throw new Error("stripe_webhook_not_configured");
+  }
+  if (
     process.env.STRIPE_WEBHOOK_SECRET &&
     opts?.stripe_signature_ok === false
   ) {
     throw new Error("invalid_signature");
   }
   const type = event.type ?? "";
+  const obj = event.data?.object;
+  const meta = obj?.metadata;
+  const commercial = store.commercial ?? {
+    enabled_channel_ids: [],
+    countries: [store.project.default_country],
+    bot_visits_used: 0,
+    credits_total: null,
+    project_count: 1,
+  };
+  store.commercial = commercial;
+
+  if (type === "invoice.payment_failed") {
+    commercial.stripe_subscription_status = "past_due";
+    return { handled: true };
+  }
+  if (type === "customer.subscription.deleted") {
+    commercial.stripe_subscription_status = "canceled";
+    setOrgPlan(store, "trial", { source: "api" });
+    return { handled: true, plan_code: "trial" };
+  }
+  if (type === "customer.subscription.updated") {
+    if (obj?.status === "active" || obj?.status === "trialing") {
+      commercial.stripe_subscription_status = "active";
+      if (meta?.plan_code) setOrgPlan(store, meta.plan_code, { source: "api" });
+    } else if (obj?.status === "canceled") {
+      commercial.stripe_subscription_status = "canceled";
+      setOrgPlan(store, "trial", { source: "api" });
+    } else if (obj?.status === "past_due" || obj?.status === "unpaid") {
+      commercial.stripe_subscription_status = "past_due";
+    }
+    return { handled: true, plan_code: store.organization.plan_code };
+  }
   if (
     type === "checkout.session.completed" ||
     type === "invoice.paid" ||
     type === "mock.checkout.completed"
   ) {
-    const obj = event.data?.object;
-    const meta = obj?.metadata;
     const sid =
       meta?.checkout_session_id ??
       obj?.client_reference_id ??
       obj?.id;
     if (sid && sessions.has(sid)) {
-      const { session } = completeCheckout(store, sid);
+      const { session } = completeCheckout(store, sid, {
+        verifiedByWebhook: true,
+      });
       return { handled: true, plan_code: session.plan_code };
     }
     if (meta?.plan_code) {
       setOrgPlan(store, meta.plan_code, { source: "api" });
+      commercial.stripe_subscription_status = "active";
       return { handled: true, plan_code: meta.plan_code };
+    }
+    if (type === "invoice.paid") {
+      commercial.stripe_subscription_status = "active";
+      return { handled: true, plan_code: store.organization.plan_code };
     }
   }
   return { handled: false };

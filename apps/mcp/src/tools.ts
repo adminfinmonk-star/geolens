@@ -138,7 +138,7 @@ export async function callMcpTool(
   if (name === "channels.routing") {
     return {
       policy:
-        "API-first: GPT channels → OpenAI; Claude → Anthropic; Gemini/AI Mode/Overviews → Google; Perplexity → Sonar; Copilot → Azure OpenAI when keyed.",
+        "API observations only: OpenAI Search API, Anthropic Messages API with web search, Gemini API with Search grounding, and Perplexity Sonar API.",
       routes: CHANNEL_PROVIDER_ROUTE,
     };
   }

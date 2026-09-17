@@ -17,6 +17,8 @@ export type ProjectExtensionPayload = Pick<
   | "fanouts"
   | "ads"
   | "sharedViews"
+  | "sourceClassifications"
+  | "sourceBookmarks"
   | "actions"
   | "actionEvents"
   | "robotsTxt"
@@ -39,6 +41,7 @@ export type ProjectExtensionPayload = Pick<
   | "pendingCategoryDraft"
   | "commercial"
   | "auditLog"
+  | "analysisScope"
 >;
 
 export function extractExtension(store: DemoStore): ProjectExtensionPayload {
@@ -50,6 +53,8 @@ export function extractExtension(store: DemoStore): ProjectExtensionPayload {
     fanouts: store.fanouts,
     ads: store.ads,
     sharedViews: store.sharedViews,
+    sourceClassifications: store.sourceClassifications,
+    sourceBookmarks: store.sourceBookmarks,
     actions: store.actions,
     actionEvents: store.actionEvents,
     robotsTxt: store.robotsTxt,
@@ -72,6 +77,7 @@ export function extractExtension(store: DemoStore): ProjectExtensionPayload {
     pendingCategoryDraft: store.pendingCategoryDraft,
     commercial: store.commercial,
     auditLog: store.auditLog,
+    analysisScope: store.analysisScope,
   };
 }
 
@@ -89,6 +95,9 @@ export function applyExtension(
     fanouts: ext.fanouts ?? store.fanouts,
     ads: ext.ads ?? store.ads,
     sharedViews: ext.sharedViews ?? store.sharedViews,
+    sourceClassifications:
+      ext.sourceClassifications ?? store.sourceClassifications,
+    sourceBookmarks: ext.sourceBookmarks ?? store.sourceBookmarks,
     actions: ext.actions ?? store.actions,
     actionEvents: ext.actionEvents ?? store.actionEvents,
     robotsTxt: ext.robotsTxt ?? store.robotsTxt,
@@ -111,6 +120,7 @@ export function applyExtension(
     pendingCategoryDraft: ext.pendingCategoryDraft ?? store.pendingCategoryDraft,
     commercial: ext.commercial ?? store.commercial,
     auditLog: ext.auditLog ?? store.auditLog,
+    analysisScope: ext.analysisScope ?? store.analysisScope,
   });
 }
 

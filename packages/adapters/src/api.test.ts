@@ -8,6 +8,7 @@ import {
   TokenBucket,
   clearAdapterCache,
   describeAdapterRuntime,
+  fixtureEngineResponse,
   getAdapter,
   listBuiltAdapters,
   markChannelDown,
@@ -27,8 +28,13 @@ describe("API-first Peec channel adapters", () => {
     resetRateLimiters();
   });
 
-  it("routes Peec-like defaults to provider APIs", async () => {
-    expect(DEFAULT_API_CHANNELS.length).toBeGreaterThanOrEqual(6);
+  it("routes truthful defaults to provider APIs", async () => {
+    expect(DEFAULT_API_CHANNELS).toEqual([
+      "openai-1",
+      "perplexity-1",
+      "google-3",
+      "anthropic-1",
+    ]);
     for (const id of DEFAULT_API_CHANNELS) {
       expect(CHANNEL_PROVIDER_ROUTE[id]).toBeTruthy();
       const a = getAdapter(id);
@@ -47,9 +53,8 @@ describe("API-first Peec channel adapters", () => {
 
   it("Claude channel uses anthropic; GPT uses openai", () => {
     expect(CHANNEL_PROVIDER_ROUTE["anthropic-1"]?.provider).toBe("anthropic");
-    expect(CHANNEL_PROVIDER_ROUTE["openai-0"]?.provider).toBe("openai");
-    expect(CHANNEL_PROVIDER_ROUTE["google-ai-mode"]?.provider).toBe("google");
-    expect(CHANNEL_PROVIDER_ROUTE["copilot-1"]?.provider).toBe("copilot");
+    expect(CHANNEL_PROVIDER_ROUTE["openai-1"]?.provider).toBe("openai");
+    expect(CHANNEL_PROVIDER_ROUTE["google-3"]?.provider).toBe("google");
   });
 
   it("token bucket refuses when empty", () => {
@@ -87,8 +92,8 @@ describe("API-first Peec channel adapters", () => {
     expect(res.errorCode).toBe("CHANNEL_DOWN");
   });
 
-  it("listBuiltAdapters includes simulator + routed Peec channels", () => {
-    expect(listBuiltAdapters().length).toBeGreaterThanOrEqual(7);
+  it("listBuiltAdapters includes simulator and routed API channels", () => {
+    expect(listBuiltAdapters().length).toBeGreaterThanOrEqual(5);
     expect(new PerplexityApiAdapter().capabilities.ads).toBe(false);
     expect(new AnthropicApiAdapter().capabilities.geo).toBe("none");
   });
@@ -160,5 +165,37 @@ describe("API-first Peec channel adapters", () => {
       rt.channels.find((c) => c.channel_id === "perplexity-1")?.mode,
     ).toBe("fixture");
     expect(rt.routing_policy).toMatch(/OPENROUTER_API_KEY/i);
+  });
+
+  it("fails closed instead of generating fixture evidence in production", () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousAllow = process.env.GEO_ALLOW_PRODUCTION_FIXTURES;
+    process.env.NODE_ENV = "production";
+    delete process.env.GEO_ALLOW_PRODUCTION_FIXTURES;
+    try {
+      const result = fixtureEngineResponse(
+        {
+          prompt: "best CRM",
+          countryCode: "US",
+          channelId: "openai-1",
+          modelId: "gpt-test",
+          runDate: "2026-09-18",
+        },
+        {
+          provider: "openai",
+          modelReported: "gpt-test",
+          brandBias: ["Acme"],
+        },
+      );
+      expect(result.status).toBe("blocked");
+      expect(result.errorCode).toBe("PROVIDER_NOT_CONFIGURED");
+      expect(result.text).toBe("");
+      expect(result.sources).toEqual([]);
+    } finally {
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
+      if (previousAllow === undefined) delete process.env.GEO_ALLOW_PRODUCTION_FIXTURES;
+      else process.env.GEO_ALLOW_PRODUCTION_FIXTURES = previousAllow;
+    }
   });
 });

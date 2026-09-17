@@ -74,12 +74,95 @@ describe("Phase 10 reports + api keys", () => {
       }),
     );
     expect(week.series.some((d) => (d.citations ?? 0) > 0)).toBe(true);
-    expect(week.score.sample_thin).toBe(false);
-    expect(week.score.presence).toBeCloseTo(week.brand!.visibility);
+    expect(week.evidence.eligible_answers).toBeGreaterThan(0);
+    expect(week.evidence.observed_presence).toBeCloseTo(week.brand!.visibility);
+    expect(week.score.value).toEqual(expect.any(Number));
+    expect(week.score.value).toBeGreaterThanOrEqual(0);
+    expect(week.score.value).toBeLessThanOrEqual(100);
+    expect(week.score.weights).toEqual({
+      presence: 55,
+      share_of_voice: 25,
+      position: 10,
+      citation_support: 10,
+    });
+    expect(week.score.range?.low).toBeLessThanOrEqual(week.score.value!);
+    expect(week.score.range?.high).toBeGreaterThanOrEqual(week.score.value!);
     expect(["fixture", "mixed", "live"]).toContain(week.honesty.collection_mode);
     expect(week.honesty.note).toMatch(/not a multi-month industry index/i);
     expect(week.competitors[0]?.share_of_voice).toBeGreaterThanOrEqual(
       week.competitors[1]?.share_of_voice ?? 0,
     );
+  }, 60_000);
+
+  it("uses only active non-branded prompts for the headline score", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const own = store.brands.find((brand) => brand.is_own)!;
+    const promptWithChats = store.prompts.find((prompt) =>
+      store.chats.some((chat) => chat.prompt_id === prompt.id),
+    )!;
+
+    for (const prompt of store.prompts) prompt.status = "archived";
+    promptWithChats.status = "active";
+    promptWithChats.text = `${own.name} reviews`;
+    promptWithChats.branding = "branded";
+
+    const brandedOnly = overviewReportPayload(store, { range: "90d" });
+    expect(brandedOnly.kpis.chats).toBeGreaterThan(0);
+    expect(brandedOnly.score.value).toBeNull();
+    expect(brandedOnly.prompt_cohort).toEqual(
+      expect.objectContaining({
+        active_prompts: 1,
+        score_prompts: 0,
+        branded_prompts_excluded: 1,
+        score_answers: 0,
+      }),
+    );
+
+    promptWithChats.text = "best software for small businesses";
+    promptWithChats.branding = "non-branded";
+    const discovery = overviewReportPayload(store, { range: "90d" });
+    expect(discovery.score.value).toEqual(expect.any(Number));
+
+    promptWithChats.status = "archived";
+    const noActivePrompts = overviewReportPayload(store, { range: "90d" });
+    expect(noActivePrompts.kpis.chats).toBe(0);
+    expect(noActivePrompts.score.value).toBeNull();
+  }, 60_000);
+
+  it("reports zero when eligible discovery answers contain no own-brand evidence", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const own = store.brands.find((brand) => brand.is_own)!;
+    const ownMentionChatIds = new Set(
+      store.mentions
+        .filter((mention) => mention.brand_id === own.id)
+        .map((mention) => mention.chat_id),
+    );
+    const cleanChat = store.chats.find(
+      (chat) =>
+        (chat.status === "ok" || chat.status === "empty") &&
+        !ownMentionChatIds.has(chat.id),
+    )!;
+    for (const prompt of store.prompts) prompt.status = "archived";
+    const prompt = store.prompts.find((candidate) => candidate.id === cleanChat.prompt_id)!;
+    prompt.status = "active";
+    prompt.text = "best software for small businesses";
+    prompt.branding = "non-branded";
+    const cohortChatIds = new Set(
+      store.chats
+        .filter((chat) => chat.prompt_id === prompt.id)
+        .map((chat) => chat.id),
+    );
+    store.mentions = store.mentions.filter(
+      (mention) =>
+        mention.brand_id !== own.id || !cohortChatIds.has(mention.chat_id),
+    );
+
+    const report = overviewReportPayload(store, { range: "90d" });
+    expect(report.evidence.eligible_answers).toBeGreaterThan(0);
+    expect(report.evidence.mentioned_answers).toBe(0);
+    expect(report.score.value).toBe(0);
+    expect(report.score.components.presence).toBe(0);
   }, 60_000);
 });

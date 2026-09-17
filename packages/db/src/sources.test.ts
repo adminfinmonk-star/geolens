@@ -26,8 +26,8 @@ describe("reportsFromStore", () => {
     resetDemoStore();
     const store = await getDemoStore();
     const domain = store.sources[0]!.domain;
-    setDomainClassification(store.project.id, domain, "CORPORATE");
-    toggleBookmark(store.project.id, domain);
+    setDomainClassification(store, domain, "CORPORATE");
+    toggleBookmark(store, domain);
     const { domains } = reportsFromStore(store);
     const row = domains.find((d) => d.domain === domain)!;
     expect(row.classification).toBe("CORPORATE");

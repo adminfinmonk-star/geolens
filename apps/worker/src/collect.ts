@@ -2,6 +2,7 @@ import {
   DEFAULT_API_CHANNELS,
   getAdapter,
   getChannelHealth,
+  type EngineResponse,
 } from "@geo/adapters";
 import { getChannel } from "@geo/registry";
 import { enrichChat, type BrandMatcher } from "@geo/core";
@@ -23,6 +24,7 @@ export interface CollectChannelResult {
   channelId: string;
   status: "ok" | "empty" | "error" | "blocked" | "skipped";
   errorCode?: string;
+  errorDetail?: string;
   text: string;
   mentions: {
     brandId: string;
@@ -40,6 +42,35 @@ export interface CollectChannelResult {
   surfaceKind: "ui" | "api" | "simulator";
   degraded?: boolean;
   geoCapability?: string;
+  modelReported?: string;
+  providerRequestId?: string;
+  latencyMs?: number;
+  rawPayload?: unknown;
+}
+
+function collectTimeoutMs(): number {
+  const configured = Number(process.env.GEO_COLLECT_TIMEOUT_MS ?? 45_000);
+  if (!Number.isFinite(configured)) return 45_000;
+  return Math.max(5_000, Math.min(120_000, Math.round(configured)));
+}
+
+async function withCollectTimeout<T>(promise: Promise<T>): Promise<T> {
+  const timeoutMs = collectTimeoutMs();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          const error = new Error(`Collector timed out after ${timeoutMs}ms`);
+          error.name = "CollectorTimeoutError";
+          reject(error);
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 /**
@@ -85,27 +116,63 @@ export async function runCollectEnrichJob(input: {
     }
 
     const health = getChannelHealth(channelId);
-    const adapter = getAdapter(channelId);
-    const raw = await adapter.run({
-      prompt: input.prompt,
-      countryCode: input.countryCode,
-      channelId,
-      modelId: meta.currentModel,
-      runDate: input.runDate,
-      seed: input.seed ?? "worker",
-      trackedBrands: input.brands.map((b) => b.name),
-    });
+    let raw: EngineResponse;
+    try {
+      const adapter = getAdapter(channelId);
+      raw = await withCollectTimeout(
+        adapter.run({
+          prompt: input.prompt,
+          countryCode: input.countryCode,
+          channelId,
+          modelId: meta.currentModel,
+          runDate: input.runDate,
+          seed: input.seed ?? "worker",
+          trackedBrands: input.brands.map((b) => b.name),
+        }),
+      );
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : "Unknown collector failure";
+      const timedOut =
+        error instanceof Error && error.name === "CollectorTimeoutError";
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? Number((error as { status?: unknown }).status)
+          : undefined;
+      results.push({
+        channelId,
+        status: "error",
+        errorCode: timedOut
+          ? "COLLECTOR_TIMEOUT"
+          : status
+            ? `HTTP_${status}`
+            : "COLLECTOR_EXCEPTION",
+        errorDetail: detail.slice(0, 500),
+        mentions: [],
+        sources: [],
+        text: "",
+        surfaceKind: meta.surface,
+        modelReported: undefined,
+        latencyMs: timedOut ? collectTimeoutMs() : undefined,
+        degraded: true,
+      });
+      continue;
+    }
 
     if (raw.status !== "ok") {
       results.push({
         channelId,
         status: raw.status,
         errorCode: raw.errorCode,
+        errorDetail: raw.errorCode ? `Provider returned ${raw.errorCode}` : undefined,
         mentions: [],
         sources: [],
         text: raw.text,
         surfaceKind: raw.meta.surfaceKind,
         degraded: health.status !== "ok",
+        modelReported: raw.meta.modelReported,
+        providerRequestId: raw.meta.providerRequestId,
+        latencyMs: raw.meta.latencyMs,
+        rawPayload: raw.raw,
       });
       continue;
     }
@@ -151,6 +218,10 @@ export async function runCollectEnrichJob(input: {
       surfaceKind: raw.meta.surfaceKind,
       geoCapability: meta.geoCapability,
       degraded: health.status !== "ok",
+      modelReported: raw.meta.modelReported,
+      providerRequestId: raw.meta.providerRequestId,
+      latencyMs: raw.meta.latencyMs,
+      rawPayload: raw.raw,
     });
   }
 

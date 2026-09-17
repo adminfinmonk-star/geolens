@@ -31,7 +31,7 @@ const TOOLS = [
   },
   {
     title: "Competitor Research",
-    body: "Find where competitors are mentioned over you — and close the gap.",
+    body: "Find where competitors are mentioned over you, then close the gap.",
     href: "/prj_demo/competitors",
     link: "Explore Competitors",
   },
@@ -43,7 +43,7 @@ const TOOLS = [
   },
   {
     title: "AI-Cited Media",
-    body: "See which outlets LLMs cite most — and start showing up there.",
+    body: "See which outlets APIs cite most, then start showing up there.",
     href: "/prj_demo/sources",
     link: "Explore Sources",
   },
@@ -60,7 +60,7 @@ export default function MarketingPage() {
     <main className="mk-shell">
       <MarketingHeader />
 
-      {/* Hero — Stitch / Semrush layout, GeoLens palette */}
+      {/* Hero: Stitch / Semrush layout, GeoLens palette */}
       <section className="mk-hero-band">
         <div className="mk-wrap mk-hero-split">
           <div className="mk-hero-copy">
@@ -70,11 +70,11 @@ export default function MarketingPage() {
             </p>
             <p className="mk-brand-hero">GeoLens</p>
             <h1 className="mk-hero-line mk-hero-line-wide">
-              Own how your brand shows up in AI answers
+              Inspect how AI APIs mention your brand
             </h1>
             <p className="mk-hero-sub">
-              Improve how often ChatGPT, AI Overviews, and other LLMs mention
-              your brand and recommend your products.
+              Retain raw provider responses, failures, model identity, and
+              sample counts without claiming consumer-surface coverage.
             </p>
             <div className="mk-hero-cta">
               <Link href="/signup" className="mk-btn-pill mk-btn-soft">
@@ -92,7 +92,7 @@ export default function MarketingPage() {
       </section>
 
       <section className="mk-bridge mk-wrap">
-        <h2>AI platforms are recommending brands. Make sure they choose yours.</h2>
+        <h2>API responses change. Keep the evidence behind every observation.</h2>
         <div className="mk-logo-row" aria-label="Trusted by brands">
           {LOGOS.map((name) => (
             <span key={name} className="mk-logo-item">
@@ -158,7 +158,7 @@ export default function MarketingPage() {
             <h3>Grow your share of voice</h3>
             <p>
               Turn prompt gaps into content and outreach that put your brand in
-              the answer — not the competition.
+              the answer, not the competition.
             </p>
             <div className="mk-trio-viz mk-trio-donut-wrap" aria-hidden>
               <svg className="mk-trio-donut" viewBox="0 0 80 80">
@@ -183,21 +183,13 @@ export default function MarketingPage() {
 
       <section className="mk-section" style={{ paddingTop: 0 }}>
         <div className="mk-wrap">
-          <blockquote className="mk-quote">
+          <div className="mk-quote">
             <p>
-              “We&apos;re consistently getting featured in Google AI Overviews
-              as well as listed as sources in LLMs.”
+              GeoLens currently measures configured provider APIs. It does not
+              claim that an API response reproduces ChatGPT, AI Mode, AI
+              Overviews, or Copilot consumer interfaces.
             </p>
-            <footer>
-              <span className="mk-quote-avatar" aria-hidden>
-                A
-              </span>
-              <span>
-                <strong>Andrew Schelle</strong>
-                <small>Head of SEO</small>
-              </span>
-            </footer>
-          </blockquote>
+          </div>
         </div>
       </section>
 
@@ -206,16 +198,16 @@ export default function MarketingPage() {
         <div className="mk-wrap" style={{ display: "grid", gap: "clamp(3.5rem, 7vw, 5.5rem)" }}>
           <FeatureRow
             kicker="Visibility"
-            title="Track AI visibility over time"
-            body="Monitor how often ChatGPT, Perplexity, Gemini, and other models mention your brand — with trends you can act on."
+            title="Track collected API evidence over time"
+            body="Monitor OpenAI, Perplexity, Gemini, and Anthropic API responses with explicit sample sizes and retained failures."
             href="/prj_demo/overview"
             cta="View visibility"
             visual={<VisibilityMock />}
           />
           <FeatureRow
             kicker="Sentiment"
-            title="See what LLMs say about you"
-            body="Know how AI platforms describe your brand — whether you're portrayed accurately, positively, and ahead of the competition."
+            title="Read the source responses"
+            body="Review what each configured API returned and inspect the evidence behind extracted mentions."
             href="/prj_demo/perception"
             cta="View sentiment"
             reverse
@@ -224,7 +216,7 @@ export default function MarketingPage() {
           <FeatureRow
             kicker="Prompts"
             title="Conduct prompt research"
-            body="Find which prompts trigger brand mentions in your category. Spot topics you're absent from — then build content that puts you in the answer."
+            body="Find which prompts trigger brand mentions in your category. Spot topics you are absent from, then build content that puts you in the answer."
             href="/prj_demo/prompts"
             cta="Research new topics"
             visual={<PromptsMock />}
@@ -238,7 +230,7 @@ export default function MarketingPage() {
             Every tool you need for AI visibility
           </h2>
           <p className="mk-section-sub mk-section-sub-center">
-            Visibility, prompts, competitors, sources, and actions — in one
+            Visibility, prompts, competitors, sources, and actions in one
             workspace built for marketing teams.
           </p>
           <div className="mk-cap-grid">
@@ -256,15 +248,15 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      <section id="reviews" className="mk-section">
+      <section id="methodology" className="mk-section">
         <div className="mk-wrap">
           <h2 className="mk-section-title mk-section-title-center">
-            Don&apos;t just take our word for it
+            Trust is a product feature
           </h2>
           <p className="mk-section-sub mk-section-sub-center">
-            Teams use GeoLens to own how they show up in AI answers.
+            GeoLens makes the collection boundary and evidence quality visible.
           </p>
-          <div className="mk-ratings" aria-label="Customer feedback highlights">
+          <div className="mk-ratings" aria-label="Methodology highlights">
             {[
               ["Teams", "Fast setup"],
               ["Agencies", "Multi-brand"],
@@ -279,16 +271,16 @@ export default function MarketingPage() {
           <div className="mk-review-grid">
             {[
               {
-                q: "Finally a clear view of where we appear in ChatGPT answers.",
-                who: "Maya Chen · Growth Lead",
+                q: "Every reported mention links back to a retained response.",
+                who: "Evidence lineage",
               },
               {
-                q: "Prompt gaps became our content roadmap in a week.",
-                who: "Jordan Lee · SEO Director",
+                q: "Failed attempts stay visible with provider and error details.",
+                who: "Failure transparency",
               },
               {
-                q: "Competitor share of voice in AI is the metric we report weekly.",
-                who: "Sam Ortiz · Brand Strategy",
+                q: "API channels are named for the surface that was actually queried.",
+                who: "Truthful identity",
               },
             ].map((r) => (
               <blockquote key={r.who} className="mk-review-card">
@@ -303,7 +295,7 @@ export default function MarketingPage() {
       <section className="mk-cta-band">
         <div className="mk-wrap" style={{ textAlign: "center" }}>
           <h2 className="mk-section-title mk-section-title-center">
-            Own how your brand shows up in AI answers
+            Start with inspectable API evidence
           </h2>
           <p className="mk-section-sub mk-section-sub-center">
             Start free, explore the live demo, or book a walkthrough with your team.
@@ -323,7 +315,7 @@ export default function MarketingPage() {
         <div className="mk-wrap mk-footer-grid">
           <div>
             <BrandMark />
-            <p className="mk-footer-tag">AI visibility for modern brands.</p>
+            <p className="mk-footer-tag">Inspectable AI API monitoring.</p>
           </div>
           <div>
             <h4>Product</h4>
@@ -333,10 +325,10 @@ export default function MarketingPage() {
           </div>
           <div>
             <h4>Platforms</h4>
-            <span>ChatGPT</span>
-            <span>Perplexity</span>
-            <span>Gemini</span>
-            <span>AI Overviews</span>
+            <span>OpenAI API</span>
+            <span>Perplexity API</span>
+            <span>Gemini API</span>
+            <span>Anthropic API</span>
           </div>
           <div>
             <h4>Account</h4>

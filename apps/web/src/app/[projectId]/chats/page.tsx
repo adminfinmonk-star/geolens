@@ -16,6 +16,10 @@ type ChatRow = {
   prompt_text: string | null;
   mention_count: number;
   text: string;
+  surface_kind?: string;
+  model_reported?: string;
+  latency_ms?: number;
+  error_code?: string;
 };
 
 export default function ChatsPage() {
@@ -74,7 +78,7 @@ export default function ChatsPage() {
             </span>
           </div>
           <p className="geo-page-lede">
-            One prompt × channel × country × day — {total} total in project.
+            Immutable API observations and failed attempts. {total} total in project.
           </p>
         </div>
         <div className="geo-vis-actions">
@@ -108,12 +112,12 @@ export default function ChatsPage() {
         </article>
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Models</p>
-          <p className="geo-vis-kpi-value">{models || "—"}</p>
+          <p className="geo-vis-kpi-value">{models || "None"}</p>
           <p className="geo-vis-kpi-meta">Distinct channels</p>
         </article>
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Countries</p>
-          <p className="geo-vis-kpi-value">{countries || "—"}</p>
+          <p className="geo-vis-kpi-value">{countries || "None"}</p>
           <p className="geo-vis-kpi-meta">In loaded window</p>
         </article>
       </div>
@@ -134,8 +138,8 @@ export default function ChatsPage() {
               <tr>
                 <th>Date</th>
                 <th>Prompt</th>
-                <th>Model</th>
-                <th>Country</th>
+                <th>API surface</th>
+                <th>Requested market</th>
                 <th>Mentions</th>
                 <th>Status</th>
               </tr>
@@ -148,14 +152,22 @@ export default function ChatsPage() {
                   </td>
                   <td>
                     <Link href={`/${projectId}/chats/${r.id}`}>
-                      <strong>{r.prompt_text ?? "—"}</strong>
+                      <strong>{r.prompt_text ?? "Unavailable"}</strong>
                     </Link>
                   </td>
-                  <td className="mono">{r.model_channel_id}</td>
+                  <td>
+                    <span className="mono">{r.model_reported ?? r.model_channel_id}</span>
+                    <small className="geo-pr-row-meta">
+                      {r.surface_kind ?? "unknown"}
+                      {r.latency_ms != null ? `, ${r.latency_ms} ms` : ""}
+                    </small>
+                  </td>
                   <td>{r.country_code}</td>
                   <td>{r.mention_count}</td>
                   <td>
-                    <span className="geo-badge geo-badge-neutral">{r.status}</span>
+                    <span className={`geo-badge ${r.error_code ? "geo-badge-warm" : "geo-badge-neutral"}`}>
+                      {r.error_code ?? r.status}
+                    </span>
                   </td>
                 </tr>
               ))}

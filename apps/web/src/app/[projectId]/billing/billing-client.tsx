@@ -86,14 +86,12 @@ export function BillingClient({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const session = params.get("session");
-    if (params.get("checkout") === "success" && session) {
+    if (params.get("checkout") === "success") {
       void (async () => {
-        await fetch(
-          `${API_BASE}/v1/projects/${projectId}/billing/checkout/${session}/complete`,
-          { method: "POST", credentials: "include" },
-        );
         window.history.replaceState({}, "", `/${projectId}/billing`);
+        // Stripe checkout is finalized only by the signed webhook. Give that
+        // durable event a moment to arrive, then refresh the displayed status.
+        await new Promise((resolve) => window.setTimeout(resolve, 1200));
         await load();
       })();
     }

@@ -13,13 +13,17 @@ import type { DemoStore } from "./seed.js";
 const classificationOverrides = new Map<string, Map<string, DomainClass>>();
 const bookmarks = new Map<string, Set<string>>();
 
-function overridesFor(projectId: string): Record<string, DomainClass> {
+function overridesFor(store: DemoStore): Record<string, DomainClass> {
+  if (store.sourceClassifications) return store.sourceClassifications;
+  const projectId = store.project.id;
   const m = classificationOverrides.get(projectId);
   if (!m) return {};
   return Object.fromEntries(m.entries());
 }
 
-function bookmarksFor(projectId: string): Set<string> {
+function bookmarksFor(store: DemoStore): Set<string> {
+  if (store.sourceBookmarks) return new Set(store.sourceBookmarks);
+  const projectId = store.project.id;
   let s = bookmarks.get(projectId);
   if (!s) {
     s = new Set();
@@ -29,31 +33,28 @@ function bookmarksFor(projectId: string): Set<string> {
 }
 
 export function setDomainClassification(
-  projectId: string,
+  store: DemoStore,
   domain: string,
   classification: DomainClass | null,
 ) {
-  let m = classificationOverrides.get(projectId);
-  if (!m) {
-    m = new Map();
-    classificationOverrides.set(projectId, m);
-  }
-  if (classification == null) m.delete(domain);
-  else m.set(domain, classification);
+  store.sourceClassifications ??= {};
+  if (classification == null) delete store.sourceClassifications[domain];
+  else store.sourceClassifications[domain] = classification;
 }
 
-export function toggleBookmark(projectId: string, key: string): boolean {
-  const s = bookmarksFor(projectId);
+export function toggleBookmark(store: DemoStore, key: string): boolean {
+  const s = bookmarksFor(store);
   if (s.has(key)) {
     s.delete(key);
+    store.sourceBookmarks = [...s];
     return false;
   }
   s.add(key);
+  store.sourceBookmarks = [...s];
   return true;
 }
 
 export function reportsFromStore(store: DemoStore) {
-  const projectId = store.project.id;
   const totalChatCount = store.chats.filter(
     (c) => c.status === "ok" || c.status === "empty",
   ).length;
@@ -90,8 +91,8 @@ export function reportsFromStore(store: DemoStore) {
     ownedDomains,
     competitorDomains,
     trackedCompetitorCount,
-    classificationOverrides: overridesFor(projectId),
-    bookmarks: bookmarksFor(projectId),
+    classificationOverrides: overridesFor(store),
+    bookmarks: bookmarksFor(store),
   });
 
   const urls = computeUrlReport({
@@ -100,8 +101,8 @@ export function reportsFromStore(store: DemoStore) {
     trackedCompetitorCount,
     ownedDomains,
     competitorDomains,
-    classificationOverrides: overridesFor(projectId),
-    bookmarks: bookmarksFor(projectId),
+    classificationOverrides: overridesFor(store),
+    bookmarks: bookmarksFor(store),
   });
 
   const domainGaps = filterGaps(domains).map((r) => ({

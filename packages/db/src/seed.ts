@@ -7,6 +7,7 @@ import {
   extractBrandProfile,
   promptVolumeScore,
   type BrandMatcher,
+  type DomainClass,
 } from "@geo/core";
 import { getChannel } from "@geo/registry";
 import { newId, type Brand, type BrandProfileRow, type ChatAd, type ChatBrandMention, type ChatFanout, type ChatRow, type ChatSource, type Organization, type Project, type Prompt, type AppUser, type SharedView, type Tag, type Topic, type ActionRecord, type ActionStatusEvent } from "./schema.js";
@@ -74,6 +75,8 @@ export interface DemoStore {
   brandProfile: BrandProfileRow;
   rejectedCompetitorNames: string[];
   sharedViews: SharedView[];
+  sourceClassifications: Record<string, DomainClass>;
+  sourceBookmarks: string[];
   actions: ActionRecord[];
   actionEvents: ActionStatusEvent[];
   robotsTxt?: string;
@@ -96,6 +99,13 @@ export interface DemoStore {
   pendingCategoryDraft: { name: string; path: string; parentPath: string | null }[];
   commercial?: import("./commercial.js").CommercialState;
   auditLog?: import("./commercial.js").AuditLogEntry[];
+  /** Current domain-scoped configuration. Historical rows remain in the store. */
+  analysisScope?: {
+    domain: string;
+    brandIds: string[];
+    topicIds: string[];
+    startedAt: string;
+  };
   /**
    * Marks the synthetic Acme/BetaSoft demo dataset. Only `buildDemoStore` sets it —
    * Postgres-backed projects stay undefined so feature reports never fabricate rows.
@@ -275,7 +285,7 @@ export async function buildDemoStore(options?: {
 
         const chatId = newId("cht");
         let text = res.text;
-        if (res.status === "ok" && d % 3 === 0 && channelId === "openai-0") {
+        if (res.status === "ok" && d % 3 === 0 && channelId === "openai-1") {
           text = `${text} Teams also evaluate Salesforce and HubSpot in this category.`;
         }
 
@@ -378,6 +388,8 @@ export async function buildDemoStore(options?: {
     brandProfile,
     rejectedCompetitorNames: [],
     sharedViews: [],
+    sourceClassifications: {},
+    sourceBookmarks: [],
     actions: [],
     actionEvents: [],
     robotsTxt: undefined,

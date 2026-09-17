@@ -1,65 +1,65 @@
+import { randomUUID } from "node:crypto";
 import path from "node:path";
+import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
-import Fastify from "fastify";
-import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
+import cors from "@fastify/cors";
 import {
-  DEFAULT_API_CHANNELS,
   clearAdapterCache,
+  DEFAULT_API_CHANNELS,
+  describeAdapterRuntime,
   getAdapter,
   getChannelHealth,
   listBuiltAdapters,
   listChannelHealth,
-  describeAdapterRuntime,
   loadRepoEnv,
 } from "@geo/adapters";
 import { buildOpenApiDocument } from "@geo/contracts";
-import { randomUUID } from "node:crypto";
-import { callMcpTool, listPlannedTools, listSlashCommands } from "@geo/mcp";
-import { MODEL_CHANNELS, getChannel, listApiChannels } from "@geo/registry";
 import {
   AuthError,
-  SUBPROCESSORS,
+  acceptCompetitor,
+  activateDiscoveredPrompts,
+  adsFromStore,
   appendAuditLog,
   assertKeyCanAccessProject,
   biBrandsFlat,
+  billingWebhookWasProcessed,
   billingMode,
+  brandInsightsFromStore,
   brandsReportCsv,
   brandsReportPayload,
+  buildIdpRedirectUrl,
+  buildSpMetadataXml,
   chatsReportCsv,
-  overviewReportPayload,
-  parseOverviewFilters,
   checkApiFeature,
   checkBiFeature,
   checkCollect,
+  checkDatabaseReadiness,
   checkMcpFeature,
-  checkPromptActivation,
   checkProjectRateLimit,
+  checkPromptActivation,
+  classifySampleReferral,
   clearSso,
   commercialSummary,
+  competitorSuggestions,
   completeCheckout,
   completeOnboarding,
   configureSso,
+  connectCloudflare,
   convertPitchToCustomer,
+  crawlInsightsDashboard,
   createApiKey,
+  createBrand,
   createCheckoutSession,
   createDb,
   createProjectForUser,
-  acceptCompetitor,
-  activateDiscoveredPrompts,
-  competitorSuggestions,
-  createBrand,
-  createTopic,
-  deleteBrand,
-  adsFromStore,
-  brandInsightsFromStore,
-  buildIdpRedirectUrl,
-  buildSpMetadataXml,
-  classifySampleReferral,
-  connectCloudflare,
-  crawlInsightsDashboard,
-  createSharedView,
   createPrompt,
+  createSharedView,
+  createTopic,
+  type Db,
+  type DemoStore,
+  type DomainClass,
+  deleteBrand,
   enrichChatRows,
   factcheckReport,
   fanoutsFromStore,
@@ -69,7 +69,6 @@ import {
   getAction,
   getChatDetail,
   getCrawlability,
-  refreshRobotsTxt,
   getDemoStore,
   getOrCreateProfile,
   getSessionUser,
@@ -85,12 +84,13 @@ import {
   listApiKeys,
   listAuditLog,
   listBrands,
+  listOnboardingPlans,
   listPrompts,
   listPurchasablePlans,
-  listOnboardingPlans,
   listTags,
   listTopics,
   listUserProjects,
+  loadSharedView,
   loadProjectStore,
   login,
   loginWithEmail,
@@ -98,20 +98,28 @@ import {
   marketPerceptionReport,
   metricsFromStore,
   objectionsReport,
+  overviewReportPayload,
+  parseOverviewFilters,
   parseSamlResponseEmail,
   pauseProject,
   persistCommercialSideEffects,
   persistProjectStore,
+  persistSharedView,
   persistSpineAdds,
+  prepareDomainAnalysis,
+  promptObservedMetrics,
   referralsOverview,
+  recordBillingWebhookEvent,
+  refreshRobotsTxt,
   rejectCompetitor,
+  replaceProjectCollection,
   reportsFromStore,
   revokeApiKey,
+  revokeSharedView,
   runDiscovery,
   runMigrations,
   runUrlTester,
-  prepareDomainAnalysis,
-  replaceProjectCollection,
+  SUBPROCESSORS,
   saveBrandProfile,
   setDomainClassification,
   setEnabledChannels,
@@ -132,15 +140,22 @@ import {
   userCanAccessProject,
   verifyApiKey,
   verifyStripeWebhookSignature,
-  type Db,
-  type DemoStore,
-  type DomainClass,
 } from "@geo/db";
-import { queueMode, resetInlineJobState, runProjectCollectAndApply } from "@geo/worker";
+import { callMcpTool, listPlannedTools, listSlashCommands } from "@geo/mcp";
+import { getChannel, listApiChannels, MODEL_CHANNELS } from "@geo/registry";
+import {
+  checkQueueReadiness,
+  enqueueAnalyzeProject,
+  getAnalyzeProjectJob,
+  queueMode,
+  resetInlineJobState,
+  runProjectCollectAndApply,
+} from "@geo/worker";
+import Fastify from "fastify";
 
-/** Fast Analyze: one strong channel × few prompts (parallel Cursor calls). */
+/** Fast Analyze: three truthful API channels across a compact market sample. */
 const ANALYZE_CHANNELS = [
-  "openai-0",
+  "openai-1",
   "perplexity-1",
   "google-3",
 ] as const;
@@ -150,7 +165,7 @@ type AnalyzeJob = {
   project_id: string;
   domain: string;
   brand_name: string;
-  status: "running" | "done" | "error";
+  status: "queued" | "running" | "done" | "error";
   message?: string;
   prompts_activated?: number;
   collect?: {
@@ -168,6 +183,56 @@ const analyzeJobs = new Map<string, AnalyzeJob>();
 const COOKIE = "geo_session";
 /** Public demo project id — unauthenticated reads allowed in memory/fixture CI. */
 const DEMO_PROJECT_ID = "prj_demo";
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const ADMIN_ONLY_PATHS = [
+  /\/api-keys(?:\/|$)/,
+  /\/billing(?:\/|$)/,
+  /\/channels\/enabled(?:\/|$)/,
+  /\/convert-pitch(?:\/|$)/,
+  /\/gdpr\/delete(?:\/|$)/,
+  /\/pause(?:\/|$)/,
+  /\/sso(?:\/|$)/,
+  /\/unpause(?:\/|$)/,
+];
+
+type AuthWindow = { startedAt: number; count: number };
+const authWindows = new Map<string, AuthWindow>();
+const httpMetrics = {
+  requests: 0,
+  errors: 0,
+  durationMs: 0,
+  startedAt: Date.now(),
+};
+
+export function validateProductionConfiguration(
+  env: Record<string, string | undefined> = process.env,
+) {
+  if (env.NODE_ENV !== "production") return;
+  const required = ["DATABASE_URL", "REDIS_URL", "WEB_URL", "CORS_ORIGINS"];
+  const missing = required.filter((key) => !env[key]?.trim());
+  if (missing.length) {
+    throw new Error(`Missing production configuration: ${missing.join(", ")}`);
+  }
+  if (env.GEO_ADAPTER_MODE === "fixture") {
+    throw new Error("GEO_ADAPTER_MODE=fixture is not allowed in production");
+  }
+}
+
+function productionCorsOrigins(): true | string[] {
+  if (process.env.NODE_ENV !== "production") return true;
+  return (process.env.CORS_ORIGINS ?? process.env.WEB_URL ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+function roleMayMutate(role: string, pathOnly: string): boolean {
+  if (role === "viewer") return false;
+  if (ADMIN_ONLY_PATHS.some((pattern) => pattern.test(pathOnly))) {
+    return role === "owner" || role === "admin";
+  }
+  return role === "owner" || role === "admin" || role === "member";
+}
 
 async function resolveProjectStore(
   db: Db | null,
@@ -189,12 +254,31 @@ async function resolveProjectStore(
  */
 async function authorizeProject(
   db: Db | null,
-  req: { cookies?: Record<string, string | undefined> },
+  req: {
+    cookies?: Record<string, string | undefined>;
+    method?: string;
+    url?: string;
+  },
   reply: {
     code: (n: number) => { send: (b: unknown) => unknown };
   },
   projectId: string,
 ): Promise<boolean> {
+  const method = (req.method ?? "GET").toUpperCase();
+  const pathOnly = (req.url ?? "").split("?")[0] ?? "";
+  const mutating = !SAFE_METHODS.has(method);
+  if (
+    projectId === DEMO_PROJECT_ID &&
+    mutating &&
+    process.env.NODE_ENV === "production"
+  ) {
+    reply.code(403).send({
+      error: "demo_read_only",
+      message: "The public demo is read-only in production.",
+    });
+    return false;
+  }
+
   if (!db) {
     if (projectId !== DEMO_PROJECT_ID) {
       reply.code(401).send({ error: "unauthorized" });
@@ -206,7 +290,14 @@ async function authorizeProject(
   const sessionUser = await getSessionUser(db, req.cookies?.[COOKIE]);
   if (sessionUser) {
     const access = await userCanAccessProject(db, sessionUser.userId, projectId);
-    if (access.ok) return true;
+    if (access.ok) {
+      if (!mutating || roleMayMutate(access.role, pathOnly)) return true;
+      reply.code(403).send({
+        error: "insufficient_role",
+        message: "Your project role cannot perform this action.",
+      });
+      return false;
+    }
     if (projectId === DEMO_PROJECT_ID) return true;
     reply.code(403).send({ error: "forbidden" });
     return false;
@@ -219,11 +310,33 @@ async function authorizeProject(
 
 export async function buildServer(options?: { databaseUrl?: string }) {
   const app = Fastify({ logger: true });
+  const corsOrigins = productionCorsOrigins();
+  if (
+    process.env.NODE_ENV === "production" &&
+    typeof corsOrigins !== "boolean" &&
+    corsOrigins.length === 0
+  ) {
+    throw new Error("CORS_ORIGINS or WEB_URL is required in production");
+  }
   await app.register(cors, {
-    origin: true,
+    origin: corsOrigins,
     credentials: true,
   });
   await app.register(cookie);
+
+  // Stripe signs the exact request bytes. Preserve them before Fastify's JSON
+  // parser runs so signature verification never relies on re-serialization.
+  app.addHook("preParsing", async (req, _reply, payload) => {
+    const pathOnly = (req.url ?? "").split("?")[0] ?? "";
+    if (pathOnly !== "/v1/billing/webhook") return payload;
+    const chunks: Buffer[] = [];
+    for await (const chunk of payload) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    const raw = Buffer.concat(chunks);
+    (req as { rawBody?: string }).rawBody = raw.toString("utf8");
+    return Readable.from(raw);
+  });
 
   let db: Db | null = null;
   const url =
@@ -246,7 +359,22 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     if (!ok) return;
   });
 
+  app.addHook("preHandler", async (req, reply) => {
+    const pathOnly = (req.url ?? "").split("?")[0] ?? "";
+    if (
+      process.env.NODE_ENV === "production" &&
+      (pathOnly.startsWith("/v1/saml/") || pathOnly.includes("/sso"))
+    ) {
+      return reply.code(501).send({
+        error: "verified_saml_not_configured",
+        message:
+          "SAML is disabled until signed assertions, issuer, audience, and expiry are cryptographically verified.",
+      });
+    }
+  });
+
   app.addHook("onRequest", async (req, reply) => {
+    (req as { metricsStartedAt?: number }).metricsStartedAt = Date.now();
     const incoming = req.headers["x-trace-id"];
     const traceId =
       typeof incoming === "string" && incoming.length > 0
@@ -254,6 +382,63 @@ export async function buildServer(options?: { databaseUrl?: string }) {
         : randomUUID();
     (req as { traceId?: string }).traceId = traceId;
     reply.header("x-trace-id", traceId);
+    reply.header("x-content-type-options", "nosniff");
+    reply.header("x-frame-options", "DENY");
+    reply.header("referrer-policy", "strict-origin-when-cross-origin");
+    reply.header("permissions-policy", "camera=(), microphone=(), geolocation=()");
+    if (process.env.NODE_ENV === "production") {
+      reply.header(
+        "strict-transport-security",
+        "max-age=31536000; includeSubDomains",
+      );
+    }
+
+    const pathOnly = (req.url ?? "").split("?")[0] ?? "";
+    const hasSessionCookie = (req.headers.cookie ?? "")
+      .split(";")
+      .some((part) => part.trim().startsWith(`${COOKIE}=`));
+    if (
+      process.env.NODE_ENV === "production" &&
+      hasSessionCookie &&
+      !SAFE_METHODS.has(req.method.toUpperCase())
+    ) {
+      const origin = req.headers.origin;
+      const allowed =
+        typeof corsOrigins !== "boolean" &&
+        typeof origin === "string" &&
+        corsOrigins.includes(origin);
+      if (!allowed) {
+        return reply.code(403).send({ error: "invalid_request_origin" });
+      }
+    }
+
+    if (req.method === "POST" && /^\/v1\/auth\/(login|signup)$/.test(pathOnly)) {
+      const now = Date.now();
+      const key = `${req.ip}:${pathOnly}`;
+      const current = authWindows.get(key);
+      const window =
+        !current || now - current.startedAt >= 15 * 60_000
+          ? { startedAt: now, count: 0 }
+          : current;
+      window.count += 1;
+      authWindows.set(key, window);
+      reply.header("x-ratelimit-limit", "10");
+      reply.header("x-ratelimit-remaining", String(Math.max(0, 10 - window.count)));
+      if (window.count > 10) {
+        reply.header(
+          "retry-after",
+          String(Math.max(1, Math.ceil((window.startedAt + 15 * 60_000 - now) / 1000))),
+        );
+        return reply.code(429).send({ error: "auth_rate_limited" });
+      }
+    }
+  });
+
+  app.addHook("onResponse", async (req, reply) => {
+    httpMetrics.requests += 1;
+    if (reply.statusCode >= 500) httpMetrics.errors += 1;
+    httpMetrics.durationMs +=
+      Date.now() - ((req as { metricsStartedAt?: number }).metricsStartedAt ?? Date.now());
   });
 
   app.get("/health", async () => ({
@@ -262,26 +447,67 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     backend: db ? "postgres" : "memory",
   }));
 
-  app.get("/v1/ops/metrics", async () => ({
-    service: "api",
-    queue_mode: queueMode(),
-    billing_mode: billingMode(),
-    ui_adapters: {
-      enabled: false,
-      decision: "docs/decisions/0009-defer-ui-adapters.md",
-      surface_kinds_allowed: ["simulator", "api", "fixture"],
-    },
-    alerts: {
-      parser_invariant_failures_pct_15m: 0,
-      enrichment_lag_minutes: 0,
-      collection_cycle_overrun: false,
-      llm_spend_anomaly: false,
-      quota_exhaustion_events: 0,
-    },
-    notes: [
-      "Phase 12 ui adapters deferred (ADR 0009). Invariant alarms apply only if ui parsers are ever enabled.",
-    ],
-  }));
+  app.get("/ready", async (_req, reply) => {
+    const database = db ? await checkDatabaseReadiness(db) : false;
+    const queue = queueMode() === "bullmq" ? await checkQueueReadiness() : false;
+    const ready =
+      process.env.NODE_ENV === "production"
+        ? database && queue
+        : db == null || database;
+    return reply.code(ready ? 200 : 503).send({
+      ready,
+      database,
+      queue,
+      queue_mode: queueMode(),
+    });
+  });
+
+  app.get("/metrics", async (req, reply) => {
+    if (process.env.NODE_ENV === "production") {
+      const token = process.env.OPS_TOKEN;
+      if (!token || req.headers.authorization !== `Bearer ${token}`) {
+        return reply.code(404).send({ error: "not_found" });
+      }
+    }
+    reply.type("text/plain; version=0.0.4");
+    return [
+      "# TYPE geolens_http_requests_total counter",
+      `geolens_http_requests_total ${httpMetrics.requests}`,
+      "# TYPE geolens_http_errors_total counter",
+      `geolens_http_errors_total ${httpMetrics.errors}`,
+      "# TYPE geolens_http_request_duration_ms_total counter",
+      `geolens_http_request_duration_ms_total ${httpMetrics.durationMs}`,
+      "# TYPE geolens_process_uptime_seconds gauge",
+      `geolens_process_uptime_seconds ${Math.floor((Date.now() - httpMetrics.startedAt) / 1000)}`,
+      "",
+    ].join("\n");
+  });
+
+  app.get("/v1/ops/metrics", async (req, reply) => {
+    if (process.env.NODE_ENV === "production") {
+      const token = process.env.OPS_TOKEN;
+      if (!token) return reply.code(404).send({ error: "not_found" });
+      if (req.headers.authorization !== `Bearer ${token}`) {
+        return reply.code(401).send({ error: "unauthorized" });
+      }
+    }
+    return {
+      service: "api",
+      queue_mode: queueMode(),
+      billing_mode: billingMode(),
+      ui_adapters: {
+        enabled: false,
+        decision: "docs/decisions/0009-defer-ui-adapters.md",
+        surface_kinds_allowed: ["simulator", "api", "fixture"],
+      },
+      telemetry: {
+        available: true,
+        format: "prometheus",
+        endpoint: "/metrics",
+        scope: "per API instance",
+      },
+    };
+  });
 
   app.post("/v1/auth/signup", async (req, reply) => {
     if (!db) {
@@ -519,7 +745,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     if (!store) return reply.code(404).send({ error: "project_not_found" });
 
     try {
-      const prepared = prepareDomainAnalysis(store, raw, { prompt_limit: 2 });
+      const prepared = prepareDomainAnalysis(store, raw, { prompt_limit: 4 });
       const gate = checkCollect(store);
       if (!gate.ok) {
         await persistProjectStore(db, store);
@@ -555,7 +781,21 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       analyzeJobs.set(jobId, job);
 
       const projectRef = store.project.id;
-      void (async () => {
+      if (queueMode() === "bullmq" && db) {
+        job.status = "queued";
+        await enqueueAnalyzeProject({
+          job_id: jobId,
+          project_id: projectRef,
+          domain: prepared.domain,
+          brand_name: prepared.brand_name,
+          prompts_activated: prepared.prompts_activated,
+          channel_ids: [...ANALYZE_CHANNELS],
+          concurrency: 2,
+          seed: `analyze|${prepared.domain}|${Date.now()}`,
+          run_date: new Date().toISOString().slice(0, 10),
+          started_at: job.started_at,
+        });
+      } else void (async () => {
         try {
           const live = await resolveProjectStore(db, projectRef);
           if (!live) throw new Error("project_not_found");
@@ -591,7 +831,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
 
       const runtime = describeAdapterRuntime();
       return reply.code(202).send({
-        status: "running",
+        status: job.status,
         job_id: jobId,
         project_id: store.project.id,
         domain: prepared.domain,
@@ -625,6 +865,34 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       projectId: string;
       jobId: string;
     };
+    const durable = await getAnalyzeProjectJob(jobId);
+    if (durable.found && durable.payload?.project_id === projectId) {
+      const store = await resolveProjectStore(db, projectId);
+      return {
+        id: jobId,
+        project_id: projectId,
+        domain: durable.payload.domain,
+        brand_name: durable.payload.brand_name,
+        prompts_activated: durable.payload.prompts_activated,
+        status: durable.status,
+        message: durable.message,
+        collect: durable.result
+          ? {
+              chats_written: durable.result.chats_written,
+              run_date: durable.result.run_date,
+              mode: durable.result.mode,
+              channels: durable.result.channels,
+            }
+          : undefined,
+        started_at: durable.payload.started_at,
+        finished_at: durable.result?.finished_at,
+        chats: store?.chats.length ?? 0,
+        overview:
+          durable.status === "done" && store
+            ? overviewReportPayload(store)
+            : undefined,
+      };
+    }
     const job = analyzeJobs.get(jobId);
     if (!job || job.project_id !== projectId) {
       return reply.code(404).send({ error: "job_not_found" });
@@ -649,10 +917,17 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       billing_period?: "monthly" | "annual";
       keep_trial?: boolean;
     };
+    const paidPlanRequested =
+      Boolean(body.plan_code) && body.plan_code !== "trial" && !body.keep_trial;
     const project = completeOnboarding(store, {
       plan_code: body.plan_code,
       billing_period: body.billing_period,
-      keep_trial: body.keep_trial ?? (!body.plan_code || body.plan_code === "trial"),
+      // A production onboarding click cannot grant a paid plan. Stripe's
+      // signed checkout webhook is the only path that applies it.
+      keep_trial:
+        process.env.NODE_ENV === "production" && paidPlanRequested
+          ? true
+          : body.keep_trial ?? (!body.plan_code || body.plan_code === "trial"),
       source: "api",
     });
     await persistProjectStore(db, store);
@@ -851,7 +1126,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     const store = await resolveProjectStore(db, projectId);
     if (!store) return reply.code(404).send({ error: "project_not_found" });
     const rows = (await listPrompts(db, projectId)) ?? store.prompts;
-    return { rows };
+    return { rows, metrics: promptObservedMetrics(store) };
   });
 
   app.post("/v1/projects/:projectId/prompts", async (req, reply) => {
@@ -988,10 +1263,11 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       const body = req.body as { classification?: DomainClass | null };
       const decoded = decodeURIComponent(domain);
       setDomainClassification(
-        projectId,
+        store,
         decoded,
         body.classification === undefined ? null : body.classification,
       );
+      await persistProjectStore(db, store);
       const { domains } = reportsFromStore(store);
       return { domain: domains.find((d) => d.domain === decoded) ?? null };
     },
@@ -1003,7 +1279,8 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     if (!store) return reply.code(404).send({ error: "project_not_found" });
     const body = req.body as { key?: string };
     if (!body.key) return reply.code(400).send({ error: "key_required" });
-    const bookmarked = toggleBookmark(projectId, body.key);
+    const bookmarked = toggleBookmark(store, body.key);
+    await persistProjectStore(db, store);
     return { key: body.key, bookmarked };
   });
 
@@ -1260,11 +1537,18 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     const { projectId } = req.params as { projectId: string };
     const store = await resolveProjectStore(db, projectId);
     if (!store) return reply.code(404).send({ error: "project_not_found" });
-    const body = req.body as { name?: string; widgets?: string[] };
+    const body = req.body as {
+      name?: string;
+      widgets?: string[];
+      expires_in_days?: number;
+    };
     const view = createSharedView(store, {
       name: body.name ?? "Shared overview",
       widgets: body.widgets,
+      expiresInDays: body.expires_in_days,
     });
+    await persistSharedView(db, view);
+    await persistProjectStore(db, store);
     return {
       view,
       share_path: `/share/${view.id}`,
@@ -1273,9 +1557,8 @@ export async function buildServer(options?: { databaseUrl?: string }) {
 
   app.get("/v1/shared/:viewId", async (req, reply) => {
     const { viewId } = req.params as { viewId: string };
-    // Public read-only shared overview (no auth). Views live on DemoStore in Phase 4.
     const store = await getDemoStore();
-    const view = getSharedView(store, viewId);
+    const view = (await loadSharedView(db, viewId)) ?? getSharedView(store, viewId);
     if (!view) return reply.code(404).send({ error: "view_not_found" });
     let projectStore = store;
     if (view.project_id !== store.project.id) {
@@ -1311,6 +1594,26 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       },
     };
   });
+
+  app.delete(
+    "/v1/projects/:projectId/views/:viewId",
+    async (req, reply) => {
+      const { projectId, viewId } = req.params as {
+        projectId: string;
+        viewId: string;
+      };
+      const store = await resolveProjectStore(db, projectId);
+      if (!store) return reply.code(404).send({ error: "project_not_found" });
+      const local = store.sharedViews.find((candidate) => candidate.id === viewId);
+      if (local) local.revoked_at = new Date().toISOString();
+      const persisted = await revokeSharedView(db, { projectId, viewId });
+      if (!local && !persisted) {
+        return reply.code(404).send({ error: "view_not_found" });
+      }
+      await persistProjectStore(db, store);
+      return { ok: true };
+    },
+  );
 
   app.get("/v1/projects/:projectId/actions", async (req, reply) => {
     const { projectId } = req.params as { projectId: string };
@@ -1680,7 +1983,10 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     };
     const store = await resolveProjectStore(db, projectId);
     if (!store) return reply.code(404).send({ error: "project_not_found" });
-    const ok = await revokeApiKey(db, keyId);
+    const ok = await revokeApiKey(db, keyId, {
+      organizationId: store.organization.id,
+      projectId,
+    });
     if (!ok) return reply.code(404).send({ error: "key_not_found" });
     appendAuditLog(store, {
       source: "api",
@@ -1761,6 +2067,12 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     const { projectId } = req.params as { projectId: string };
     const store = await resolveProjectStore(db, projectId);
     if (!store) return reply.code(404).send({ error: "project_not_found" });
+    if (process.env.NODE_ENV === "production") {
+      return reply.code(403).send({
+        error: "checkout_required",
+        message: "Production plan changes require a verified billing webhook.",
+      });
+    }
     const body = (req.body ?? {}) as {
       plan_code?: string;
       is_agency?: boolean;
@@ -1831,9 +2143,10 @@ export async function buildServer(options?: { databaseUrl?: string }) {
 
   app.post("/v1/billing/webhook", async (req, reply) => {
     const raw =
-      typeof req.body === "string"
+      (req as { rawBody?: string }).rawBody ??
+      (typeof req.body === "string"
         ? req.body
-        : JSON.stringify(req.body ?? {});
+        : JSON.stringify(req.body ?? {}));
     const sigHeader = req.headers["stripe-signature"] as string | undefined;
     let signatureOk: boolean | undefined;
     if (process.env.STRIPE_WEBHOOK_SECRET) {
@@ -1845,11 +2158,13 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     const body = (
       typeof req.body === "string" ? JSON.parse(req.body) : (req.body ?? {})
     ) as {
+      id?: string;
       type?: string;
       project_id?: string;
       data?: {
         object?: {
           id?: string;
+          status?: string;
           client_reference_id?: string;
           metadata?: {
             checkout_session_id?: string;
@@ -1863,6 +2178,12 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       body.project_id ??
       body.data?.object?.metadata?.project_id ??
       DEMO_PROJECT_ID;
+    if (process.env.NODE_ENV === "production" && !body.id) {
+      return reply.code(400).send({ error: "stripe_event_id_required" });
+    }
+    if (body.id && (await billingWebhookWasProcessed(db, body.id))) {
+      return { handled: true, duplicate: true };
+    }
     const store = await resolveProjectStore(db, projectId);
     if (!store) return reply.code(404).send({ error: "project_not_found" });
     try {
@@ -1872,6 +2193,13 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       if (result.handled) {
         await persistProjectStore(db, store);
         await persistCommercialSideEffects(db, store);
+        if (body.id) {
+          await recordBillingWebhookEvent(db, {
+            eventId: body.id,
+            eventType: body.type ?? "unknown",
+            projectId,
+          });
+        }
       }
       return result;
     } catch (e) {
@@ -2158,6 +2486,7 @@ async function main() {
   const envFile = loadRepoEnv();
   clearAdapterCache();
   const runtime = describeAdapterRuntime();
+  validateProductionConfiguration();
   console.log(
     `collection env=${envFile ?? "process"} mode=${runtime.GEO_ADAPTER_MODE} backend=${runtime.GEO_COLLECTION_BACKEND} openrouter=${runtime.openrouter_key_present} cursor=${runtime.cursor_key_present} resolved=${runtime.global_resolved}`,
   );

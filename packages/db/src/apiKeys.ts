@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, or } from "drizzle-orm";
 import type { Db } from "./client.js";
 import { apiKey } from "./pg-schema.js";
 import { newId } from "./schema.js";
@@ -184,22 +184,34 @@ export async function listApiKeys(
 export async function revokeApiKey(
   db: Db | null,
   keyId: string,
+  scope: { organizationId: string; projectId?: string },
 ): Promise<boolean> {
   if (db) {
+    const where = and(
+      eq(apiKey.id, keyId),
+      eq(apiKey.organizationId, scope.organizationId),
+      scope.projectId
+        ? or(isNull(apiKey.projectId), eq(apiKey.projectId, scope.projectId))
+        : undefined,
+    );
     const rows = await db
       .select()
       .from(apiKey)
-      .where(eq(apiKey.id, keyId))
+      .where(where)
       .limit(1);
     if (!rows[0]) return false;
     await db
       .update(apiKey)
       .set({ revokedAt: new Date() })
-      .where(eq(apiKey.id, keyId));
+      .where(where);
     return true;
   }
   for (const [hash, rec] of memoryKeys) {
-    if (rec.id === keyId) {
+    if (
+      rec.id === keyId &&
+      rec.organization_id === scope.organizationId &&
+      (!scope.projectId || rec.project_id == null || rec.project_id === scope.projectId)
+    ) {
       rec.revoked_at = new Date().toISOString();
       memoryKeys.set(hash, rec);
       return true;

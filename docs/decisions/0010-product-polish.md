@@ -14,12 +14,15 @@ settings (API keys / SSO), and production-shaped Stripe / SAML paths.
    brands table; top actions / domains / recent chats.
 3. **Stripe:** when `STRIPE_SECRET_KEY` is set, Checkout Sessions are created
    via Stripe HTTPS API; webhooks verify `Stripe-Signature` HMAC. Without keys,
-   mock checkout still completes in-app.
+   mock checkout completes only outside production. Production fails closed
+   unless both Checkout and webhook secrets are configured.
 4. **SAML:** SP metadata at `/v1/saml/metadata`, ACS at `/v1/saml/acs` parses
    NameID email and establishes a session (`loginWithEmail`). Enterprise IdP
-   config remains plan-gated. Full XML crypto validation is deferred to a
-   certified SAML library when an enterprise customer is onboarded.
+   config remains plan-gated for local demonstrations. Because this parser does
+   not cryptographically verify signatures, issuer, audience, or expiry, every
+   SAML route is disabled in production until a certified library is integrated.
 
 ## Consequences
 
-Demos stay zero-credential. Production billing/SSO activate by env only.
+Demos stay zero-credential. Production billing is fail-closed and the current
+SAML demonstration is never treated as an authentication boundary.

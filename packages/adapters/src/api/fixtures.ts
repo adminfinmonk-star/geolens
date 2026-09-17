@@ -47,6 +47,32 @@ export function fixtureEngineResponse(
   },
 ): EngineResponse {
   const t0 = Date.now();
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.GEO_ALLOW_PRODUCTION_FIXTURES !== "true"
+  ) {
+    return {
+      status: "blocked",
+      errorCode: "PROVIDER_NOT_CONFIGURED",
+      text: "",
+      sources: [],
+      fanouts: [],
+      ads: [],
+      products: [],
+      maps: [],
+      features: [],
+      raw: {
+        fixture: false,
+        provider: opts.provider,
+        reason: "production_fixture_disabled",
+      },
+      meta: {
+        modelReported: opts.modelReported,
+        latencyMs: Date.now() - t0,
+        surfaceKind: "api",
+      },
+    };
+  }
   const rng = mulberry32(
     hash32(
       req.seed ?? "fixture",
@@ -238,7 +264,7 @@ export const CHANNEL_PROVIDER_ROUTE: Record<
 > = {
   "openai-0": {
     provider: "openai",
-    note: "ChatGPT channel → OpenAI GPT + web search API (not consumer UI scrape).",
+    note: "Legacy alias for OpenAI GPT + web search API. Not a ChatGPT UI observation.",
   },
   "openai-1": {
     provider: "openai",
@@ -255,18 +281,6 @@ export const CHANNEL_PROVIDER_ROUTE: Record<
   "google-3": {
     provider: "google",
     note: "Gemini channel → Google Gemini API with Google Search grounding.",
-  },
-  "google-ai-mode": {
-    provider: "google",
-    note: "Google AI Mode (Peec label) → Gemini API + Search grounding. Not identical to consumer AI Mode UI.",
-  },
-  "google-ai-overviews": {
-    provider: "google",
-    note: "Google AI Overviews (Peec label) → Gemini API + Search grounding. Not identical to SERP AI Overviews.",
-  },
-  "copilot-1": {
-    provider: "copilot",
-    note: "Microsoft Copilot channel → Azure OpenAI when configured; otherwise fixtures (no consumer Copilot scrape).",
   },
 };
 

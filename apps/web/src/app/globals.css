@@ -1345,6 +1345,44 @@ pre {
   font-weight: 700;
 }
 
+.geo-score-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem 0.85rem;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.geo-score-breakdown span {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.geo-score-breakdown strong {
+  min-width: 1.8rem;
+  color: var(--ink-strong);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.geo-score-method {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.geo-score-method summary {
+  width: fit-content;
+  cursor: pointer;
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.geo-score-method p {
+  margin: 0.5rem 0 0;
+  line-height: 1.5;
+}
+
 .geo-vis-panel {
   padding: 1rem 1.1rem 1.15rem;
 }
@@ -1553,6 +1591,12 @@ pre {
   .geo-vis-kpis,
   .geo-vis-grid-main,
   .geo-vis-grid-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .geo-score-breakdown {
     grid-template-columns: 1fr;
   }
 }

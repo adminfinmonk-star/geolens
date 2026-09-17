@@ -1,4 +1,4 @@
-import { compareBrandRank, competitiveVisibilityScore } from "@geo/core";
+import { classifyBranding, compareBrandRank } from "@geo/core";
 import type { DemoStore } from "./seed.js";
 import { metricsFromStore } from "./seed.js";
 
@@ -167,11 +167,13 @@ function sliceOverviewStore(
   from: string,
   to: string,
   channel: string | null,
+  promptIds?: Set<string>,
 ): DemoStore {
   const chats = store.chats.filter((c) => {
     const day = c.run_date.slice(0, 10);
     if (day < from || day > to) return false;
     if (channel && c.model_channel_id !== channel) return false;
+    if (promptIds && !promptIds.has(c.prompt_id)) return false;
     return true;
   });
   const chatIds = new Set(chats.map((c) => c.id));
@@ -185,18 +187,66 @@ function sliceOverviewStore(
 
 export type OverviewReport = ReturnType<typeof overviewReportPayload>;
 
-/**
- * Visibility Overview aggregate — score gauge, channel mix, country mix,
- * competitor rank, topic snapshot. Prefer this over client-side demos.
- */
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, value));
+}
+
+function wilsonInterval(successes: number, total: number) {
+  if (total <= 0) return { low: 0, high: 1 };
+  const z = 1.96;
+  const p = successes / total;
+  const denominator = 1 + (z * z) / total;
+  const centre = p + (z * z) / (2 * total);
+  const margin =
+    z * Math.sqrt((p * (1 - p)) / total + (z * z) / (4 * total * total));
+  return {
+    low: clamp01((centre - margin) / denominator),
+    high: clamp01((centre + margin) / denominator),
+  };
+}
+
+/** Visibility Overview aggregate with an inspectable, sample-aware score. */
 export function overviewReportPayload(
   store: DemoStore,
   filters: OverviewFilterInput = {},
 ) {
   const parsed = parseOverviewFilters(filters);
   const { from, to } = overviewWindow(store.chats, parsed.range);
-  const view = sliceOverviewStore(store, from, to, parsed.channel);
-  const brands = brandsReportPayload(view);
+  const analysisScope = store.analysisScope;
+  let scopedBrandIds: Set<string> | null = null;
+  if (analysisScope && analysisScope.domain === store.project.domain) {
+    scopedBrandIds = new Set(analysisScope.brandIds);
+  }
+  const scopedBrands = scopedBrandIds
+    ? store.brands.filter((brand) => scopedBrandIds.has(brand.id))
+    : store.brands;
+  const reportStore = { ...store, brands: scopedBrands };
+  const ownBrandConfig =
+    scopedBrands.find((brand) => brand.is_own) ?? scopedBrands[0];
+  const activePrompts = store.prompts.filter((prompt) => prompt.status === "active");
+  const activePromptIds = new Set(activePrompts.map((prompt) => prompt.id));
+  const scorePrompts = activePrompts.filter(
+    (prompt) =>
+      (prompt.branding ??
+        classifyBranding(prompt.text, ownBrandConfig?.name ?? "")) ===
+      "non-branded",
+  );
+  const scorePromptIds = new Set(scorePrompts.map((prompt) => prompt.id));
+  const view = sliceOverviewStore(
+    reportStore,
+    from,
+    to,
+    parsed.channel,
+    activePromptIds,
+  );
+  const scoreView = sliceOverviewStore(
+    reportStore,
+    from,
+    to,
+    parsed.channel,
+    scorePromptIds,
+  );
+  const brands = brandsReportPayload(scoreView);
   const own = brands.rows.find((r) => r.is_own) ?? brands.rows[0];
   const ranked = [...brands.rows].sort(compareBrandRank);
   const ownRank =
@@ -205,32 +255,34 @@ export function overviewReportPayload(
       : null;
 
   const eligibleChats = own?.visibility_total ?? 0;
-  const scored = competitiveVisibilityScore({
-    visibility: own?.visibility ?? 0,
-    shareOfVoice: own?.share_of_voice ?? 0,
-    position: own?.position ?? null,
-    eligibleChats,
-  });
-  const band = scored.band;
+  const ownMentionedChatIds = new Set(
+    own
+      ? scoreView.mentions
+          .filter((m) => m.brand_id === own.brand_id)
+          .map((m) => m.chat_id)
+      : [],
+  );
 
   const byChannel = new Map<
     string,
-    { chats: number; ok: number; mentioned: Set<string> }
+    { chats: number; ok: number; mentioned: Set<string>; models: Set<string> }
   >();
-  for (const c of view.chats) {
+  for (const c of scoreView.chats) {
     const cur = byChannel.get(c.model_channel_id) ?? {
       chats: 0,
       ok: 0,
       mentioned: new Set<string>(),
+      models: new Set<string>(),
     };
     cur.chats += 1;
     if (c.status === "ok" || c.status === "empty") cur.ok += 1;
+    if (c.model_reported) cur.models.add(c.model_reported);
     byChannel.set(c.model_channel_id, cur);
   }
   if (own) {
-    for (const m of view.mentions) {
+    for (const m of scoreView.mentions) {
       if (m.brand_id !== own.brand_id) continue;
-      const chat = view.chats.find((c) => c.id === m.chat_id);
+      const chat = scoreView.chats.find((c) => c.id === m.chat_id);
       if (!chat) continue;
       const cur = byChannel.get(chat.model_channel_id);
       if (cur) cur.mentioned.add(chat.id);
@@ -243,6 +295,7 @@ export function overviewReportPayload(
       chat_count: v.chats,
       mention_count: v.mentioned.size,
       visibility: v.ok === 0 ? 0 : v.mentioned.size / v.ok,
+      models_reported: [...v.models].sort(),
     }))
     .sort((a, b) => b.mention_count - a.mention_count);
 
@@ -252,23 +305,95 @@ export function overviewReportPayload(
     share: mentionTotal === 0 ? 0 : r.mention_count / mentionTotal,
   }));
 
-  const byCountry = new Map<string, number>();
-  for (const c of view.chats) {
+  const byCountry = new Map<
+    string,
+    { attempts: number; eligible: number; mentioned: Set<string> }
+  >();
+  for (const c of scoreView.chats) {
     const code = (c.country_code || "XX").toUpperCase();
-    byCountry.set(code, (byCountry.get(code) ?? 0) + 1);
+    const row = byCountry.get(code) ?? {
+      attempts: 0,
+      eligible: 0,
+      mentioned: new Set<string>(),
+    };
+    row.attempts += 1;
+    if (c.status === "ok" || c.status === "empty") row.eligible += 1;
+    if (ownMentionedChatIds.has(c.id)) row.mentioned.add(c.id);
+    byCountry.set(code, row);
   }
-  const countryTotal = view.chats.length || 1;
   const countries = [...byCountry.entries()]
-    .map(([code, count]) => ({
+    .map(([code, row]) => ({
       code,
-      count,
-      share: count / countryTotal,
+      count: row.attempts,
+      attempt_count: row.attempts,
+      eligible_answers: row.eligible,
+      mentioned_answers: row.mentioned.size,
+      presence: row.eligible === 0 ? 0 : row.mentioned.size / row.eligible,
     }))
-    .sort((a, b) => b.count - a.count);
+    .sort(
+      (a, b) =>
+        b.presence - a.presence || b.eligible_answers - a.eligible_answers,
+    );
+  const scoreCountryCount = new Set(
+    scoreView.chats.map((chat) => (chat.country_code || "XX").toUpperCase()),
+  ).size;
+
+  // GeoLens Visibility Score (0-100). This is a transparent evidence score,
+  // not a claim to reproduce a proprietary third-party index. The point score
+  // uses only observed evidence; uncertainty belongs in the interval/confidence.
+  const mentionedAnswers = ownMentionedChatIds.size;
+  const adjustedPresence =
+    eligibleChats > 0 ? mentionedAnswers / eligibleChats : 0;
+  const shareOfVoice = clamp01(own?.share_of_voice ?? 0);
+  const positionQuality =
+    own?.position == null ? 0 : clamp01(1 - (own.position - 1) / 9);
+  const citedMentionedChats = new Set(
+    scoreView.sources
+      .filter((s) => s.cited && ownMentionedChatIds.has(s.chat_id))
+      .map((s) => s.chat_id),
+  ).size;
+  const citationSupport =
+    mentionedAnswers === 0 ? 0 : citedMentionedChats / mentionedAnswers;
+  const supportedPosition = positionQuality * adjustedPresence;
+  const supportedCitations = citationSupport * adjustedPresence;
+  const scoreValue =
+    eligibleChats === 0
+      ? null
+      : Math.round(
+          100 *
+            (0.55 * adjustedPresence +
+              0.25 * shareOfVoice +
+              0.1 * supportedPosition +
+              0.1 * supportedCitations),
+        );
+  const presenceInterval = wilsonInterval(mentionedAnswers, eligibleChats);
+  const scoreWithPresence = (presence: number) =>
+    Math.round(
+      100 *
+        (0.55 * presence +
+          0.25 * shareOfVoice +
+          0.1 * positionQuality * presence +
+          0.1 * citationSupport * presence),
+    );
+  const collectionReliability =
+    scoreView.chats.length === 0 ? 0 : eligibleChats / scoreView.chats.length;
+  const confidenceIndex =
+    (0.6 * Math.min(1, eligibleChats / 30) +
+      0.25 * Math.min(1, byChannel.size / 3) +
+      0.15 * Math.min(1, scoreCountryCount / 3)) *
+    collectionReliability;
+  const confidence =
+    eligibleChats === 0
+      ? "insufficient"
+      : confidenceIndex >= 0.75
+        ? "strong"
+        : confidenceIndex >= 0.45
+          ? "directional"
+          : "limited";
 
   const topicPromptCount = new Map<string, number>();
   const promptsByTopic = new Map<string, string[]>();
-  for (const p of store.prompts) {
+  for (const p of activePrompts) {
     if (!p.topic_id) continue;
     topicPromptCount.set(
       p.topic_id,
@@ -280,7 +405,11 @@ export function overviewReportPayload(
   }
   const ownBrandId = own?.brand_id;
   let topicVisibilityIsProxy = false;
-  const topics = store.topics.slice(0, 8).map((t) => {
+  const scopedTopicIds = store.analysisScope?.topicIds;
+  const reportTopics = scopedTopicIds
+    ? store.topics.filter((topic) => scopedTopicIds.includes(topic.id))
+    : store.topics;
+  const topics = reportTopics.slice(0, 8).map((t) => {
     const promptIds = new Set(promptsByTopic.get(t.id) ?? []);
     const topicChats = view.chats.filter(
       (c) =>
@@ -400,9 +529,19 @@ export function overviewReportPayload(
         : "Last 7 days";
   const channelNote = parsed.channel ? `, ${parsed.channel} only` : "";
   const windowNote = `${rangeLabel} (${from} to ${to})${channelNote}.`;
-  const sampleNote = `Figures are from ${view.chats.length} collected answer${
+  const eligibleAttemptCount = view.chats.filter(
+    (chat) => chat.status === "ok" || chat.status === "empty",
+  ).length;
+  const failedAttemptCount = view.chats.filter(
+    (chat) => chat.status === "error" || chat.status === "blocked",
+  ).length;
+  const sampleNote = `Figures are from ${view.chats.length} collection attempt${
     view.chats.length === 1 ? "" : "s"
-  } across ${channelIds.size} model${channelIds.size === 1 ? "" : "s"} in this project — not a multi-month industry index.`;
+  } (${eligibleAttemptCount} eligible answer${
+    eligibleAttemptCount === 1 ? "" : "s"
+  }, ${failedAttemptCount} failed or blocked) across ${channelIds.size} configured route${
+    channelIds.size === 1 ? "" : "s"
+  } in this project — not a multi-month industry index.`;
   const fixtureNote =
     collectionMode === "fixture" || collectionMode === "mixed"
       ? " Adapter fixtures are synthetic answers for local/dev collection. They will not match live LLM or Semrush-scale totals. Add provider keys (or Cursor/OpenRouter) and Analyze again for real answers."
@@ -424,14 +563,52 @@ export function overviewReportPayload(
           of: ranked.length,
         }
       : null,
+    evidence: {
+      mentioned_answers: own?.visibility_count ?? 0,
+      eligible_answers: eligibleChats,
+      observed_presence: own?.visibility ?? 0,
+      failed_attempts: view.chats.filter(
+        (c) => c.status === "error" || c.status === "blocked",
+      ).length,
+      label: "Observed presence",
+      note: "The raw presence rate remains visible beside the composite score.",
+    },
     score: {
-      value: scored.value,
-      band,
-      label:
-        band === "high" ? "High" : band === "medium" ? "Medium" : "Low",
-      insight: scoreInsight(band, scored.sampleThin, view.chats.length),
-      sample_thin: scored.sampleThin,
-      presence: own?.visibility ?? 0,
+      value: scoreValue,
+      label: "GeoLens Visibility Score",
+      confidence,
+      confidence_index: Number(confidenceIndex.toFixed(3)),
+      range:
+        scoreValue == null
+          ? null
+          : {
+              low: scoreWithPresence(presenceInterval.low),
+              high: scoreWithPresence(presenceInterval.high),
+            },
+      components: {
+        presence: Math.round(adjustedPresence * 100),
+        share_of_voice: Math.round(shareOfVoice * 100),
+        position: Math.round(supportedPosition * 100),
+        citation_support: Math.round(supportedCitations * 100),
+      },
+      weights: {
+        presence: 55,
+        share_of_voice: 25,
+        position: 10,
+        citation_support: 10,
+      },
+      methodology:
+        "Uses only observed evidence from the current active, non-branded prompts: 55% presence + 25% current-cohort share of voice + 10% presence-weighted answer position + 10% presence-weighted citation support. Branded prompts, archived prompts, stale competitors, failures, and statistical priors cannot inflate or lower the point score.",
+    },
+    prompt_cohort: {
+      active_prompts: activePrompts.length,
+      score_prompts: scorePrompts.length,
+      branded_prompts_excluded: activePrompts.length - scorePrompts.length,
+      archived_prompts_excluded: store.prompts.filter(
+        (prompt) => prompt.status === "archived",
+      ).length,
+      collected_answers: view.chats.length,
+      score_answers: scoreView.chats.length,
     },
     kpis: {
       mentions: own?.mention_count ?? 0,
@@ -464,7 +641,8 @@ export function overviewReportPayload(
       series_is_collected: series.length >= 1 && view.chats.length > 0,
       country_is_requested_market: true,
       topic_visibility_is_proxy: topicVisibilityIsProxy,
-      score_sample_thin: scored.sampleThin,
+      score_sample_thin:
+        eligibleChats < 30 || byChannel.size < 3 || scoreCountryCount < 3,
       collection_is_live: liveSurfaces > 0 && fixtureLike === 0,
       collection_mode: collectionMode,
       fixture_chats: fixtureLike,
@@ -477,25 +655,5 @@ export function overviewReportPayload(
       note: `${windowNote} ${sampleNote}${fixtureNote}`,
     },
   };
-}
-
-function scoreInsight(
-  band: "high" | "medium" | "low",
-  sampleThin: boolean,
-  chats: number,
-): string {
-  if (chats === 0) {
-    return "No collected answers yet. Run Analyze to score this brand.";
-  }
-  if (sampleThin) {
-    return `Based on ${chats} collected answer${chats === 1 ? "" : "s"}. Showing up in a short list is not a high score until more prompts and models are collected.`;
-  }
-  if (band === "high") {
-    return "Mentioned often and holds a meaningful share versus tracked brands.";
-  }
-  if (band === "medium") {
-    return "Present in answers, but competitors still take more of the conversation.";
-  }
-  return "Rarely mentioned, or named only in lists dominated by other brands.";
 }
 

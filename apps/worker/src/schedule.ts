@@ -35,12 +35,15 @@ export async function scheduleProjectCollect(
   const runDate =
     opts?.runDate ?? new Date().toISOString().slice(0, 10);
   const channelIds = opts?.channelIds ?? [...DEFAULT_API_CHANNELS];
-  const brands = store.brands.map((b) => ({
-    brandId: b.id,
-    name: b.name,
-    aliases: b.aliases,
-    patterns: b.patterns,
-  }));
+  const activeBrandIds = store.analysisScope?.brandIds;
+  const brands = store.brands
+    .filter((b) => !activeBrandIds || activeBrandIds.includes(b.id))
+    .map((b) => ({
+      brandId: b.id,
+      name: b.name,
+      aliases: b.aliases,
+      patterns: b.patterns,
+    }));
 
   const active = store.prompts.filter((p) => p.status === "active");
   const enqueued: EnqueueResult[] = [];
@@ -156,8 +159,19 @@ export function applyCollectResultToStore(
         ? result.status
         : "error",
     text: result.text,
-    raw_uri: `memory://collect/${payload.job_key}`,
+    raw_uri: `db://chat/${chatId}/raw`,
+    raw_payload: result.rawPayload,
     surface_kind: result.surfaceKind,
+    model_reported: result.modelReported,
+    provider_request_id: result.providerRequestId,
+    latency_ms: result.latencyMs,
+    error_code: result.errorCode,
+    error_detail: result.errorDetail,
+    collected_at: new Date().toISOString(),
+    retrieval_mode: "provider_api",
+    locale: `${store.project.language || "en"}-${payload.country_code}`,
+    collector_version: process.env.GIT_SHA ?? "geolens-worker-v1",
+    extraction_version: "brands-v1",
   });
 
   for (const m of result.mentions) {

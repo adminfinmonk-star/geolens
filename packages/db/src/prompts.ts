@@ -2,13 +2,62 @@ import { and, eq } from "drizzle-orm";
 import type { Db } from "./client.js";
 import { prompt as promptTable } from "./pg-schema.js";
 import { newId, type Prompt } from "./schema.js";
-import { getDemoStore, type DemoStore } from "./seed.js";
+import { type DemoStore, getDemoStore } from "./seed.js";
 
 export type PromptInput = {
   text: string;
   country_code?: string;
   status?: "active" | "paused" | "archived";
 };
+
+export interface PromptObservedMetrics {
+  attempts: number;
+  eligible_answers: number;
+  mentioned_answers: number;
+  failed_attempts: number;
+  mention_rate: number | null;
+}
+
+/**
+ * Observed prompt metrics derived only from immutable collection rows.
+ * Error/blocked attempts are reported, but never included in the visibility
+ * denominator. No synthetic ranking or estimated demand is produced here.
+ */
+export function promptObservedMetrics(
+  store: DemoStore,
+): Record<string, PromptObservedMetrics> {
+  const ownBrandIds = new Set(
+    store.brands.filter((brand) => brand.is_own).map((brand) => brand.id),
+  );
+  const ownMentionChatIds = new Set(
+    store.mentions
+      .filter(
+        (mention) =>
+          ownBrandIds.has(mention.brand_id) && mention.mention_count > 0,
+      )
+      .map((mention) => mention.chat_id),
+  );
+
+  const result: Record<string, PromptObservedMetrics> = {};
+  for (const prompt of store.prompts) {
+    const chats = store.chats.filter((chat) => chat.prompt_id === prompt.id);
+    const eligible = chats.filter(
+      (chat) => chat.status === "ok" || chat.status === "empty",
+    );
+    const mentioned = eligible.filter((chat) => ownMentionChatIds.has(chat.id));
+    result[prompt.id] = {
+      attempts: chats.length,
+      eligible_answers: eligible.length,
+      mentioned_answers: mentioned.length,
+      failed_attempts: chats.filter(
+        (chat) => chat.status === "error" || chat.status === "blocked",
+      ).length,
+      mention_rate:
+        eligible.length === 0 ? null : mentioned.length / eligible.length,
+    };
+  }
+  return result;
+}
 
 function toApi(p: {
   id: string;

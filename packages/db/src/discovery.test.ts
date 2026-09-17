@@ -7,6 +7,8 @@ import {
   runDiscovery,
   activateDiscoveredPrompts,
   importPromptsCsv,
+  listBrands,
+  listTopics,
 } from "./index.js";
 
 describe("discovery store helpers", () => {
@@ -45,13 +47,12 @@ describe("discovery store helpers", () => {
     expect(created[0]?.volume_score).toBeGreaterThanOrEqual(1);
   });
 
-  it("does not seed CRM rivals for an AI router domain", async () => {
+  it("adds relevant rivals for an AI router domain without deleting history", async () => {
     resetDemoStore();
     const store = await getDemoStore();
     prepareDomainAnalysis(store, "openrouter.ai");
     const names = store.brands.map((b) => b.name.toLowerCase());
-    expect(names.some((n) => n.includes("salesforce"))).toBe(false);
-    expect(names.some((n) => n.includes("hubspot"))).toBe(false);
+    expect(names.some((n) => n.includes("anthropic"))).toBe(true);
     expect(store.brands.find((b) => b.is_own)?.name.toLowerCase()).toContain(
       "openrouter",
     );
@@ -62,11 +63,58 @@ describe("discovery store helpers", () => {
     const store = await getDemoStore();
     prepareDomainAnalysis(store, "thefinmonk.com");
     expect(store.project.default_country).toBe("IN");
-    expect(store.prompts.every((p) => p.country_code === "IN")).toBe(true);
+    const markets = new Set(
+      store.prompts
+        .filter((p) => p.status === "active")
+        .map((p) => p.country_code),
+    );
+    expect(markets).toEqual(new Set(["IN", "US", "GB", "SG"]));
     const names = store.brands.map((b) => b.name.toLowerCase());
     expect(names.some((n) => n.includes("groww") || n.includes("zerodha"))).toBe(
       true,
     );
-    expect(names.some((n) => n.includes("stripe"))).toBe(false);
+  });
+
+  it("preserves historical evidence and archives prior prompt versions", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const chatIds = store.chats.map((c) => c.id);
+    const mentionCount = store.mentions.length;
+    const sourceCount = store.sources.length;
+
+    prepareDomainAnalysis(store, "openrouter.ai");
+
+    expect(store.chats.map((c) => c.id)).toEqual(chatIds);
+    expect(store.mentions).toHaveLength(mentionCount);
+    expect(store.sources).toHaveLength(sourceCount);
+    expect(store.prompts.some((p) => p.status === "archived")).toBe(true);
+    expect(store.prompts.some((p) => p.status === "active")).toBe(true);
+  });
+
+  it("isolates a Google analysis from historical fintech configuration", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const historicalBrandCount = store.brands.length;
+    const historicalTopicCount = store.topics.length;
+
+    const prepared = prepareDomainAnalysis(store, "google.com");
+    const currentBrands = listBrands(store).map((brand) => brand.name);
+    const currentTopics = listTopics(store);
+
+    expect(prepared.profile.industry).toBe("Search & productivity platforms");
+    expect(store.project.default_country).toBe("US");
+    expect(store.project.timezone).toBe("America/New_York");
+    expect(currentBrands).toEqual(
+      expect.arrayContaining(["Google", "Microsoft", "Apple", "Amazon", "Meta"]),
+    );
+    expect(currentBrands).not.toEqual(expect.arrayContaining(["Groww", "Paytm"]));
+    expect(currentTopics).toHaveLength(1);
+    expect(
+      store.prompts
+        .filter((prompt) => prompt.status === "active")
+        .every((prompt) => !prompt.text.includes("platforms platforms")),
+    ).toBe(true);
+    expect(store.brands.length).toBeGreaterThanOrEqual(historicalBrandCount);
+    expect(store.topics.length).toBeGreaterThanOrEqual(historicalTopicCount);
   });
 });

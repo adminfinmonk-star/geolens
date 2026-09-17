@@ -37,16 +37,6 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "brand",
-    label: "Brand Performance",
-    short: "Brand",
-    items: [
-      { href: "insights", label: "Brand Performance" },
-      { href: "perception", label: "Perception & Sentiment" },
-      { href: "perception/fact-checking", label: "Fact-checking" },
-    ],
-  },
-  {
     id: "monitor",
     label: "Boost & Monitor",
     short: "Monitor",
@@ -320,19 +310,6 @@ export function AppSideNav({ projectId }: { projectId: string }) {
           </nav>
 
           <div className="geo-side-footer">
-            <div className="geo-side-quota">
-              <div className="geo-side-quota-head">
-                <span>Prompt quota</span>
-                <span className="mono">Demo</span>
-              </div>
-              <div className="geo-vis-bar-track" aria-hidden>
-                <span style={{ width: "28%" }} />
-              </div>
-              <div className="geo-side-quota-meta">
-                <span>Illustrative until billing meters wire up</span>
-                <Link href={`/${projectId}/billing`}>Manage</Link>
-              </div>
-            </div>
             <div className="geo-side-footer-row">
               <Link
                 href={`/${projectId}/profile`}

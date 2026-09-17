@@ -8,6 +8,7 @@ import {
   suggestTopics,
   classifyBranding,
   classifyPromptIntent,
+  countryDisplayName,
   promptVolumeScore,
   type BrandProfile,
   type DiscoveredPrompt,
@@ -146,6 +147,7 @@ const INDUSTRY_COMPETITORS: Record<string, string[]> = {
   Eyewear: ["Warby Parker", "LensCrafters", "Zenni", "GlassesUSA"],
   Apparel: ["Nike", "Adidas", "Everlane", "Uniqlo", "Zara"],
   "Fintech IN": ["Groww", "Zerodha", "Paytm", "PhonePe"],
+  "Search & productivity platforms": ["Microsoft", "Apple", "Amazon", "Meta"],
   default: ["Google", "Microsoft", "Amazon", "Apple"],
 };
 
@@ -157,6 +159,9 @@ function competitorPoolForProfile(industry: string, domain: string): string[] {
   }
   if (/warby|zenni|glasses|optics|eyewear|lens/.test(host + industry)) {
     return INDUSTRY_COMPETITORS.Eyewear!;
+  }
+  if (industry === "Search & productivity platforms") {
+    return INDUSTRY_COMPETITORS["Search & productivity platforms"]!;
   }
   if (/shop|store|commerce|allbirds|nike/.test(host + industry)) {
     return INDUSTRY_COMPETITORS["E-commerce"]!;
@@ -177,8 +182,8 @@ function competitorPoolForProfile(industry: string, domain: string): string[] {
 }
 
 /**
- * Full Semrush-style analyze prep: bind domain, wipe prior collection rows,
- * seed domain prompts + competitors. Caller runs collect afterward.
+ * Bind a domain and add a new prompt version for collection. Historical
+ * prompts, answers, failures, mentions, and sources remain immutable.
  */
 export function prepareDomainAnalysis(
   store: DemoStore,
@@ -197,18 +202,17 @@ export function prepareDomainAnalysis(
 
   profile.name = canonicalOwn;
   profile.domain = bound.domain;
+  const marketCodes = Array.from(
+    new Set([
+      market.country,
+      ...(market.country === "IN" ? ["US", "GB", "SG"] : ["GB", "CA", "AU"]),
+    ]),
+  ).slice(0, 4);
+  profile.targetMarkets = marketCodes.map(countryDisplayName);
   saveBrandProfile(store, profile);
 
-  // Drop prior answers — Overview must not show Acme/demo chats for a new domain
-  store.chats = [];
-  store.mentions = [];
-  store.sources = [];
-  store.fanouts = [];
-  store.ads = [];
-
-  // Keep own brand only; rename to canonical
+  // Keep the stable own-brand identity so historical mentions retain lineage.
   const own = store.brands.find((b) => b.is_own);
-  store.brands = own ? [own] : [];
   if (own) {
     try {
       updateBrand(store, own.id, {
@@ -243,35 +247,62 @@ export function prepareDomainAnalysis(
       n.toLowerCase().replace(/[^a-z0-9]/g, "") !==
       canonicalOwn.toLowerCase().replace(/[^a-z0-9]/g, ""),
   );
+  const activeBrandIds = new Set<string>();
+  const currentOwn = store.brands.find((brand) => brand.is_own);
+  if (currentOwn) activeBrandIds.add(currentOwn.id);
   for (const name of competitors.slice(0, 4)) {
-    if (store.brands.some((b) => b.name.toLowerCase() === name.toLowerCase())) {
+    const existing = store.brands.find(
+      (b) => b.name.toLowerCase() === name.toLowerCase(),
+    );
+    if (existing) {
+      activeBrandIds.add(existing.id);
       continue;
     }
-    createBrand(store, { name, is_own: false, aliases: [name.toLowerCase()] });
+    const created = createBrand(store, {
+      name,
+      is_own: false,
+      aliases: [name.toLowerCase()],
+    });
+    activeBrandIds.add(created.id);
   }
 
-  // Domain-aware prompts (not generic topic stubs) so LLM answers mention real brands
-  store.prompts = [];
-  store.topics = [];
+  // Archive the prior prompt version. Never delete a prompt referenced by
+  // historical evidence.
+  for (const prompt of store.prompts) {
+    if (prompt.status === "active") prompt.status = "archived";
+  }
   updateProjectSettings(store, {
     default_country: market.country,
     location: market.location,
-    timezone: market.country === "IN" ? "Asia/Kolkata" : store.project.timezone,
+    timezone: timezoneForCountry(market.country),
   });
-  const country = store.project.default_country || market.country;
   const industry = profile.industry;
-  const limit = Math.max(1, Math.min(opts?.prompt_limit ?? 3, 12));
-  const seedTexts = [
-    `best ${industry.toLowerCase()} apps in ${market.location} 2026`,
-    `${canonicalOwn} vs alternatives in ${market.location}`,
-    `best ${industry.toLowerCase()} for everyday use in ${market.location}`,
-    `top rated ${industry.toLowerCase()} companies in ${market.location}`,
-    `${canonicalOwn} reviews and competitors`,
-  ].slice(0, limit);
+  const promptCategory = industry.toLowerCase().replace(/\s*\/\s*/g, " and ");
+  const limit = Math.max(1, Math.min(opts?.prompt_limit ?? 4, 12));
+  const selectedMarkets = marketCodes.slice(0, Math.min(limit, marketCodes.length));
+  const seedRows = selectedMarkets.map((country, index) => {
+    const location = countryDisplayName(country);
+    const templates = [
+      `best ${promptCategory} in ${location} 2026`,
+      `best alternatives to leading ${promptCategory} in ${location}`,
+      `top rated ${promptCategory} in ${location}`,
+      `most recommended ${promptCategory} for teams in ${location}`,
+    ];
+    return { country, text: templates[index % templates.length]! };
+  });
 
-  const topic = createTopic(store, industry);
+  const topic =
+    store.topics.find(
+      (candidate) => candidate.name.toLowerCase() === industry.toLowerCase(),
+    ) ?? createTopic(store, industry);
+  store.analysisScope = {
+    domain: bound.domain,
+    brandIds: [...activeBrandIds],
+    topicIds: [topic.id],
+    startedAt: new Date().toISOString(),
+  };
   const activated = [];
-  for (const text of seedTexts) {
+  for (const { text, country } of seedRows) {
     const row = {
       id: newId("pr"),
       project_id: store.project.id,
@@ -299,9 +330,25 @@ export function prepareDomainAnalysis(
     brand_name: canonicalOwn,
     own_brand_id: store.brands.find((b) => b.is_own)?.id ?? null,
     prompts_activated: activated.length,
-    competitor_count: store.brands.filter((b) => !b.is_own).length,
+    competitor_count: [...activeBrandIds].filter(
+      (id) => !store.brands.find((brand) => brand.id === id)?.is_own,
+    ).length,
     profile,
   };
+}
+
+function timezoneForCountry(country: string): string {
+  const zones: Record<string, string> = {
+    IN: "Asia/Kolkata",
+    US: "America/New_York",
+    GB: "Europe/London",
+    CA: "America/Toronto",
+    AU: "Australia/Sydney",
+    SG: "Asia/Singapore",
+    DE: "Europe/Berlin",
+    FR: "Europe/Paris",
+  };
+  return zones[country.toUpperCase()] ?? "UTC";
 }
 
 export function updateProjectSettings(
@@ -333,7 +380,8 @@ export function updateProjectSettings(
 }
 
 export function listTopics(store: DemoStore) {
-  return store.topics;
+  const ids = store.analysisScope?.topicIds;
+  return ids ? store.topics.filter((topic) => ids.includes(topic.id)) : store.topics;
 }
 
 export function createTopic(store: DemoStore, name: string): Topic {
@@ -356,7 +404,7 @@ export function competitorSuggestions(store: DemoStore) {
   );
   const suggestions = suggestCompetitors({
     chatTexts: store.chats.map((c) => c.text),
-    trackedNames: store.brands.map((b) => b.name),
+    trackedNames: currentAnalysisBrands(store).map((b) => b.name),
   }).filter((s) => !rejected.has(s.name.toLowerCase()));
   return suggestions;
 }
@@ -382,7 +430,12 @@ export function acceptCompetitor(store: DemoStore, name: string) {
 }
 
 export function listBrands(store: DemoStore) {
-  return store.brands;
+  return currentAnalysisBrands(store);
+}
+
+export function currentAnalysisBrands(store: DemoStore) {
+  const ids = store.analysisScope?.brandIds;
+  return ids ? store.brands.filter((brand) => ids.includes(brand.id)) : store.brands;
 }
 
 export function createBrand(

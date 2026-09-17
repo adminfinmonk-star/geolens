@@ -121,7 +121,7 @@ export default async function ChannelsPage({
             <span className="geo-badge geo-badge-neutral">LLM coverage</span>
           </div>
           <p className="geo-page-lede">
-            Models and assistants you collect AI answers from — health,
+            Provider APIs you collect answers from: health,
             visibility, and collection mode.
           </p>
         </div>
@@ -167,7 +167,7 @@ export default async function ChannelsPage({
             <article className="geo-vis-kpi">
               <p className="geo-vis-kpi-label">Collection mode</p>
               <p className="geo-vis-kpi-value" style={{ fontSize: "1.15rem" }}>
-                {runtime?.GEO_ADAPTER_MODE ?? "—"}
+                {runtime?.GEO_ADAPTER_MODE ?? "Not set"}
               </p>
               <p className="geo-vis-kpi-meta">{live} live · fixture otherwise</p>
             </article>
@@ -275,7 +275,7 @@ export default async function ChannelsPage({
                 </h2>
                 <p className="geo-vis-note" style={{ marginTop: 0 }}>
                   {runtime?.honesty ??
-                    "Unset vendor keys stay on fixtures — demo numbers are honest about that."}
+                    "Unset vendor keys stay on fixtures. Demo numbers are labeled accordingly."}
                 </p>
                 {runtime?.routing_policy && (
                   <p className="geo-vis-note">

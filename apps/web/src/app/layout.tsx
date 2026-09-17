@@ -21,7 +21,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GeoLens — AI Search Analytics",
+  title: "GeoLens - Auditable AI API Monitoring",
   description:
     "Track, analyze, and improve brand performance on AI search platforms",
   icons: {

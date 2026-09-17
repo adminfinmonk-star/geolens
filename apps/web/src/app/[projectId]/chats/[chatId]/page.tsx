@@ -16,6 +16,13 @@ type Detail = {
     model_channel_id: string;
     text: string;
     raw_uri?: string;
+    surface_kind?: string;
+    model_reported?: string;
+    provider_request_id?: string;
+    latency_ms?: number;
+    error_code?: string;
+    error_detail?: string;
+    collected_at?: string;
   };
   prompt: { id: string; text: string } | null;
   mentions: Array<{
@@ -82,7 +89,7 @@ export default function ChatDetailPage() {
             <span className="geo-badge geo-badge-neutral">Atomic measurement</span>
           </div>
           <p className="geo-page-lede">
-            {chat.run_date} · {chat.model_channel_id} · {chat.country_code} ·{" "}
+            {chat.run_date} / {chat.model_reported ?? chat.model_channel_id} / {chat.country_code} /{" "}
             {chat.status}
           </p>
         </div>
@@ -118,16 +125,16 @@ export default function ChatDetailPage() {
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Model</p>
           <p className="geo-vis-kpi-value" style={{ fontSize: "1rem" }}>
-            {chat.model_channel_id}
+            {chat.model_reported ?? chat.model_channel_id}
           </p>
-          <p className="geo-vis-kpi-meta">{chat.country_code}</p>
+          <p className="geo-vis-kpi-meta">{chat.surface_kind ?? "Unknown surface"}</p>
         </article>
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Status</p>
           <p className="geo-vis-kpi-value" style={{ fontSize: "1.15rem" }}>
             {chat.status}
           </p>
-          <p className="geo-vis-kpi-meta">{chat.run_date}</p>
+          <p className="geo-vis-kpi-meta">{chat.error_code ?? chat.run_date}</p>
         </article>
       </div>
 
@@ -138,7 +145,7 @@ export default function ChatDetailPage() {
               Prompt
             </h2>
             <p style={{ margin: 0, fontWeight: 650, lineHeight: 1.45 }}>
-              {prompt?.text ?? "—"}
+              {prompt?.text ?? "Unavailable"}
             </p>
           </section>
           <section className="geo-panel geo-vis-panel">
@@ -161,7 +168,6 @@ export default function ChatDetailPage() {
                       <th>Brand</th>
                       <th>Position</th>
                       <th>Mentions</th>
-                      <th>Sentiment</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -183,7 +189,6 @@ export default function ChatDetailPage() {
                           </td>
                           <td>{m.position}</td>
                           <td>{m.mention_count}</td>
-                          <td>{m.sentiment.toFixed(2)}</td>
                         </tr>
                       ))}
                   </tbody>
@@ -194,6 +199,19 @@ export default function ChatDetailPage() {
         </div>
 
         <aside className="geo-pr-side">
+          <section className="geo-panel geo-vis-panel">
+            <h2 className="geo-section-title" style={{ marginTop: 0 }}>
+              Collection diagnostics
+            </h2>
+            <p className="geo-vis-note">
+              Surface: {chat.surface_kind ?? "unknown"}<br />
+              Model: {chat.model_reported ?? "not reported"}<br />
+              Latency: {chat.latency_ms != null ? `${chat.latency_ms} ms` : "not reported"}<br />
+              Provider request: {chat.provider_request_id ?? "not reported"}<br />
+              Error: {chat.error_code ?? "none"}
+              {chat.error_detail ? <><br />Detail: {chat.error_detail}</> : null}
+            </p>
+          </section>
           <section className="geo-panel geo-vis-panel">
             <h2 className="geo-section-title" style={{ marginTop: 0 }}>
               Sources &amp; citations

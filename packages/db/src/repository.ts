@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { createHash } from "node:crypto";
 import { extractBrandProfile } from "@geo/core";
 import type { Db } from "./client.js";
 import {
@@ -126,7 +127,19 @@ export async function persistSpineAdds(
         status: c.status,
         text: c.text,
         rawUri: c.raw_uri,
+        rawPayloadJson:
+          c.raw_payload === undefined ? null : JSON.stringify(c.raw_payload),
         surfaceKind: c.surface_kind,
+        modelReported: c.model_reported,
+        providerRequestId: c.provider_request_id,
+        latencyMs: c.latency_ms,
+        errorCode: c.error_code,
+        errorDetail: c.error_detail,
+        collectedAt: c.collected_at ? new Date(c.collected_at) : new Date(),
+        retrievalMode: c.retrieval_mode,
+        locale: c.locale,
+        collectorVersion: c.collector_version,
+        extractionVersion: c.extraction_version,
       })
       .onConflictDoNothing();
   }
@@ -212,8 +225,8 @@ export function dedupeStoreBrands(store: DemoStore): number {
 }
 
 /**
- * Replace chats/mentions/sources for a project (used after domain Analyze).
- * Also upserts brands/prompts and project extension.
+ * Persist collection state append-only. Existing evidence is never deleted;
+ * reruns add new chats and derived facts while configuration is upserted.
  */
 export async function replaceProjectCollection(
   db: Db,
@@ -243,41 +256,23 @@ export async function replaceProjectCollection(
       });
   }
 
-  // Archive-replace brands too. Analyze mints fresh brand ids each run, so
-  // upsert-by-id alone left every previous run's rows behind — inflating total
-  // mentions and skewing share of voice.
-  const keep = new Set(store.brands.map((b) => b.id));
-  const persisted = await db
-    .select({ id: brand.id })
-    .from(brand)
-    .where(eq(brand.projectId, store.project.id));
-  for (const row of persisted) {
-    if (keep.has(row.id)) continue;
-    await db.delete(chatBrandMention).where(eq(chatBrandMention.brandId, row.id));
-    await db.delete(brand).where(eq(brand.id, row.id));
-  }
-
-  // Archive-replace prompts: delete project prompts then insert current set
-  await db.delete(prompt).where(eq(prompt.projectId, store.project.id));
+  // Prompt ids are versioned entities. Upsert status without deleting rows
+  // referenced by earlier chats.
   for (const pr of store.prompts) {
-    await db.insert(prompt).values({
-      id: pr.id,
-      projectId: pr.project_id,
-      text: pr.text,
-      countryCode: pr.country_code,
-      status: pr.status,
-    });
+    await db
+      .insert(prompt)
+      .values({
+        id: pr.id,
+        projectId: pr.project_id,
+        text: pr.text,
+        countryCode: pr.country_code,
+        status: pr.status,
+      })
+      .onConflictDoUpdate({
+        target: prompt.id,
+        set: { text: pr.text, countryCode: pr.country_code, status: pr.status },
+      });
   }
-
-  const existingChats = await db
-    .select({ id: chat.id })
-    .from(chat)
-    .where(eq(chat.projectId, store.project.id));
-  for (const c of existingChats) {
-    await db.delete(chatBrandMention).where(eq(chatBrandMention.chatId, c.id));
-    await db.delete(chatSource).where(eq(chatSource.chatId, c.id));
-  }
-  await db.delete(chat).where(eq(chat.projectId, store.project.id));
 
   for (const c of store.chats) {
     await db.insert(chat).values({
@@ -290,8 +285,20 @@ export async function replaceProjectCollection(
       status: c.status,
       text: c.text,
       rawUri: c.raw_uri,
+      rawPayloadJson:
+        c.raw_payload === undefined ? null : JSON.stringify(c.raw_payload),
       surfaceKind: c.surface_kind,
-    });
+      modelReported: c.model_reported,
+      providerRequestId: c.provider_request_id,
+      latencyMs: c.latency_ms,
+      errorCode: c.error_code,
+      errorDetail: c.error_detail,
+      collectedAt: c.collected_at ? new Date(c.collected_at) : new Date(),
+      retrievalMode: c.retrieval_mode,
+      locale: c.locale,
+      collectorVersion: c.collector_version,
+      extractionVersion: c.extraction_version,
+    }).onConflictDoNothing();
   }
 
   for (const m of store.mentions) {
@@ -301,19 +308,19 @@ export async function replaceProjectCollection(
       mentionCount: m.mention_count,
       position: m.position,
       sentiment: m.sentiment,
-    });
+    }).onConflictDoNothing();
   }
 
   for (const s of store.sources) {
     await db.insert(chatSource).values({
-      id: newId("src"),
+      id: `src_${createHash("sha256").update(`${s.chat_id}|${s.url}`).digest("hex").slice(0, 24)}`,
       chatId: s.chat_id,
       url: s.url,
       domain: s.domain,
       cited: s.cited,
       citationCount: s.citation_count,
       retrievalRank: s.retrieval_rank,
-    });
+    }).onConflictDoNothing();
   }
 
   await saveProjectExtension(db, store);
@@ -411,8 +418,21 @@ export async function loadProjectStore(
       status: c.status as "ok" | "empty" | "error" | "blocked",
       text: c.text,
       raw_uri: c.rawUri ?? undefined,
+      raw_payload: c.rawPayloadJson
+        ? (JSON.parse(c.rawPayloadJson) as unknown)
+        : undefined,
       surface_kind:
         (c.surfaceKind as "ui" | "api" | "simulator" | null) ?? undefined,
+      model_reported: c.modelReported ?? undefined,
+      provider_request_id: c.providerRequestId ?? undefined,
+      latency_ms: c.latencyMs ?? undefined,
+      error_code: c.errorCode ?? undefined,
+      error_detail: c.errorDetail ?? undefined,
+      collected_at: c.collectedAt.toISOString(),
+      retrieval_mode: c.retrievalMode ?? undefined,
+      locale: c.locale ?? undefined,
+      collector_version: c.collectorVersion ?? undefined,
+      extraction_version: c.extractionVersion ?? undefined,
     })),
     mentions: mentions.map((m) => ({
       chat_id: m.chatId,
@@ -436,6 +456,8 @@ export async function loadProjectStore(
     fanouts: [],
     ads: [],
     sharedViews: [],
+    sourceClassifications: {},
+    sourceBookmarks: [],
     actions: [],
     actionEvents: [],
     robotsTxt: undefined,
@@ -578,51 +600,62 @@ export async function seedPostgresFromDemo(
       .onConflictDoNothing();
   }
 
-  const existingChats = await db
-    .select({ id: chat.id })
-    .from(chat)
-    .where(eq(chat.projectId, store.project.id));
-  for (const c of existingChats) {
-    await db.delete(chatBrandMention).where(eq(chatBrandMention.chatId, c.id));
-    await db.delete(chatSource).where(eq(chatSource.chatId, c.id));
-  }
-  await db.delete(chat).where(eq(chat.projectId, store.project.id));
-
   for (const c of store.chats) {
-    await db.insert(chat).values({
-      id: c.id,
-      projectId: c.project_id,
-      promptId: c.prompt_id,
-      modelChannelId: c.model_channel_id,
-      countryCode: c.country_code,
-      runDate: c.run_date,
-      status: c.status,
-      text: c.text,
-      rawUri: c.raw_uri,
-      surfaceKind: c.surface_kind,
-    });
+    await db
+      .insert(chat)
+      .values({
+        id: c.id,
+        projectId: c.project_id,
+        promptId: c.prompt_id,
+        modelChannelId: c.model_channel_id,
+        countryCode: c.country_code,
+        runDate: c.run_date,
+        status: c.status,
+        text: c.text,
+        rawUri: c.raw_uri,
+        rawPayloadJson:
+          c.raw_payload === undefined ? null : JSON.stringify(c.raw_payload),
+        surfaceKind: c.surface_kind,
+        modelReported: c.model_reported,
+        providerRequestId: c.provider_request_id,
+        latencyMs: c.latency_ms,
+        errorCode: c.error_code,
+        errorDetail: c.error_detail,
+        collectedAt: c.collected_at ? new Date(c.collected_at) : new Date(),
+        retrievalMode: c.retrieval_mode,
+        locale: c.locale,
+        collectorVersion: c.collector_version,
+        extractionVersion: c.extraction_version,
+      })
+      .onConflictDoNothing();
   }
 
   for (const m of store.mentions) {
-    await db.insert(chatBrandMention).values({
-      chatId: m.chat_id,
-      brandId: m.brand_id,
-      mentionCount: m.mention_count,
-      position: m.position,
-      sentiment: m.sentiment,
-    });
+    await db
+      .insert(chatBrandMention)
+      .values({
+        chatId: m.chat_id,
+        brandId: m.brand_id,
+        mentionCount: m.mention_count,
+        position: m.position,
+        sentiment: m.sentiment,
+      })
+      .onConflictDoNothing();
   }
 
   for (const s of store.sources) {
-    await db.insert(chatSource).values({
-      id: newId("src"),
-      chatId: s.chat_id,
-      url: s.url,
-      domain: s.domain,
-      cited: s.cited,
-      citationCount: s.citation_count,
-      retrievalRank: s.retrieval_rank,
-    });
+    await db
+      .insert(chatSource)
+      .values({
+        id: `src_${createHash("sha256").update(`${s.chat_id}|${s.url}`).digest("hex").slice(0, 24)}`,
+        chatId: s.chat_id,
+        url: s.url,
+        domain: s.domain,
+        cited: s.cited,
+        citationCount: s.citation_count,
+        retrievalRank: s.retrieval_rank,
+      })
+      .onConflictDoNothing();
   }
 
   await saveProjectExtension(db, store);

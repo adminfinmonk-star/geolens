@@ -215,7 +215,7 @@ function draftToRecord(
     })),
     expected_outcome: draft.expected_outcome,
     additional_context: draft.additional_context,
-    scope: draft.scope,
+    scope: { ...draft.scope, domain: store.project.domain ?? undefined },
     evidence: draft.evidence,
     opportunity_score: draft.opportunity_score,
     relative_opportunity_score: draft.relative_opportunity_score,
@@ -308,7 +308,11 @@ export function listActions(
   if (store.actions.length === 0) {
     generateActionsForStore(store, { force: true });
   }
-  let rows = [...store.actions];
+  const currentDomain = store.project.domain?.toLowerCase();
+  let rows = store.actions.filter((action) => {
+    if (!store.analysisScope || !currentDomain) return true;
+    return action.scope.domain?.toLowerCase() === currentDomain;
+  });
   if (filters?.status && filters.status !== "all") {
     rows = rows.filter((a) => a.status === filters.status);
   }
@@ -317,15 +321,19 @@ export function listActions(
   }
   rows.sort((a, b) => b.opportunity_score - a.opportunity_score);
 
+  const scopedActions = store.actions.filter((action) => {
+    if (!store.analysisScope || !currentDomain) return true;
+    return action.scope.domain?.toLowerCase() === currentDomain;
+  });
   const counts = {
-    SITE_AUDIT: store.actions.filter((a) => a.group === "SITE_AUDIT").length,
-    OWNED: store.actions.filter((a) => a.group === "OWNED").length,
-    EARNED: store.actions.filter((a) => a.group === "EARNED").length,
+    SITE_AUDIT: scopedActions.filter((a) => a.group === "SITE_AUDIT").length,
+    OWNED: scopedActions.filter((a) => a.group === "OWNED").length,
+    EARNED: scopedActions.filter((a) => a.group === "EARNED").length,
     by_status: {
-      new: store.actions.filter((a) => a.status === "new").length,
-      in_progress: store.actions.filter((a) => a.status === "in_progress").length,
-      done: store.actions.filter((a) => a.status === "done").length,
-      declined: store.actions.filter((a) => a.status === "declined").length,
+      new: scopedActions.filter((a) => a.status === "new").length,
+      in_progress: scopedActions.filter((a) => a.status === "in_progress").length,
+      done: scopedActions.filter((a) => a.status === "done").length,
+      declined: scopedActions.filter((a) => a.status === "declined").length,
     },
   };
 

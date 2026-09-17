@@ -32,6 +32,21 @@ export function queueMode(): CollectQueueMode {
   return redisUrl() ? "bullmq" : "inline";
 }
 
+export async function checkQueueReadiness(): Promise<boolean> {
+  const url = redisUrl();
+  if (!url) return false;
+  const { Queue } = await import("bullmq");
+  const queue = new Queue("geo-collect", { connection: parseRedis(url) });
+  try {
+    await queue.getJobCounts("waiting", "active", "failed");
+    return true;
+  } catch {
+    return false;
+  } finally {
+    await queue.close();
+  }
+}
+
 /**
  * Enqueue a collect job. Without REDIS_URL, runs inline (CI/demo).
  * With Redis, uses BullMQ jobId = job_key for idempotency (§6.1).

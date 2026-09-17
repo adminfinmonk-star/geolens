@@ -105,20 +105,23 @@ export default function OnboardingPlanPage() {
             }),
           },
         );
-        if (checkout.ok) {
-          const data = (await checkout.json()) as {
-            session?: { checkout_url?: string; id?: string };
-          };
-          if (data.session?.checkout_url?.startsWith("http")) {
-            window.location.href = data.session.checkout_url;
-            return;
-          }
-          if (data.session?.id) {
-            await fetch(
-              `${API}/v1/projects/${projectId}/billing/checkout/${data.session.id}/complete`,
-              { method: "POST", credentials: "include" },
-            );
-          }
+        if (!checkout.ok) {
+          const failure = (await checkout.json()) as { error?: string };
+          throw new Error(failure.error ?? "checkout_failed");
+        }
+        const data = (await checkout.json()) as {
+          session?: { checkout_url?: string; id?: string; mode?: string };
+        };
+        if (data.session?.mode === "stripe" && data.session.checkout_url) {
+          window.location.href = data.session.checkout_url;
+          return;
+        }
+        if (data.session?.id) {
+          const completeCheckout = await fetch(
+            `${API}/v1/projects/${projectId}/billing/checkout/${data.session.id}/complete`,
+            { method: "POST", credentials: "include" },
+          );
+          if (!completeCheckout.ok) throw new Error("checkout_completion_failed");
         }
       }
       router.push(`/${projectId}/overview`);

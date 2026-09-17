@@ -117,13 +117,10 @@ export class CursorRoutedAdapter implements EngineAdapter {
 
     const t0 = Date.now();
     const model = this.modelId();
-    const tracked = req.trackedBrands?.filter(Boolean) ?? [];
     const prompt = [
-      "You are simulating an AI search / assistant answer for brand analytics.",
+      "Answer as a general-purpose assistant using your own knowledge and retrieval.",
       "Answer the user question helpfully. Name relevant real-world brands and products when natural.",
-      tracked.length
-        ? `When relevant, consider these tracked brands: ${tracked.join(", ")}.`
-        : "",
+      "Do not favor or introduce any brand unless it is relevant to the user's question.",
       "Do not mention that you are Cursor or an API.",
       "",
       `Question: ${req.prompt}`,

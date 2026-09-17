@@ -16,12 +16,14 @@ describe("MODEL_CHANNELS", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("lists Peec-like API channels including Gemini proxies", () => {
+  it("lists only the API surfaces actually collected", () => {
     const api = listApiChannels();
-    expect(api.length).toBeGreaterThanOrEqual(6);
-    expect(getChannel("openai-0")?.surface).toBe("api");
-    expect(getChannel("google-ai-mode")?.provider).toBe("google");
-    expect(getChannel("copilot-1")?.id).toBe("copilot-1");
+    expect(api.map((c) => c.id).sort()).toEqual(
+      ["anthropic-1", "google-3", "openai-1", "perplexity-1"],
+    );
+    expect(getChannel("google-ai-mode")).toBeUndefined();
+    expect(getChannel("google-ai-overviews")).toBeUndefined();
+    expect(getChannel("copilot-1")).toBeUndefined();
     for (const c of api) {
       expect(c.versionHistory.length).toBeGreaterThan(0);
       expect(c.geoCapability).toBeTruthy();

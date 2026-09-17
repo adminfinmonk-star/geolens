@@ -1,8 +1,98 @@
+import { resetDemoStore } from "@geo/db";
+import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { buildServer } from "./index.js";
-import { resetDemoStore } from "@geo/db";
 
 describe("API memory mode", () => {
+  it("verifies Stripe webhooks against the exact raw request body", async () => {
+    const previousSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_raw_body_test";
+    resetDemoStore();
+    const app = await buildServer({ databaseUrl: undefined });
+    await app.ready();
+    try {
+      const raw = JSON.stringify({
+        id: "evt_raw_body_test",
+        type: "customer.subscription.updated",
+        data: {
+          object: {
+            status: "active",
+            metadata: { project_id: "prj_demo", plan_code: "starter" },
+          },
+        },
+      });
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signature = createHmac("sha256", "whsec_raw_body_test")
+        .update(`${timestamp}.${raw}`)
+        .digest("hex");
+      const response = await app.inject({
+        method: "POST",
+        url: "/v1/billing/webhook",
+        headers: {
+          "content-type": "application/json",
+          "stripe-signature": `t=${timestamp},v1=${signature}`,
+        },
+        payload: raw,
+      });
+      expect(response.statusCode).toBe(200);
+      expect(response.json().handled).toBe(true);
+    } finally {
+      await app.close();
+      if (previousSecret === undefined) delete process.env.STRIPE_WEBHOOK_SECRET;
+      else process.env.STRIPE_WEBHOOK_SECRET = previousSecret;
+    }
+  });
+
+  it("fails closed for production demo writes, CORS, and unverified SAML", async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousCors = process.env.CORS_ORIGINS;
+    process.env.NODE_ENV = "production";
+    process.env.CORS_ORIGINS = "https://app.geolens.example";
+    resetDemoStore();
+    const app = await buildServer({ databaseUrl: undefined });
+    await app.ready();
+    try {
+      const read = await app.inject({
+        method: "GET",
+        url: "/v1/projects/prj_demo/prompts",
+        headers: { origin: "https://app.geolens.example" },
+      });
+      expect(read.statusCode).toBe(200);
+      expect(read.headers["access-control-allow-origin"]).toBe(
+        "https://app.geolens.example",
+      );
+      expect(read.headers["x-content-type-options"]).toBe("nosniff");
+      expect(read.headers["strict-transport-security"]).toContain(
+        "max-age=31536000",
+      );
+
+      const deniedOrigin = await app.inject({
+        method: "GET",
+        url: "/health",
+        headers: { origin: "https://attacker.example" },
+      });
+      expect(deniedOrigin.headers["access-control-allow-origin"]).toBeUndefined();
+
+      const write = await app.inject({
+        method: "POST",
+        url: "/v1/projects/prj_demo/prompts",
+        payload: { text: "must not mutate the public demo" },
+      });
+      expect(write.statusCode).toBe(403);
+      expect(write.json().error).toBe("demo_read_only");
+
+      const saml = await app.inject({ method: "GET", url: "/v1/saml/metadata" });
+      expect(saml.statusCode).toBe(501);
+      expect(saml.json().error).toBe("verified_saml_not_configured");
+    } finally {
+      await app.close();
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
+      if (previousCors === undefined) delete process.env.CORS_ORIGINS;
+      else process.env.CORS_ORIGINS = previousCors;
+    }
+  });
+
   it("health and brands report return consistent metrics", async () => {
     delete process.env.DATABASE_URL;
     resetDemoStore();
@@ -49,8 +139,22 @@ describe("API memory mode", () => {
       url: "/v1/projects/prj_demo/prompts",
     });
     expect(listed.statusCode).toBe(200);
-    const prompts = (listed.json() as { rows: { id: string }[] }).rows;
+    const listedBody = listed.json() as {
+      rows: { id: string }[];
+      metrics: Record<
+        string,
+        { attempts: number; eligible_answers: number; mention_rate: number | null }
+      >;
+    };
+    const prompts = listedBody.rows;
     expect(prompts.some((p) => p.id === promptId)).toBe(true);
+    expect(listedBody.metrics[promptId]).toEqual({
+      attempts: 0,
+      eligible_answers: 0,
+      mentioned_answers: 0,
+      failed_attempts: 0,
+      mention_rate: null,
+    });
 
     const archived = await app.inject({
       method: "PATCH",
@@ -165,6 +269,17 @@ describe("API memory mode", () => {
     });
     expect(shared.statusCode).toBe(200);
     expect((shared.json() as { read_only: boolean }).read_only).toBe(true);
+
+    const revoked = await app.inject({
+      method: "DELETE",
+      url: `/v1/projects/prj_demo/views/${viewId}`,
+    });
+    expect(revoked.statusCode).toBe(200);
+    const sharedAfterRevoke = await app.inject({
+      method: "GET",
+      url: `/v1/shared/${viewId}`,
+    });
+    expect(sharedAfterRevoke.statusCode).toBe(404);
 
     const genActions = await app.inject({
       method: "POST",

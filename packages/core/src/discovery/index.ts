@@ -119,7 +119,9 @@ export function extractBrandProfile(domain: string): BrandProfile {
   const name = slug.charAt(0).toUpperCase() + slug.slice(1);
 
   const industry =
-    /crm|sales|hub/.test(slug) || host.includes("acme")
+    /(^|\.)google\./.test(host)
+      ? "Search & productivity platforms"
+      : /crm|sales|hub/.test(slug) || host.includes("acme")
       ? "B2B CRM / sales software"
       : /warby|zenni|glasses|optics|eyewear|lens/.test(slug)
         ? "Eyewear"
@@ -134,7 +136,9 @@ export function extractBrandProfile(domain: string): BrandProfile {
               : "B2B software";
 
   const products =
-    industry.includes("CRM")
+    industry.startsWith("Search")
+      ? ["Search", "Workspace", "Cloud"]
+      : industry.includes("CRM")
       ? ["Pipeline", "Contacts", "Reporting"]
       : industry.startsWith("AI")
         ? ["Model routing", "API access", "Inference"]
@@ -150,7 +154,9 @@ export function extractBrandProfile(domain: string): BrandProfile {
     industry,
     tagline: `${name} helps teams work faster in ${industry.toLowerCase()}.`,
     description: `${name} is a ${industry.toLowerCase()} company helping people discover and choose the right products.`,
-    identityTags: industry.includes("CRM")
+    identityTags: industry.startsWith("Search")
+      ? ["Search", "Productivity", "Cloud"]
+      : industry.includes("CRM")
       ? ["B2B", "SaaS", "Sales"]
       : industry.startsWith("AI")
         ? ["AI", "Infrastructure", "B2B"]

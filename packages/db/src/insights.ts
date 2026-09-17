@@ -4,7 +4,7 @@ import {
   type MatrixAxis,
 } from "@geo/core";
 import { dataState } from "./fixtures.js";
-import { newId, type SharedView } from "./schema.js";
+import type { SharedView } from "./schema.js";
 import type { DemoStore } from "./seed.js";
 
 export function brandInsightsFromStore(
@@ -196,19 +196,31 @@ export function adsFromStore(store: DemoStore) {
 
 export function createSharedView(
   store: DemoStore,
-  input: { name: string; widgets?: string[] },
+  input: { name: string; widgets?: string[]; expiresInDays?: number },
 ): SharedView {
+  const days = Math.max(1, Math.min(input.expiresInDays ?? 30, 365));
+  const now = new Date();
   const view: SharedView = {
-    id: newId("vw"),
+    id: `vw_${randomBytes(24).toString("base64url")}`,
     project_id: store.project.id,
     name: input.name.trim() || "Shared overview",
     widgets: input.widgets ?? ["visibility", "sov", "position", "sentiment", "brands"],
-    created_at: new Date().toISOString(),
+    created_at: now.toISOString(),
+    expires_at: new Date(now.getTime() + days * 86_400_000).toISOString(),
   };
   store.sharedViews.push(view);
   return view;
 }
 
 export function getSharedView(store: DemoStore, viewId: string) {
-  return store.sharedViews.find((v) => v.id === viewId) ?? null;
+  const view = store.sharedViews.find((v) => v.id === viewId) ?? null;
+  if (
+    !view ||
+    view.revoked_at ||
+    (view.expires_at && Date.parse(view.expires_at) <= Date.now())
+  ) {
+    return null;
+  }
+  return view;
 }
+import { randomBytes } from "node:crypto";

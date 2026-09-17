@@ -1,13 +1,14 @@
+import { CHANNEL_PROVIDER_ROUTE } from "@geo/adapters";
+import { getDemoStore, resetDemoStore } from "@geo/db";
 import { describe, expect, it } from "vitest";
 import {
   collectJobKey,
+  projectCollectionIsDue,
   resetInlineJobState,
   runCollectEnrichJob,
   runProjectCollectAndApply,
   scheduleProjectCollect,
 } from "./index.js";
-import { getDemoStore, resetDemoStore } from "@geo/db";
-import { CHANNEL_PROVIDER_ROUTE } from "@geo/adapters";
 
 describe("runCollectEnrichJob", () => {
   it("collects across ≥3 API providers with surface_kind=api", async () => {
@@ -43,6 +44,30 @@ describe("runCollectEnrichJob", () => {
 });
 
 describe("job_key + schedule", () => {
+  it("honors daily and weekly project collection frequency", () => {
+    expect(
+      projectCollectionIsDue({
+        frequency: "daily",
+        runDate: "2026-09-17",
+        latestRunDate: "2026-09-16",
+      }),
+    ).toBe(true);
+    expect(
+      projectCollectionIsDue({
+        frequency: "weekly",
+        runDate: "2026-09-17",
+        latestRunDate: "2026-09-11",
+      }),
+    ).toBe(false);
+    expect(
+      projectCollectionIsDue({
+        frequency: "weekly",
+        runDate: "2026-09-17",
+        latestRunDate: "2026-09-10",
+      }),
+    ).toBe(true);
+  });
+
   it("job_key is stable sha256 of identity fields", () => {
     const a = collectJobKey({
       projectId: "prj_1",

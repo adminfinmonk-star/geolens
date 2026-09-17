@@ -124,8 +124,21 @@ export const chat = pgTable(
     status: text("status").notNull(),
     text: text("text").notNull().default(""),
     rawUri: text("raw_uri"),
+    rawPayloadJson: text("raw_payload_json"),
     /** Provenance of the answer: "api" | "ui" | "simulator". Drives live-vs-fixture honesty. */
     surfaceKind: text("surface_kind"),
+    modelReported: text("model_reported"),
+    providerRequestId: text("provider_request_id"),
+    latencyMs: integer("latency_ms"),
+    errorCode: text("error_code"),
+    errorDetail: text("error_detail"),
+    collectedAt: timestamp("collected_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    retrievalMode: text("retrieval_mode"),
+    locale: text("locale"),
+    collectorVersion: text("collector_version"),
+    extractionVersion: text("extraction_version"),
   },
   (t) => [uniqueIndex("chat_project_run_idx").on(t.projectId, t.runDate, t.id)],
 );
@@ -201,6 +214,31 @@ export const auditLog = pgTable("audit_log", {
   beforeJson: text("before_json"),
   afterJson: text("after_json"),
   createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** Revocable public report links. The random id is the bearer capability. */
+export const sharedView = pgTable("shared_view", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id")
+    .notNull()
+    .references(() => project.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  widgetsJson: text("widgets_json").notNull().default("[]"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+});
+
+/** Stripe event ids are retained so webhook delivery is idempotent across restarts. */
+export const billingWebhookEvent = pgTable("billing_webhook_event", {
+  id: text("id").primaryKey(),
+  eventType: text("event_type").notNull(),
+  projectId: text("project_id"),
+  processedAt: timestamp("processed_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });

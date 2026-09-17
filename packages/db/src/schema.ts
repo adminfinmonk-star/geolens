@@ -98,8 +98,20 @@ export interface ChatRow {
   status: "ok" | "empty" | "error" | "blocked";
   text: string;
   raw_uri?: string;
+  raw_payload?: unknown;
   /** Collection surface — never misrepresent api as ui. */
   surface_kind?: "ui" | "api" | "simulator";
+  /** Immutable collection-attempt diagnostics. */
+  model_reported?: string;
+  provider_request_id?: string;
+  latency_ms?: number;
+  error_code?: string;
+  error_detail?: string;
+  collected_at?: string;
+  retrieval_mode?: string;
+  locale?: string;
+  collector_version?: string;
+  extraction_version?: string;
 }
 
 export interface ChatBrandMention {
@@ -139,6 +151,8 @@ export interface SharedView {
   name: string;
   widgets: string[];
   created_at: string;
+  expires_at: string;
+  revoked_at?: string;
 }
 
 export type ActionStatus = "new" | "in_progress" | "done" | "declined";
@@ -176,6 +190,7 @@ export interface ActionRecord {
     models?: string[];
     country?: string;
     your_page?: string;
+    domain?: string;
   };
   evidence: ActionEvidenceRow[];
   opportunity_score: number;

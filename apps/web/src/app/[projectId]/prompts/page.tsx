@@ -1,9 +1,9 @@
 "use client";
 
-import { apiBase } from "@/lib/api";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/api";
 
 const API = apiBase();
 
@@ -14,21 +14,15 @@ type Prompt = {
   status: string;
 };
 
+type PromptMetrics = {
+  attempts: number;
+  eligible_answers: number;
+  mentioned_answers: number;
+  failed_attempts: number;
+  mention_rate: number | null;
+};
+
 type StatusFilter = "all" | "active" | "paused" | "archived";
-
-function demoVisibility(id: string, status: string): number {
-  if (status === "paused" || status === "archived") return 0;
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 1000;
-  return 35 + (h % 55);
-}
-
-function demoPosition(id: string, status: string): number | null {
-  if (status !== "active") return null;
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 17 + id.charCodeAt(i)) % 100;
-  return 1 + (h % 40) / 10;
-}
 
 function statusBadge(status: string) {
   if (status === "active") return "geo-badge geo-badge-positive";
@@ -40,6 +34,7 @@ export default function PromptsPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = params.projectId;
   const [rows, setRows] = useState<Prompt[]>([]);
+  const [metrics, setMetrics] = useState<Record<string, PromptMetrics>>({});
   const [text, setText] = useState("");
   const [country, setCountry] = useState("US");
   const [query, setQuery] = useState("");
@@ -59,8 +54,12 @@ export default function PromptsPage() {
         setError("Failed to load prompts");
         return;
       }
-      const data = (await res.json()) as { rows: Prompt[] };
+      const data = (await res.json()) as {
+        rows: Prompt[];
+        metrics?: Record<string, PromptMetrics>;
+      };
       setRows(data.rows);
+      setMetrics(data.metrics ?? {});
     } catch {
       setError(`API unreachable at ${API}`);
     } finally {
@@ -119,22 +118,21 @@ export default function PromptsPage() {
   }, [rows, query, statusFilter]);
 
   const active = rows.filter((p) => p.status === "active");
-  const avgVis =
-    active.length > 0
-      ? Math.round(
-          active.reduce((s, p) => s + demoVisibility(p.id, p.status), 0) /
-            active.length,
-        )
-      : 0;
-  const avgPos =
-    active.length > 0
-      ? (
-          active.reduce(
-            (s, p) => s + (demoPosition(p.id, p.status) ?? 0),
-            0,
-          ) / active.length
-        ).toFixed(1)
-      : "—";
+  const observed = active.map((prompt) => metrics[prompt.id]).filter(Boolean);
+  const eligibleAnswers = observed.reduce(
+    (sum, metric) => sum + metric.eligible_answers,
+    0,
+  );
+  const mentionedAnswers = observed.reduce(
+    (sum, metric) => sum + metric.mentioned_answers,
+    0,
+  );
+  const failedAttempts = observed.reduce(
+    (sum, metric) => sum + metric.failed_attempts,
+    0,
+  );
+  const observedRate =
+    eligibleAnswers === 0 ? null : mentionedAnswers / eligibleAnswers;
 
   return (
     <div className="geo-vis">
@@ -145,8 +143,8 @@ export default function PromptsPage() {
             <span className="geo-badge geo-badge-positive">Live radar</span>
           </div>
           <p className="geo-page-lede">
-            Prompts you monitor across ChatGPT, Perplexity, Gemini, and AI
-            Overviews.
+            Prompts collected from configured OpenAI, Perplexity, Gemini, and
+            Anthropic API channels.
           </p>
         </div>
         <div className="geo-vis-actions">
@@ -179,17 +177,17 @@ export default function PromptsPage() {
         </article>
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Visibility hit rate</p>
-          <p className="geo-vis-kpi-value">{active.length ? `${avgVis}%` : "—"}</p>
+          <p className="geo-vis-kpi-value">
+            {observedRate == null ? "—" : `${Math.round(observedRate * 100)}%`}
+          </p>
           <p className="geo-vis-kpi-meta">
-            Illustrative until per-prompt metrics API
+            {mentionedAnswers}/{eligibleAnswers} eligible collected answers
           </p>
         </article>
         <article className="geo-vis-kpi">
-          <p className="geo-vis-kpi-label">Avg recommendation pos</p>
-          <p className="geo-vis-kpi-value">
-            {avgPos === "—" ? "—" : `#${avgPos}`}
-          </p>
-          <p className="geo-vis-kpi-meta">Across active tracked prompts</p>
+          <p className="geo-vis-kpi-label">Collection failures</p>
+          <p className="geo-vis-kpi-value">{failedAttempts}</p>
+          <p className="geo-vis-kpi-meta">Error or blocked attempts</p>
         </article>
         <article className="geo-vis-kpi">
           <p className="geo-vis-kpi-label">Countries covered</p>
@@ -290,7 +288,7 @@ export default function PromptsPage() {
                   <th>Tracked prompt</th>
                   <th>Market</th>
                   <th>Visibility</th>
-                  <th>Avg pos</th>
+                  <th>Evidence</th>
                   <th>Status</th>
                   <th />
                 </tr>
@@ -301,8 +299,7 @@ export default function PromptsPage() {
                     key={p.id}
                     prompt={p}
                     projectId={projectId}
-                    visibility={demoVisibility(p.id, p.status)}
-                    position={demoPosition(p.id, p.status)}
+                    metrics={metrics[p.id]}
                     onArchive={() => void setStatus(p.id, "archived")}
                     onActivate={() => void setStatus(p.id, "active")}
                     onPause={() => void setStatus(p.id, "paused")}
@@ -337,8 +334,7 @@ export default function PromptsPage() {
 function PromptRow({
   prompt,
   projectId,
-  visibility,
-  position,
+  metrics,
   onArchive,
   onActivate,
   onPause,
@@ -346,8 +342,7 @@ function PromptRow({
 }: {
   prompt: Prompt;
   projectId: string;
-  visibility: number;
-  position: number | null;
+  metrics?: PromptMetrics;
   onArchive: () => void;
   onActivate: () => void;
   onPause: () => void;
@@ -355,7 +350,12 @@ function PromptRow({
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(prompt.text);
-  const gap = prompt.status === "active" && visibility < 20;
+  const visibility = metrics?.mention_rate;
+  const gap =
+    prompt.status === "active" &&
+    visibility != null &&
+    (metrics?.eligible_answers ?? 0) >= 3 &&
+    visibility < 0.2;
 
   return (
     <tr data-gap={gap ? "true" : "false"}>
@@ -402,12 +402,20 @@ function PromptRow({
       <td>
         <div className="geo-pt-vis">
           <div className="geo-vis-bar-track">
-            <span style={{ width: `${visibility}%` }} />
+            <span style={{ width: `${(visibility ?? 0) * 100}%` }} />
           </div>
-          <span className="mono">{visibility}%</span>
+          <span className="mono">
+            {visibility == null ? "—" : `${Math.round(visibility * 100)}%`}
+          </span>
         </div>
       </td>
-      <td>{position != null ? position.toFixed(1) : "—"}</td>
+      <td>
+        {metrics
+          ? `${metrics.eligible_answers}/${metrics.attempts} eligible${
+              metrics.failed_attempts ? ` · ${metrics.failed_attempts} failed` : ""
+            }`
+          : "—"}
+      </td>
       <td>
         <span className={statusBadge(prompt.status)}>{prompt.status}</span>
       </td>

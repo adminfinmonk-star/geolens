@@ -26,9 +26,8 @@ export interface ModelChannel {
 }
 
 /**
- * Peec-comparable model channels — collection is API-first.
- * Checking GPT uses OpenAI; Claude uses Anthropic; Gemini/AI Mode/Overviews
- * use Google Gemini grounding; Copilot uses Azure OpenAI when configured.
+ * Truthful collection channels. A channel names the API surface actually
+ * queried, never a consumer product that merely uses a related model.
  */
 export const MODEL_CHANNELS: ModelChannel[] = [
   {
@@ -45,22 +44,6 @@ export const MODEL_CHANNELS: ModelChannel[] = [
     supportsShopping: true,
     unsupportedCountryCodes: [],
     geoCapability: "full",
-  },
-  {
-    id: "openai-0",
-    description: "ChatGPT (via OpenAI GPT API)",
-    surface: "api",
-    provider: "openai",
-    currentModel: "gpt-web-search",
-    versionHistory: [
-      { modelId: "chatgpt-ui", effectiveFrom: "2025-01-01", note: "label only" },
-      { modelId: "gpt-web-search", effectiveFrom: "2026-09-01" },
-    ],
-    supportsFanouts: true,
-    supportsAds: false,
-    supportsShopping: false,
-    unsupportedCountryCodes: [],
-    geoCapability: "none",
   },
   {
     id: "openai-1",
@@ -100,7 +83,7 @@ export const MODEL_CHANNELS: ModelChannel[] = [
   },
   {
     id: "anthropic-1",
-    description: "Claude (via Anthropic API + web search)",
+    description: "Anthropic Messages API (web search)",
     surface: "api",
     provider: "anthropic",
     currentModel: "claude-web-search",
@@ -115,57 +98,12 @@ export const MODEL_CHANNELS: ModelChannel[] = [
   },
   {
     id: "google-3",
-    description: "Gemini (API + Google Search grounding)",
+    description: "Google Gemini API (Search grounding)",
     surface: "api",
     provider: "google",
     currentModel: "gemini-grounded",
     versionHistory: [
       { modelId: "gemini-grounded", effectiveFrom: "2025-01-01" },
-    ],
-    supportsFanouts: true,
-    supportsAds: false,
-    supportsShopping: false,
-    unsupportedCountryCodes: [],
-    geoCapability: "none",
-  },
-  {
-    id: "google-ai-mode",
-    description: "Google AI Mode (via Gemini grounding API)",
-    surface: "api",
-    provider: "google",
-    currentModel: "gemini-grounded",
-    versionHistory: [
-      { modelId: "gemini-grounded", effectiveFrom: "2026-09-01" },
-    ],
-    supportsFanouts: true,
-    supportsAds: false,
-    supportsShopping: false,
-    unsupportedCountryCodes: [],
-    geoCapability: "none",
-  },
-  {
-    id: "google-ai-overviews",
-    description: "Google AI Overviews (via Gemini grounding API)",
-    surface: "api",
-    provider: "google",
-    currentModel: "gemini-grounded",
-    versionHistory: [
-      { modelId: "gemini-grounded", effectiveFrom: "2026-09-01" },
-    ],
-    supportsFanouts: true,
-    supportsAds: false,
-    supportsShopping: false,
-    unsupportedCountryCodes: [],
-    geoCapability: "none",
-  },
-  {
-    id: "copilot-1",
-    description: "Microsoft Copilot (via Azure OpenAI when keyed)",
-    surface: "api",
-    provider: "copilot",
-    currentModel: "copilot-azure",
-    versionHistory: [
-      { modelId: "copilot-azure", effectiveFrom: "2026-09-01" },
     ],
     supportsFanouts: true,
     supportsAds: false,

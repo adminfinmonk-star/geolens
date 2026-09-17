@@ -115,16 +115,13 @@ export function getAdapter(channelId: string): EngineAdapter {
 }
 
 /**
- * Peec-like default set — each channel maps to the matching provider API:
- * ChatGPT→GPT, Claude→Anthropic, Gemini/AI Mode/Overviews→Google, etc.
+ * Default set contains only API surfaces we actually query.
  */
 export const DEFAULT_API_CHANNELS = [
-  "openai-0",
-  "google-ai-overviews",
-  "google-ai-mode",
+  "openai-1",
   "perplexity-1",
   "google-3",
-  "copilot-1",
+  "anthropic-1",
 ] as const;
 
 /** Core live providers (also include Claude for Claude checks). */

@@ -37,6 +37,9 @@ describe("brandInsightsFromStore", () => {
     const store = await getDemoStore();
     const view = createSharedView(store, { name: "Board pack" });
     expect(view.id).toMatch(/^vw_/);
+    expect(view.id.length).toBeGreaterThan(30);
     expect(getSharedView(store, view.id)?.name).toBe("Board pack");
+    view.expires_at = new Date(Date.now() - 1_000).toISOString();
+    expect(getSharedView(store, view.id)).toBeNull();
   }, 60_000);
 });
