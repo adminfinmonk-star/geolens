@@ -122,6 +122,7 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+        <p><Link href="/forgot-password">Forgot your password?</Link></p>
         <p style={{ marginTop: 18, color: "var(--muted)", fontSize: 14 }}>
           New here? <Link href="/signup">Create an account</Link>
         </p>

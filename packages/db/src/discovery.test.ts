@@ -116,5 +116,11 @@ describe("discovery store helpers", () => {
     ).toBe(true);
     expect(store.brands.length).toBeGreaterThanOrEqual(historicalBrandCount);
     expect(store.topics.length).toBeGreaterThanOrEqual(historicalTopicCount);
+    const activeBefore = store.prompts.filter((p) => p.status === "active");
+    activeBefore[0]!.text = "User-selected product comparison question";
+    const ids = activeBefore.map((p) => p.id);
+    prepareDomainAnalysis(store, "google.com");
+    expect(store.prompts.filter((p) => p.status === "active").map((p) => p.id)).toEqual(ids);
+    expect(store.prompts.find((p) => p.id === ids[0])!.text).toBe("User-selected product comparison question");
   });
 });

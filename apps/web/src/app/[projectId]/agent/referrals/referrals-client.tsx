@@ -3,6 +3,7 @@
 import { apiBase } from "@/lib/api";
 import { DemoDataBadge, NoDataCallout } from "@/components/no-data-callout";
 import { useEffect, useState } from "react";
+import { ReferralImport } from "@/components/ReferralImport";
 
 const API_BASE = apiBase();
 
@@ -28,11 +29,12 @@ type Ref = {
 export function ReferralsClient({ projectId }: { projectId: string }) {
   const [data, setData] = useState<Ref | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
     void (async () => {
       try {
-        const res = await fetch(`${API_BASE}/v1/projects/${projectId}/agent/referrals`, { credentials: "include" });
+        const res = await fetch(`${API_BASE}/v1/projects/${projectId}/agent/referrals?refresh=${revision}`, { credentials: "include", cache: "no-store" });
         if (!res.ok) {
           setError("Failed to load");
           return;
@@ -42,7 +44,7 @@ export function ReferralsClient({ projectId }: { projectId: string }) {
         setError(`API unreachable at ${API_BASE}`);
       }
     })();
-  }, [projectId]);
+  }, [projectId, revision]);
 
   if (error) return <p style={{ color: "var(--muted)" }}>{error}</p>;
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -54,6 +56,7 @@ export function ReferralsClient({ projectId }: { projectId: string }) {
           title="No assistant referral traffic imported"
           reason={data.empty_reason}
         />
+        <ReferralImport projectId={projectId} onImported={() => setRevision((r) => r + 1)} />
         <p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.5 }}>
           {data.honesty.floor_not_total}
         </p>
@@ -63,6 +66,7 @@ export function ReferralsClient({ projectId }: { projectId: string }) {
 
   return (
     <div>
+      <ReferralImport projectId={projectId} onImported={() => setRevision((r) => r + 1)} />
       {data.data_state === "demo_fixture" && (
         <p style={{ margin: "0 0 0.75rem" }}>
           <DemoDataBadge />

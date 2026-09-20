@@ -339,7 +339,7 @@ export function referralsOverview(store: DemoStore) {
     empty_reason:
       rows.length > 0
         ? null
-        : "Connect GA4 to import assistant referral sessions. No traffic data is estimated on your behalf.",
+        : "Import measured assistant referral rows from your analytics export. No traffic data is estimated on your behalf.",
     kpis: {
       session_starts,
       conversions,
@@ -367,6 +367,39 @@ export function referralsOverview(store: DemoStore) {
         "landing_page is session entry; page_path is where the event fired — they do not join.",
     },
   };
+}
+
+/** Import normalized analytics exports, replacing exact dimension matches for idempotency. */
+export function importReferralRows(store: DemoStore, input: unknown) {
+  if (!Array.isArray(input) || input.length === 0 || input.length > 5000) throw new Error("Provide between 1 and 5000 referral rows.");
+  const rows: GaReferralDaily[] = input.map((raw, index) => {
+    const invalid = () => new Error(`Invalid referral row ${index + 1}. Check date, dimensions and non-negative metrics.`);
+    if (!raw || typeof raw !== "object") throw invalid();
+    const r = raw as Record<string, unknown>;
+    for (const key of ["date", "source", "medium", "country", "device", "landing_page", "page_path", "currency"]) {
+      if (typeof r[key] !== "string" || (r[key] as string).length > 2048) throw invalid();
+    }
+    const date = r.date as string;
+    const parsed = new Date(`${date}T00:00:00Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) throw invalid();
+    for (const key of ["session_starts", "conversions", "revenue"]) {
+      if (typeof r[key] !== "number" || !Number.isFinite(r[key]) || (r[key] as number) < 0) throw invalid();
+    }
+    if (!Number.isSafeInteger(r.session_starts) || !Number.isSafeInteger(r.conversions) || !/^[A-Z]{3}$/.test(r.currency as string)) throw invalid();
+    const source = (r.source as string).trim().toLowerCase();
+    const classification = classifyAssistantReferral({ source, medium: r.medium as string });
+    if (!classification.isAiAssistant) throw new Error(`Row ${index + 1}: source is not a recognized AI assistant referral.`);
+    return { date, source, provenance: "customer_analytics_import", imported_at: new Date().toISOString(), assistant: classification.displayName!, platform: classification.platform!, medium: r.medium as string, country: r.country as string, device: r.device as string, landing_page: r.landing_page as string, page_path: r.page_path as string, currency: r.currency as string, session_starts: r.session_starts as number, conversions: r.conversions as number, revenue: r.revenue as number };
+  });
+  const currencies = new Set([...store.gaReferrals, ...rows].map((r) => r.currency));
+  if (currencies.size > 1) throw new Error("Mixed currencies cannot be summed. Convert your export to one reporting currency first.");
+  const key = (r: GaReferralDaily) => JSON.stringify([r.date, r.source, r.medium, r.country, r.device, r.landing_page, r.page_path, r.currency]);
+  const seen = new Set<string>();
+  for (const row of rows) { if (seen.has(key(row))) throw new Error("Duplicate dimensions in the import. Aggregate those rows first."); seen.add(key(row)); }
+  const merged = new Map(store.gaReferrals.map((r) => [key(r), r]));
+  for (const row of rows) merged.set(key(row), row);
+  store.gaReferrals = [...merged.values()].sort((a, b) => a.date.localeCompare(b.date));
+  return { imported: rows.length, total: store.gaReferrals.length, provenance: "customer_analytics_import" };
 }
 
 export function classifySampleReferral(input: {

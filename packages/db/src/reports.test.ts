@@ -85,8 +85,8 @@ describe("Phase 10 reports + api keys", () => {
       position: 10,
       citation_support: 10,
     });
-    expect(week.score.range?.low).toBeLessThanOrEqual(week.score.value!);
-    expect(week.score.range?.high).toBeGreaterThanOrEqual(week.score.value!);
+    expect(week.score.range).toBeNull();
+    expect(week.score.confidence).toBe("unvalidated");
     expect(["fixture", "mixed", "live"]).toContain(week.honesty.collection_mode);
     expect(week.honesty.note).toMatch(/not a multi-month industry index/i);
     expect(week.competitors[0]?.share_of_voice).toBeGreaterThanOrEqual(
@@ -165,4 +165,48 @@ describe("Phase 10 reports + api keys", () => {
     expect(report.score.value).toBe(0);
     expect(report.score.components.presence).toBe(0);
   }, 60_000);
+
+  it("requires matching eligible sample counts across all observed days", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const original = store.chats.find((chat) => store.prompts.some((prompt) => prompt.id === chat.prompt_id && prompt.status === "active"))!;
+    store.chats = [
+      { ...original, id: "trend-a", status: "ok", run_date: "2026-09-15" },
+      { ...original, id: "trend-b", status: "ok", run_date: "2026-09-16" },
+    ];
+    store.mentions = [];
+    store.sources = [];
+    expect(overviewReportPayload(store, { range: "90d" }).honesty.trend_comparable).toBe(true);
+    store.chats.push({ ...store.chats[1]!, id: "trend-repeat" });
+    expect(overviewReportPayload(store, { range: "90d" }).honesty.trend_comparable).toBe(false);
+    store.chats.pop();
+    store.chats[1]!.status = "error";
+    store.chats[1]!.error_code = "HTTP_429";
+    store.chats[1]!.raw_payload = { error: "quota exhausted private diagnostic" };
+    const failed = overviewReportPayload(store, { range: "90d" });
+    expect(failed.honesty.trend_comparable).toBe(false);
+    expect(failed.series[1]!.visibility).toBeNull();
+    expect(failed.collection_health[0]).toMatchObject({ status: "unavailable", failures: 1, eligible_answers: 0 });
+    expect(failed.collection_health[0]!.action).toContain("quota");
+    expect(JSON.stringify(failed.collection_health)).not.toContain("private diagnostic");
+  });
+
+  it("does not treat unrelated citations as owned-domain coverage", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    store.project.domain = "acme.example";
+    store.sources = store.sources.map((source) => ({ ...source, url: "https://unrelated.example/review", cited: true }));
+    const unrelated = overviewReportPayload(store, { range: "90d" });
+    expect(unrelated.score.components.citation_support).toBe(0);
+    expect(unrelated.score.range).toBeNull();
+    expect(unrelated.score.confidence).toBe("unvalidated");
+    const originalCohort = unrelated.prompt_cohort.id;
+    const active = store.prompts.find((prompt) => prompt.status === "active")!;
+    active.text += " revised";
+    expect(overviewReportPayload(store, { range: "90d" }).prompt_cohort.id).not.toBe(originalCohort);
+    store.sources = store.sources.map((source) => ({ ...source, url: "https://docs.acme.example/guide" }));
+    expect(overviewReportPayload(store, { range: "90d" }).score.components.citation_support).toBeGreaterThan(0);
+    store.sources = store.sources.map((source) => ({ ...source, url: "https://acme.example.attacker.test/" }));
+    expect(overviewReportPayload(store, { range: "90d" }).score.components.citation_support).toBe(0);
+  });
 });

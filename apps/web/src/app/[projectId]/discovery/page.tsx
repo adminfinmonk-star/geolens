@@ -260,12 +260,12 @@ export default function DiscoveryPage() {
           </p>
         </article>
         <article className="geo-vis-kpi">
-          <p className="geo-vis-kpi-label">High-volume (4–5★)</p>
+          <p className="geo-vis-kpi-label">High heuristic priority (4–5★)</p>
           <p className="geo-vis-kpi-value">{highVol}</p>
           <p className="geo-vis-kpi-meta">
             {prompts.length
               ? `${Math.round((highVol / prompts.length) * 100)}% of cluster`
-              : "Generate to score volume"}
+              : "Estimated priority; no measured demand data"}
           </p>
         </article>
         <article className="geo-vis-kpi">
@@ -298,11 +298,11 @@ export default function DiscoveryPage() {
               className="geo-input geo-pr-select"
               value={String(minVolume)}
               onChange={(e) => setMinVolume(Number(e.target.value))}
-              aria-label="Volume filter"
+              aria-label="Heuristic priority filter"
             >
-              <option value="1">All volumes (1–5★)</option>
-              <option value="3">Volume 3–5★</option>
-              <option value="4">High volume 4–5★</option>
+              <option value="1">All priorities (1–5★)</option>
+              <option value="3">Priority 3–5★</option>
+              <option value="4">High priority 4–5★</option>
               <option value="5">Only 5★</option>
             </select>
             <select
@@ -404,7 +404,7 @@ export default function DiscoveryPage() {
                     <th>Topic</th>
                     <th>Intent</th>
                     <th>Branding</th>
-                    <th>Volume</th>
+                    <th title="Heuristic estimate, not measured search volume">Estimated priority</th>
                     <th />
                   </tr>
                 </thead>
@@ -439,7 +439,7 @@ export default function DiscoveryPage() {
                       <td>
                         <span
                           className="geo-pr-volume mono"
-                          title={`Volume score ${p.volume_score}`}
+                          title={`Heuristic priority ${p.volume_score}; not measured search volume`}
                         >
                           {volumeLabel(p.volume_score)}
                         </span>

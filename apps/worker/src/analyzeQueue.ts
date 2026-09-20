@@ -1,11 +1,11 @@
 import {
   createDb,
+  closeDb,
   loadProjectStore,
-  persistCommercialSideEffects,
-  replaceProjectCollection,
+  persistCollectionEvidence,
 } from "@geo/db";
-import { queueMode, redisUrl, resetInlineJobState } from "./queue.js";
-import { runProjectCollectAndApply } from "./schedule.js";
+import { queueMode, redisUrl, resetInlineJobState, parseRedis } from "./queue.js";
+import { runProjectCollectAndApply, type CollectionSnapshot } from "./schedule.js";
 
 export interface AnalyzeQueuePayload {
   job_id: string;
@@ -18,9 +18,12 @@ export interface AnalyzeQueuePayload {
   seed: string;
   concurrency?: number;
   started_at: string;
+  snapshot?: CollectionSnapshot;
 }
 
 export interface AnalyzeQueueResult {
+  eligible_answers?: number;
+  failed_attempts?: number;
   chats_written: number;
   run_date: string;
   mode: string;
@@ -38,15 +41,7 @@ function redisConnection(): {
 } {
   const raw = redisUrl();
   if (!raw) throw new Error("REDIS_URL is required for durable analysis jobs");
-  const url = new URL(raw);
-  return {
-    host: url.hostname || "127.0.0.1",
-    port: Number(url.port || 6379),
-    ...(url.password ? { password: decodeURIComponent(url.password) } : {}),
-    ...(url.username ? { username: decodeURIComponent(url.username) } : {}),
-    ...(url.protocol === "rediss:" ? { tls: {} } : {}),
-    maxRetriesPerRequest: null,
-  };
+  return parseRedis(raw);
 }
 
 export async function enqueueAnalyzeProject(
@@ -93,7 +88,7 @@ export async function getAnalyzeProjectJob(jobId: string): Promise<{
     const state = await job.getState();
     const status =
       state === "completed"
-        ? "done"
+        ? job.returnvalue?.eligible_answers === 0 ? "error" : "done"
         : state === "failed"
           ? "error"
           : state === "active"
@@ -104,7 +99,9 @@ export async function getAnalyzeProjectJob(jobId: string): Promise<{
       status,
       payload: job.data,
       result: state === "completed" ? job.returnvalue : undefined,
-      message: state === "failed" ? job.failedReason : undefined,
+      message: state === "failed" ? job.failedReason : state === "completed" && job.returnvalue?.eligible_answers === 0
+        ? "No eligible answers were collected. Review channel errors, restore provider access, and run a new analysis."
+        : undefined,
     };
   } finally {
     await queue.close();
@@ -119,6 +116,7 @@ async function processAnalyzeJob(
     throw new Error("DATABASE_URL is required for durable analysis jobs");
   }
   const db = createDb(databaseUrl);
+  try {
   const store = await loadProjectStore(db, payload.project_id);
   if (!store) throw new Error("project_not_found");
 
@@ -131,16 +129,20 @@ async function processAnalyzeJob(
     concurrency: payload.concurrency ?? 2,
     seed: payload.seed,
     runDate: payload.run_date,
+    observationId: payload.job_id,
+    snapshot: payload.snapshot,
   });
-  await replaceProjectCollection(db, store);
-  await persistCommercialSideEffects(db, store);
+  await persistCollectionEvidence(db, store);
   return {
     chats_written: collect.chats_written,
+    eligible_answers: collect.eligible_answers,
+    failed_attempts: collect.failed_attempts,
     run_date: collect.run_date,
     mode: "bullmq",
     channels: payload.channel_ids,
     finished_at: new Date().toISOString(),
   };
+  } finally { await closeDb(db); }
 }
 
 export async function startAnalyzeWorker(): Promise<{

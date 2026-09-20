@@ -4,13 +4,21 @@ import * as schema from "./pg-schema.js";
 import { sql } from "drizzle-orm";
 
 export type Db = ReturnType<typeof createDb>;
+const clients = new WeakMap<object, ReturnType<typeof postgres>>();
 
 export function createDb(connectionString = process.env.DATABASE_URL) {
   if (!connectionString) {
     throw new Error("DATABASE_URL is required for Postgres mode");
   }
   const client = postgres(connectionString, { max: 10 });
-  return drizzle(client, { schema });
+  const db = drizzle(client, { schema });
+  clients.set(db, client);
+  return db;
+}
+
+export async function closeDb(db: Db) {
+  const client = clients.get(db);
+  if (client) { await client.end({ timeout: 5 }); clients.delete(db); }
 }
 
 export function hasDatabaseUrl(): boolean {

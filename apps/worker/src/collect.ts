@@ -7,6 +7,7 @@ import {
 import { getChannel } from "@geo/registry";
 import { enrichChat, type BrandMatcher } from "@geo/core";
 import { collectJobKey } from "./jobKey.js";
+import { collectionFailureDetail } from "./diagnostics.js";
 
 export interface CollectJobPayload {
   job_key: string;
@@ -146,7 +147,7 @@ export async function runCollectEnrichJob(input: {
           : status
             ? `HTTP_${status}`
             : "COLLECTOR_EXCEPTION",
-        errorDetail: detail.slice(0, 500),
+        errorDetail: collectionFailureDetail(timedOut ? "COLLECTOR_TIMEOUT" : status ? `HTTP_${status}` : "COLLECTOR_EXCEPTION", { error: detail }),
         mentions: [],
         sources: [],
         text: "",
@@ -163,7 +164,7 @@ export async function runCollectEnrichJob(input: {
         channelId,
         status: raw.status,
         errorCode: raw.errorCode,
-        errorDetail: raw.errorCode ? `Provider returned ${raw.errorCode}` : undefined,
+        errorDetail: collectionFailureDetail(raw.errorCode, raw.raw),
         mentions: [],
         sources: [],
         text: raw.text,
@@ -261,6 +262,7 @@ export function buildCollectPayload(input: {
   runDate: string;
   brands: BrandMatcher[];
   seed?: string;
+  observationId?: string;
 }): CollectJobPayload {
   return {
     job_key: collectJobKey({
@@ -269,6 +271,7 @@ export function buildCollectPayload(input: {
       channelId: input.channelId,
       countryCode: input.countryCode,
       runDate: input.runDate,
+      observationId: input.observationId,
     }),
     project_id: input.projectId,
     prompt_id: input.promptId,

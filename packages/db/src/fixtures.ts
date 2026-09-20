@@ -99,7 +99,7 @@ export function purgeLegacyFixtures(store: {
   shoppingAttributes?: { product_id: string }[];
   productCategories?: { path: string }[];
   agentLogs?: { request_url: string }[];
-  gaReferrals?: { source: string }[];
+  gaReferrals?: { source: string; provenance?: string }[];
   robotsTxt?: string;
   robotsSource?: string;
   actions?: unknown[];
@@ -184,7 +184,7 @@ export function purgeLegacyFixtures(store: {
     return domain == null || !url.includes(domain);
   });
   store.gaReferrals = drop(store.gaReferrals, (r) =>
-    FIXTURE_ASSISTANT_SOURCES.has(r.source),
+    r.provenance !== "customer_analytics_import" && FIXTURE_ASSISTANT_SOURCES.has(r.source),
   );
 
   // Actions are derived data. Once any input was fabricated, every recommendation

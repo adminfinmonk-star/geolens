@@ -44,6 +44,7 @@ export async function createStripeCheckoutSession(
   params.set("line_items[0][quantity]", "1");
   for (const [k, v] of Object.entries(input.metadata)) {
     params.set(`metadata[${k}]`, v);
+    params.set(`subscription_data[metadata][${k}]`, v);
   }
 
   const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
@@ -53,6 +54,7 @@ export async function createStripeCheckoutSession(
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: params.toString(),
+    signal: AbortSignal.timeout(30_000),
   });
   const body = (await res.json()) as {
     id?: string;

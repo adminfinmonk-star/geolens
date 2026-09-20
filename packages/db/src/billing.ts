@@ -37,6 +37,25 @@ export function billingMode(): "mock" | "stripe" {
   return process.env.STRIPE_SECRET_KEY ? "stripe" : "mock";
 }
 
+type BillingMetadata = { checkout_session_id?: string; plan_code?: string; project_id?: string; organization_id?: string };
+export type BillingEvent = {
+  id?: string;
+  type?: string;
+  project_id?: string;
+  data?: { object?: {
+    id?: string; status?: string; client_reference_id?: string;
+    metadata?: BillingMetadata;
+    subscription_details?: { metadata?: BillingMetadata };
+    parent?: { subscription_details?: { metadata?: BillingMetadata } };
+  } };
+};
+
+/** Invoice metadata may live on its subscription snapshot, not the invoice. */
+export function billingEventMetadata(event: BillingEvent): BillingMetadata {
+  const obj = event.data?.object;
+  return { ...obj?.subscription_details?.metadata, ...obj?.parent?.subscription_details?.metadata, ...obj?.metadata };
+}
+
 export async function createCheckoutSession(
   store: DemoStore,
   planCode: string,
@@ -172,21 +191,7 @@ export function completeCheckout(
  */
 export function handleBillingWebhook(
   store: DemoStore,
-  event: {
-    type?: string;
-    data?: {
-      object?: {
-        id?: string;
-        status?: string;
-        client_reference_id?: string;
-        metadata?: {
-          checkout_session_id?: string;
-          plan_code?: string;
-          project_id?: string;
-        };
-      };
-    };
-  },
+  event: BillingEvent,
   opts?: { stripe_signature_ok?: boolean },
 ): { handled: boolean; plan_code?: string } {
   if (
@@ -197,13 +202,15 @@ export function handleBillingWebhook(
   }
   if (
     process.env.STRIPE_WEBHOOK_SECRET &&
-    opts?.stripe_signature_ok === false
+    opts?.stripe_signature_ok !== true
   ) {
     throw new Error("invalid_signature");
   }
   const type = event.type ?? "";
   const obj = event.data?.object;
-  const meta = obj?.metadata;
+  const meta = billingEventMetadata(event);
+  if (meta.project_id && meta.project_id !== store.project.id) throw new Error("billing_project_mismatch");
+  if (meta.organization_id && meta.organization_id !== store.organization.id) throw new Error("billing_org_mismatch");
   const commercial = store.commercial ?? {
     enabled_channel_ids: [],
     countries: [store.project.default_country],

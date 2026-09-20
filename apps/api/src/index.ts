@@ -104,11 +104,20 @@ import {
   pauseProject,
   persistCommercialSideEffects,
   persistProjectStore,
+  persistCollectionEvidence,
+  closeDb,
+  billingEventMetadata,
+  type BillingEvent,
+  emailConfigured,
+  requestPasswordRecovery,
+  completePasswordRecovery,
+  getReportSchedule,
+  saveReportSchedule,
   persistSharedView,
-  persistSpineAdds,
   prepareDomainAnalysis,
   promptObservedMetrics,
   referralsOverview,
+  importReferralRows,
   recordBillingWebhookEvent,
   refreshRobotsTxt,
   rejectCompetitor,
@@ -150,8 +159,10 @@ import {
   queueMode,
   resetInlineJobState,
   runProjectCollectAndApply,
+  snapshotProjectCollect,
 } from "@geo/worker";
 import Fastify from "fastify";
+import { promptIdentity } from "@geo/db";
 
 /** Fast Analyze: three truthful API channels across a compact market sample. */
 const ANALYZE_CHANNELS = [
@@ -347,6 +358,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     process.env.DATABASE_URL = url;
     await runMigrations(url);
     db = createDb(url);
+    app.addHook("onClose", async () => { if (db) await closeDb(db); });
   }
 
   /** Authz chokepoint — all /v1/projects/:projectId/* routes. */
@@ -412,7 +424,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       }
     }
 
-    if (req.method === "POST" && /^\/v1\/auth\/(login|signup)$/.test(pathOnly)) {
+    if (req.method === "POST" && /^\/v1\/auth\/(login|signup|forgot-password|reset-password)$/.test(pathOnly)) {
       const now = Date.now();
       const key = `${req.ip}:${pathOnly}`;
       const current = authWindows.get(key);
@@ -573,6 +585,35 @@ export async function buildServer(options?: { databaseUrl?: string }) {
         return reply.code(401).send({ error: err.code, message: err.message });
       }
       throw err;
+    }
+  });
+
+  app.post("/v1/auth/forgot-password", async (req, reply) => {
+    if (!db || !emailConfigured()) return reply.code(503).send({ error: "recovery_unavailable", message: "Password recovery requires database and email configuration." });
+    const body = (req.body ?? {}) as { email?: unknown };
+    if (typeof body.email !== "string" || body.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return reply.code(400).send({ error: "invalid_email" });
+    const started = Date.now();
+    try {
+      await requestPasswordRecovery(db, body.email);
+    } catch {
+      // Never reveal whether an account exists or log the token/email contents.
+      req.log.error("Password recovery email delivery failed");
+    }
+    await new Promise((resolve) => setTimeout(resolve, Math.max(0, 500 - (Date.now() - started))));
+    return { message: "If an account exists, a password reset link will be sent." };
+  });
+
+  app.post("/v1/auth/reset-password", async (req, reply) => {
+    if (!db) return reply.code(503).send({ error: "postgres_required" });
+    const body = (req.body ?? {}) as { token?: unknown; password?: unknown };
+    if (typeof body.token !== "string" || typeof body.password !== "string") return reply.code(400).send({ error: "invalid_request" });
+    try {
+      await completePasswordRecovery(db, body.token, body.password);
+      reply.clearCookie(COOKIE, { path: "/" });
+      return { message: "Password updated. Sign in again with your new password." };
+    } catch (error) {
+      if (error instanceof AuthError) return reply.code(400).send({ error: error.code, message: error.message });
+      throw error;
     }
   });
 
@@ -781,6 +822,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       analyzeJobs.set(jobId, job);
 
       const projectRef = store.project.id;
+      const snapshot = snapshotProjectCollect(store, { channelIds: [...ANALYZE_CHANNELS], observationId: jobId, runDate: new Date().toISOString().slice(0, 10), seed: `analyze|${prepared.domain}|${jobId}` });
       if (queueMode() === "bullmq" && db) {
         job.status = "queued";
         await enqueueAnalyzeProject({
@@ -794,6 +836,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
           seed: `analyze|${prepared.domain}|${Date.now()}`,
           run_date: new Date().toISOString().slice(0, 10),
           started_at: job.started_at,
+          snapshot,
         });
       } else void (async () => {
         try {
@@ -801,6 +844,8 @@ export async function buildServer(options?: { databaseUrl?: string }) {
           if (!live) throw new Error("project_not_found");
           resetInlineJobState();
           const collect = await runProjectCollectAndApply(live, {
+            observationId: job.id,
+            snapshot,
             forceInline: true,
             channelIds: [...ANALYZE_CHANNELS],
             concurrency: 2,
@@ -808,12 +853,13 @@ export async function buildServer(options?: { databaseUrl?: string }) {
             runDate: new Date().toISOString().slice(0, 10),
           });
           if (db) {
-            await replaceProjectCollection(db, live);
-            await persistCommercialSideEffects(db, live);
+            await persistCollectionEvidence(db, live);
           } else {
             await persistProjectStore(db, live);
           }
-          job.status = "done";
+          job.status = collect.eligible_answers > 0 ? "done" : "error";
+          if (collect.eligible_answers === 0) job.message = "No eligible answers were collected. Review channel errors, restore provider access, and run a new analysis.";
+          else if (collect.failed_attempts > 0) job.message = `Collected ${collect.eligible_answers} eligible answers; ${collect.failed_attempts} attempts failed. Results describe the successful sample.`;
           job.collect = {
             chats_written: collect.chats_written,
             run_date: collect.run_date,
@@ -959,6 +1005,25 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     };
   });
 
+  app.get("/v1/projects/:projectId/report-schedule", async (req, reply) => {
+    if (!db) return reply.code(503).send({ error: "postgres_required" });
+    const user = await getSessionUser(db, req.cookies[COOKIE]);
+    if (!user) return reply.code(401).send({ error: "unauthorized" });
+    const { projectId } = req.params as { projectId: string };
+    return { schedule: await getReportSchedule(db, projectId, user.userId), recipient: user.email, delivery_configured: emailConfigured() };
+  });
+
+  app.put("/v1/projects/:projectId/report-schedule", async (req, reply) => {
+    if (!db) return reply.code(503).send({ error: "postgres_required" });
+    const user = await getSessionUser(db, req.cookies[COOKIE]);
+    if (!user) return reply.code(401).send({ error: "unauthorized" });
+    const { projectId } = req.params as { projectId: string };
+    const body = (req.body ?? {}) as { frequency?: unknown; enabled?: unknown };
+    if ((body.frequency !== "daily" && body.frequency !== "weekly") || typeof body.enabled !== "boolean") return reply.code(400).send({ error: "invalid_schedule" });
+    if (body.enabled && !emailConfigured()) return reply.code(503).send({ error: "email_not_configured", message: "Configure SMTP before enabling email reports." });
+    return { schedule: await saveReportSchedule(db, { projectId, userId: user.userId, frequency: body.frequency, enabled: body.enabled }) };
+  });
+
   app.get("/v1/projects/:projectId/reports/brands", async (req, reply) => {
     const { projectId } = req.params as { projectId: string };
     const store = await resolveProjectStore(db, projectId);
@@ -1081,6 +1146,15 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     }
     const rows = [...byChannel.entries()].map(([channel_id, v]) => {
       const meta = getChannel(channel_id);
+      const observations = store.chats.filter((chat) => chat.model_channel_id === channel_id);
+      const latestDate = observations.map((chat) => chat.run_date).sort().at(-1);
+      const latest = observations.filter((chat) => chat.run_date === latestDate);
+      const failures = latest.filter((chat) => chat.status === "error" || chat.status === "blocked").length;
+      const stale = latestDate ? Date.now() - Date.parse(`${latestDate}T00:00:00Z`) > 2 * 86400_000 : true;
+      const persistedHealth = {
+        status: failures === latest.length ? "down" : failures > 0 ? "degraded" : stale ? "stale" : "ok",
+        reason: `Latest observed day: ${latestDate ?? "none"}; ${latest.length - failures}/${latest.length} eligible answers.`,
+      };
       return {
         channel_id,
         description: meta?.description ?? channel_id,
@@ -1088,7 +1162,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
         geo_capability: meta?.geoCapability ?? "none",
         chat_count: v.chats,
         visibility: v.ok === 0 ? 0 : v.mentioned / v.ok,
-        health: getChannelHealth(channel_id),
+        health: persistedHealth,
         version_history: meta?.versionHistory ?? [],
       };
     });
@@ -1139,6 +1213,9 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       status?: "active" | "paused" | "archived";
     };
     const status = body.status ?? "active";
+    const duplicate = status === "active" && store.prompts.find((p) => p.status === "active" &&
+      promptIdentity(p.text, p.country_code) === promptIdentity(body.text ?? "", body.country_code ?? "US"));
+    if (duplicate) return { prompt: duplicate };
     if (status === "active") {
       const q = checkPromptActivation(store, 1);
       if (!q.ok) {
@@ -1164,6 +1241,9 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       await persistProjectStore(db, store);
       return { prompt: row };
     } catch (err) {
+      if ((err as { code?: string }).code === "23505" || (err as { cause?: { code?: string } }).cause?.code === "23505") {
+        return reply.code(409).send({ error: "active_prompt_already_exists" });
+      }
       if (err instanceof Error && err.message === "text_required") {
         return reply.code(400).send({ error: "text_required" });
       }
@@ -1194,13 +1274,32 @@ export async function buildServer(options?: { databaseUrl?: string }) {
         return reply.code(409).send({ error: q.code, message: q.message });
       }
     }
-    const row = await updatePrompt(db, projectId, promptId, body);
+    const before = existing ? { ...existing } : undefined;
+    if (body.text !== undefined && (typeof body.text !== "string" || !body.text.trim())) {
+      return reply.code(400).send({ error: "text_required" });
+    }
+    let row;
+    try {
+      row = await updatePrompt(db, projectId, promptId, body);
+    } catch (err) {
+      if ((err instanceof Error && err.message === "active_prompt_already_exists") ||
+        (err as { code?: string }).code === "23505" || (err as { cause?: { code?: string } }).cause?.code === "23505") {
+        return reply.code(409).send({ error: "active_prompt_already_exists" });
+      }
+      throw err;
+    }
     if (!row) return reply.code(404).send({ error: "prompt_not_found" });
+    if (row.id !== promptId) {
+      if (existing) existing.status = "archived";
+      if (!store.prompts.some((prompt) => prompt.id === row.id)) {
+        store.prompts.push({ ...existing, ...row });
+      }
+    } else if (existing) Object.assign(existing, row);
     appendAuditLog(store, {
       source: "api",
       action: "prompt.update",
       project_id: projectId,
-      before: existing,
+      before,
       after: row,
     });
     await persistProjectStore(db, store);
@@ -1791,6 +1890,18 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     return referralsOverview(store);
   });
 
+  app.post("/v1/projects/:projectId/agent/referrals/import", async (req, reply) => {
+    const { projectId } = req.params as { projectId: string };
+    const store = await resolveProjectStore(db, projectId);
+    if (!store) return reply.code(404).send({ error: "project_not_found" });
+    try {
+      const result = importReferralRows(store, (req.body as { rows?: unknown })?.rows);
+      appendAuditLog(store, { source: "api", action: "referrals.import", project_id: projectId, after: result });
+      await persistProjectStore(db, store);
+      return result;
+    } catch (error) { return reply.code(400).send({ error: "invalid_referral_import", message: error instanceof Error ? error.message : "Invalid import" }); }
+  });
+
   app.post("/v1/agent/classify-referral", async (req) => {
     return classifySampleReferral((req.body ?? {}) as Record<string, string>);
   });
@@ -1893,24 +2004,30 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       channel_ids?: string[];
       force_inline?: boolean;
     };
+    if (body.force_inline === false && queueMode() === "bullmq" && !db) {
+      return reply.code(409).send({
+        error: "database_required",
+        message: "Background collection requires PostgreSQL persistence.",
+      });
+    }
     // Respect GEO_ADAPTER_MODE / per-provider keys (default auto → fixture without keys)
     const result = await runProjectCollectAndApply(store, {
+      observationId: randomUUID(),
       runDate: body.run_date,
       channelIds: body.channel_ids,
       forceInline: body.force_inline ?? true,
       seed: `api|${projectId}|${body.run_date ?? "today"}`,
     });
     if (db) {
-      await persistSpineAdds(db, store);
-      await persistProjectStore(db, store);
+      await persistCollectionEvidence(db, store);
     }
     return {
       ...result,
       queue_mode: queueMode(),
       note:
-        queueMode() === "inline"
-          ? "REDIS_URL unset — collect ran inline with job_key idempotency"
-          : "Jobs queued on BullMQ geo-collect (set force_inline to run sync)",
+        result.mode === "inline"
+          ? "Collection ran inline with observation-level idempotency"
+          : "Collection queued",
     };
   });
 
@@ -2174,10 +2291,10 @@ export async function buildServer(options?: { databaseUrl?: string }) {
         };
       };
     };
-    const projectId =
-      body.project_id ??
-      body.data?.object?.metadata?.project_id ??
-      DEMO_PROJECT_ID;
+    const eventMetadata = billingEventMetadata(body as BillingEvent);
+    const projectId = eventMetadata.project_id ?? body.project_id ??
+      (process.env.NODE_ENV !== "production" && !process.env.STRIPE_WEBHOOK_SECRET ? DEMO_PROJECT_ID : undefined);
+    if (!projectId) return { handled: false, reason: "unmapped_project" };
     if (process.env.NODE_ENV === "production" && !body.id) {
       return reply.code(400).send({ error: "stripe_event_id_required" });
     }

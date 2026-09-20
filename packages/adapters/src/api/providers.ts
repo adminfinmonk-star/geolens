@@ -36,9 +36,9 @@ async function gatedFetch(
     throw new HttpStatusError(429, `rate_limited:${provider}`);
   }
   return withRetry(async () => {
-    const res = await fetch(url, init);
-    if (res.status === 429 || res.status >= 500) {
-      throw new HttpStatusError(res.status, await res.text());
+    const res = await fetch(url, { ...init, signal: init.signal ?? AbortSignal.timeout(30_000) });
+    if (!res.ok) {
+      throw new HttpStatusError(res.status, `Provider HTTP ${res.status}: ${(await res.text()).slice(0, 1000)}`);
     }
     return res;
   });
@@ -405,11 +405,11 @@ export class GoogleGeminiApiAdapter implements EngineAdapter {
     const model = resolveGeminiModel(getChannel(this.channelId)?.currentModel);
     let grounded = true;
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(this.apiKey!)}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
       const post = (useSearch: boolean) =>
         gatedFetch("google", this.channelId, url, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-goog-api-key": this.apiKey! },
           body: JSON.stringify({
             contents: [{ role: "user", parts: [{ text: req.prompt }] }],
             ...(useSearch ? { tools: [{ google_search: {} }] } : {}),
@@ -424,7 +424,7 @@ export class GoogleGeminiApiAdapter implements EngineAdapter {
         res = await post(true);
       } catch (err) {
         const status = err instanceof HttpStatusError ? err.status : 0;
-        if (status !== 429 && status !== 403) throw err;
+        if (process.env.GEO_ALLOW_UNGROUNDED_FALLBACK !== "true" || (status !== 429 && status !== 403)) throw err;
         grounded = false;
         res = await post(false);
       }
@@ -433,6 +433,7 @@ export class GoogleGeminiApiAdapter implements EngineAdapter {
           content?: { parts?: { text?: string }[] };
           groundingMetadata?: {
             groundingChunks?: { web?: { uri?: string; title?: string } }[];
+            groundingSupports?: { groundingChunkIndices?: number[] }[];
           };
         }[];
         modelVersion?: string;
@@ -448,15 +449,17 @@ export class GoogleGeminiApiAdapter implements EngineAdapter {
       const chunks =
         raw.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
       const sources: RawSource[] = [];
+      const supports = raw.candidates?.[0]?.groundingMetadata?.groundingSupports ?? [];
       for (let i = 0; i < chunks.length; i++) {
         const uri = chunks[i]?.web?.uri;
         if (!uri) continue;
+        const citationCount = supports.filter((support) => support.groundingChunkIndices?.includes(i)).length;
         sources.push({
           url: uri,
           title: chunks[i]?.web?.title,
-          cited: true,
-          citationCount: 1,
-          citationPosition: sources.length + 1,
+          cited: citationCount > 0,
+          citationCount,
+          citationPosition: citationCount > 0 ? sources.length + 1 : undefined,
           retrievalRank: sources.length + 1,
         });
       }
@@ -794,7 +797,16 @@ function errorRes(
     products: [],
     maps: [],
     features: [],
-    raw: { error: err ? String(err) : code },
+    raw: { error: redactProviderError(err ? String(err) : code) },
     meta: { modelReported: model, latencyMs, surfaceKind: "api" },
   };
+}
+
+function redactProviderError(message: string): string {
+  let safe = message;
+  for (const name of ["OPENAI_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY", "PERPLEXITY_API_KEY", "ANTHROPIC_API_KEY", "AZURE_OPENAI_API_KEY"]) {
+    const value = process.env[name];
+    if (value) safe = safe.split(value).join("[redacted]");
+  }
+  return safe.replace(/([?&]key=)[^\s&]+/gi, "$1[redacted]").slice(0, 1000);
 }

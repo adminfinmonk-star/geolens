@@ -34,9 +34,12 @@ export {
   runProjectCollectAndApply,
   type ScheduleCollectOptions,
   scheduleProjectCollect,
+  snapshotProjectCollect,
 } from "./schedule.js";
 
 import { clearAdapterCache, loadRepoEnv } from "@geo/adapters";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { startAnalyzeWorker } from "./analyzeQueue.js";
 import { runCollectEnrichJob } from "./collect.js";
 import { startProjectScheduler } from "./projectScheduler.js";
@@ -90,8 +93,7 @@ async function main() {
 }
 
 if (
-  process.argv[1]?.endsWith("index.ts") ||
-  process.argv[1]?.endsWith("index.js")
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 ) {
   main().catch((e) => {
     console.error(e);

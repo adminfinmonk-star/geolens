@@ -3,6 +3,8 @@ import type { Db } from "./client.js";
 import { prompt as promptTable } from "./pg-schema.js";
 import { newId, type Prompt } from "./schema.js";
 import { type DemoStore, getDemoStore } from "./seed.js";
+import { loadProjectStore } from "./repository.js";
+import { promptIdentity } from "./promptIdentity.js";
 
 export type PromptInput = {
   text: string;
@@ -80,11 +82,7 @@ export async function listPrompts(
   projectId: string,
 ): Promise<Prompt[] | null> {
   if (db) {
-    const rows = await db
-      .select()
-      .from(promptTable)
-      .where(eq(promptTable.projectId, projectId));
-    return rows.map(toApi);
+    return (await loadProjectStore(db, projectId))?.prompts ?? null;
   }
   const store = await getDemoStore();
   if (store.project.id !== projectId) return null;
@@ -100,6 +98,10 @@ export async function createPrompt(
   if (!text) throw new Error("text_required");
   const country = (input.country_code ?? "US").toUpperCase().slice(0, 2);
   const status = input.status ?? "active";
+  const current = await listPrompts(db, projectId);
+  const duplicate = current?.find((p) => p.status === "active" &&
+    promptIdentity(p.text, p.country_code) === promptIdentity(text, country));
+  if (status === "active" && duplicate) return duplicate;
   const id = newId("pr");
 
   if (db) {
@@ -157,6 +159,23 @@ export async function updatePrompt(
       ? input.country_code.toUpperCase().slice(0, 2)
       : row.countryCode;
     const status = input.status ?? row.status;
+    if (status === "active") {
+      const others = await listPrompts(db, projectId);
+      if (others?.some((p) => p.id !== promptId && p.status === "active" &&
+        promptIdentity(p.text, p.country_code) === promptIdentity(text, countryCode))) {
+        throw new Error("active_prompt_already_exists");
+      }
+    }
+
+    if (text !== row.text || countryCode !== row.countryCode) {
+      if (!text) throw new Error("text_required");
+      const id = newId("pr");
+      await db.transaction(async (tx) => {
+        await tx.update(promptTable).set({ status: "archived" }).where(eq(promptTable.id, promptId));
+        await tx.insert(promptTable).values({ id, projectId, text, countryCode, status });
+      });
+      return { id, project_id: projectId, text, country_code: countryCode, status: status as Prompt["status"] };
+    }
 
     await db
       .update(promptTable)
@@ -176,6 +195,20 @@ export async function updatePrompt(
   if (store.project.id !== projectId) return null;
   const p = store.prompts.find((x) => x.id === promptId);
   if (!p) return null;
+  const nextText = input.text?.trim() ?? p.text;
+  const nextCountry = input.country_code?.toUpperCase().slice(0, 2) ?? p.country_code;
+  if ((input.status ?? p.status) === "active" && store.prompts.some((other) =>
+    other.id !== p.id && other.status === "active" &&
+    promptIdentity(other.text, other.country_code) === promptIdentity(nextText, nextCountry))) {
+    throw new Error("active_prompt_already_exists");
+  }
+  if (nextText !== p.text || nextCountry !== p.country_code) {
+    if (!nextText) throw new Error("text_required");
+    const version: Prompt = { ...p, id: newId("pr"), text: nextText, country_code: nextCountry, status: input.status ?? p.status };
+    p.status = "archived";
+    store.prompts.push(version);
+    return version;
+  }
   if (input.text !== undefined) p.text = input.text.trim();
   if (input.country_code !== undefined) {
     p.country_code = input.country_code.toUpperCase().slice(0, 2);

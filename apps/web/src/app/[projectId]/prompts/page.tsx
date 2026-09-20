@@ -38,7 +38,7 @@ export default function PromptsPage() {
   const [text, setText] = useState("");
   const [country, setCountry] = useState("US");
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
   const [showAdd, setShowAdd] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,39 +73,41 @@ export default function PromptsPage() {
 
   async function onCreate(e: React.FormEvent) {
     e.preventDefault();
-    const res = await fetch(`${API}/v1/projects/${projectId}/prompts`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, country_code: country }),
-    });
-    if (!res.ok) {
-      setError("Could not create prompt");
-      return;
-    }
+    if (!await mutatePrompt("", "POST", { text, country_code: country })) return;
     setText("");
     setShowAdd(false);
+  }
+
+  async function mutatePrompt(id: string, method: "POST" | "PATCH", body: object) {
+    setError(null);
+    try {
+    const res = await fetch(`${API}/v1/projects/${projectId}/prompts${id ? `/${id}` : ""}`, {
+      method,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const result = await res.json().catch(() => ({}));
+      setError(result.error === "active_prompt_already_exists"
+        ? "This question is already active for that market. Edit the existing prompt or choose a different market."
+        : result.message ?? "Could not save this prompt. Your changes have not been saved.");
+      return false;
+    }
     await load();
+    return true;
+    } catch {
+      setError("Connection lost. Please retry saving your prompt.");
+      return false;
+    }
   }
 
   async function setStatus(id: string, status: string) {
-    await fetch(`${API}/v1/projects/${projectId}/prompts/${id}`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    await load();
+    await mutatePrompt(id, "PATCH", { status });
   }
 
   async function saveText(id: string, next: string) {
-    await fetch(`${API}/v1/projects/${projectId}/prompts/${id}`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: next }),
-    });
-    await load();
+    await mutatePrompt(id, "PATCH", { text: next });
   }
 
   const filtered = useMemo(() => {
@@ -140,7 +142,7 @@ export default function PromptsPage() {
         <div>
           <div className="geo-vis-title-row">
             <h1>Prompt Tracking</h1>
-            <span className="geo-badge geo-badge-positive">Live radar</span>
+            <span className="geo-badge geo-badge-neutral">API monitoring</span>
           </div>
           <p className="geo-page-lede">
             Prompts collected from configured OpenAI, Perplexity, Gemini, and
@@ -163,6 +165,12 @@ export default function PromptsPage() {
           </button>
         </div>
       </header>
+      <details className="geo-panel" style={{ marginBottom: "var(--space-4)", padding: "var(--space-4)" }}>
+        <summary>Build a useful prompt panel</summary>
+        <p>Track questions your customers ask about the problems your product solves, comparisons they make, and purchase decisions. Use specific categories and target markets. Keep the same questions over time to measure change.</p>
+        <p>Brand-name questions measure awareness and reputation. Discovery questions measure whether your brand appears without being named. Only discovery questions contribute to the Overview score. A zero can be a valid result.</p>
+        <p>Editing a question preserves the original version and its answers. Repeating Analyze keeps your selected panel.</p>
+      </details>
 
       {error && <p className="ob-error">{error}</p>}
 

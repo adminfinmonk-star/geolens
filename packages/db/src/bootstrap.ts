@@ -42,10 +42,13 @@ export type ProjectExtensionPayload = Pick<
   | "commercial"
   | "auditLog"
   | "analysisScope"
->;
+> & {
+  promptMetadata?: Record<string, Pick<DemoStore["prompts"][number], "topic_id" | "persona" | "branding" | "intent_type">>;
+};
 
 export function extractExtension(store: DemoStore): ProjectExtensionPayload {
   return {
+    promptMetadata: Object.fromEntries(store.prompts.map((p) => [p.id, { topic_id: p.topic_id, persona: p.persona, branding: p.branding, intent_type: p.intent_type }])),
     topics: store.topics,
     tags: store.tags,
     brandProfile: store.brandProfile,
@@ -86,6 +89,10 @@ export function applyExtension(
   ext: Partial<ProjectExtensionPayload> | null | undefined,
 ) {
   if (!ext) return;
+  for (const prompt of store.prompts) {
+    const metadata = ext.promptMetadata?.[prompt.id];
+    if (metadata) Object.assign(prompt, { topic_id: metadata.topic_id, persona: metadata.persona, branding: metadata.branding, intent_type: metadata.intent_type });
+  }
   Object.assign(store, {
     topics: ext.topics ?? store.topics,
     tags: ext.tags ?? store.tags,

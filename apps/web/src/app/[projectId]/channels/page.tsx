@@ -151,7 +151,7 @@ export default async function ChannelsPage({
         <>
           <div className="geo-vis-kpis">
             <article className="geo-vis-kpi">
-              <p className="geo-vis-kpi-label">Enabled channels</p>
+              <p className="geo-vis-kpi-label">Observed channels</p>
               <p className="geo-vis-kpi-value">{rows.length}</p>
               <p className="geo-vis-kpi-meta">
                 {data.providers.length} providers
@@ -162,14 +162,14 @@ export default async function ChannelsPage({
               <p className="geo-vis-kpi-value">
                 {healthy}/{rows.length || 0}
               </p>
-              <p className="geo-vis-kpi-meta">Ok status</p>
+              <p className="geo-vis-kpi-meta">Based on recent saved collection</p>
             </article>
             <article className="geo-vis-kpi">
               <p className="geo-vis-kpi-label">Collection mode</p>
               <p className="geo-vis-kpi-value" style={{ fontSize: "1.15rem" }}>
                 {runtime?.GEO_ADAPTER_MODE ?? "Not set"}
               </p>
-              <p className="geo-vis-kpi-meta">{live} live · fixture otherwise</p>
+              <p className="geo-vis-kpi-meta">{live} configured for API collection; successful access requires credentials and quota</p>
             </article>
             <article className="geo-vis-kpi">
               <p className="geo-vis-kpi-label">Chats collected</p>

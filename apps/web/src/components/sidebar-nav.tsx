@@ -41,7 +41,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Boost & Monitor",
     short: "Monitor",
     items: [
-      { href: "prompts", label: "Prompt Tracking", badge: "Live" },
+      { href: "prompts", label: "Prompt Tracking" },
       { href: "sources/domains", label: "Sources & Citations" },
       { href: "actions", label: "Actions & Fixes" },
     ],
@@ -52,8 +52,8 @@ export const NAV_GROUPS: NavGroup[] = [
     short: "Results",
     items: [
       { href: "chats", label: "Chats" },
-      { href: "fanouts", label: "Fanouts" },
-      { href: "ads", label: "Ads" },
+      { href: "fanouts", label: "Fanouts", badge: "Preview" },
+      { href: "ads", label: "Ads", badge: "Preview" },
     ],
   },
   {
@@ -68,6 +68,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "channels", label: "Channels" },
       { href: "billing", label: "Billing" },
       { href: "settings/api-keys", label: "API keys" },
+      { href: "settings/reports", label: "Email reports" },
       { href: "settings/sso", label: "SSO" },
     ],
   },

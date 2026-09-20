@@ -78,7 +78,7 @@ export function ensureCommercial(store: DemoStore): CommercialState {
 
 export function buildQuotaContext(store: DemoStore): QuotaContext {
   const c = ensureCommercial(store);
-  const active = store.prompts.filter((p) => p.status === "active").length;
+  const active = uniqueActivePrompts(store).length;
   return {
     plan_code: store.organization.plan_code,
     is_agency: store.organization.is_agency,
@@ -491,3 +491,4 @@ export const SUBPROCESSORS = [
   { name: "Redis", purpose: "job queue" },
   { name: "LLM providers (OpenAI / Anthropic / Perplexity)", purpose: "collection when keys set" },
 ];
+import { uniqueActivePrompts } from "./promptIdentity.js";

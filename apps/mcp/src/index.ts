@@ -7,6 +7,8 @@ export {
 } from "./tools.js";
 
 import { listPlannedTools, listSlashCommands } from "./tools.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 async function main() {
   console.log(
@@ -22,8 +24,7 @@ async function main() {
 }
 
 if (
-  process.argv[1]?.endsWith("index.ts") ||
-  process.argv[1]?.endsWith("index.js")
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 ) {
   main().catch((e) => {
     console.error(e);

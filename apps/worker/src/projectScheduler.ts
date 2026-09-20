@@ -1,12 +1,15 @@
 import {
   checkCollect,
   createDb,
+  closeDb,
   ensureCommercial,
   loadProjectStore,
   project as projectTable,
+  deliverDueReports,
 } from "@geo/db";
 import { enqueueAnalyzeProject } from "./analyzeQueue.js";
 import { queueMode } from "./queue.js";
+import { snapshotProjectCollect } from "./schedule.js";
 
 function dateInTimezone(now: Date, timezone: string): string {
   try {
@@ -47,6 +50,8 @@ export async function runProjectSchedulerTick(
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl || queueMode() !== "bullmq") return { scanned: 0, queued: 0 };
   const db = createDb(databaseUrl);
+  try {
+  await deliverDueReports(db);
   const projects = await db.select().from(projectTable);
   let queued = 0;
 
@@ -85,8 +90,10 @@ export async function runProjectSchedulerTick(
       continue;
     }
     const ownBrand = store.brands.find((brand) => brand.is_own);
+    const jobId = `sched_${project.id}_${runDate.replaceAll("-", "")}`;
     await enqueueAnalyzeProject({
-      job_id: `sched_${project.id}_${runDate.replaceAll("-", "")}`,
+      job_id: jobId,
+      snapshot: snapshotProjectCollect(store, { channelIds, runDate, observationId: jobId, seed: `scheduled|${project.id}|${runDate}` }),
       project_id: project.id,
       domain: project.domain,
       brand_name: ownBrand?.name ?? project.name,
@@ -100,6 +107,7 @@ export async function runProjectSchedulerTick(
     queued += 1;
   }
   return { scanned: projects.length, queued };
+  } finally { await closeDb(db); }
 }
 
 export async function startProjectScheduler(): Promise<{

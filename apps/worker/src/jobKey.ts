@@ -7,6 +7,7 @@ export function collectJobKey(input: {
   channelId: string;
   countryCode: string;
   runDate: string;
+  observationId?: string;
 }): string {
   const raw = [
     input.projectId,
@@ -14,6 +15,7 @@ export function collectJobKey(input: {
     input.channelId,
     input.countryCode.toUpperCase(),
     input.runDate,
+    ...(input.observationId ? [input.observationId] : []),
   ].join("|");
   return createHash("sha256").update(raw).digest("hex");
 }

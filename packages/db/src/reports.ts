@@ -1,6 +1,8 @@
 import { classifyBranding, compareBrandRank } from "@geo/core";
+import { createHash } from "node:crypto";
 import type { DemoStore } from "./seed.js";
 import { metricsFromStore } from "./seed.js";
+import { uniqueActivePrompts } from "./promptIdentity.js";
 
 /** Canonical brands report — dashboard, API, MCP, CSV must call this. */
 export function brandsReportPayload(store: DemoStore) {
@@ -191,20 +193,6 @@ function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
 }
 
-function wilsonInterval(successes: number, total: number) {
-  if (total <= 0) return { low: 0, high: 1 };
-  const z = 1.96;
-  const p = successes / total;
-  const denominator = 1 + (z * z) / total;
-  const centre = p + (z * z) / (2 * total);
-  const margin =
-    z * Math.sqrt((p * (1 - p)) / total + (z * z) / (4 * total * total));
-  return {
-    low: clamp01((centre - margin) / denominator),
-    high: clamp01((centre + margin) / denominator),
-  };
-}
-
 /** Visibility Overview aggregate with an inspectable, sample-aware score. */
 export function overviewReportPayload(
   store: DemoStore,
@@ -223,7 +211,7 @@ export function overviewReportPayload(
   const reportStore = { ...store, brands: scopedBrands };
   const ownBrandConfig =
     scopedBrands.find((brand) => brand.is_own) ?? scopedBrands[0];
-  const activePrompts = store.prompts.filter((prompt) => prompt.status === "active");
+  const activePrompts = uniqueActivePrompts(store);
   const activePromptIds = new Set(activePrompts.map((prompt) => prompt.id));
   const scorePrompts = activePrompts.filter(
     (prompt) =>
@@ -255,10 +243,11 @@ export function overviewReportPayload(
       : null;
 
   const eligibleChats = own?.visibility_total ?? 0;
+  const eligibleChatIds = new Set(scoreView.chats.filter((chat) => chat.status === "ok" || chat.status === "empty").map((chat) => chat.id));
   const ownMentionedChatIds = new Set(
     own
       ? scoreView.mentions
-          .filter((m) => m.brand_id === own.brand_id)
+          .filter((m) => m.brand_id === own.brand_id && m.mention_count > 0 && eligibleChatIds.has(m.chat_id))
           .map((m) => m.chat_id)
       : [],
   );
@@ -349,7 +338,16 @@ export function overviewReportPayload(
     own?.position == null ? 0 : clamp01(1 - (own.position - 1) / 9);
   const citedMentionedChats = new Set(
     scoreView.sources
-      .filter((s) => s.cited && ownMentionedChatIds.has(s.chat_id))
+      .filter((s) => {
+        if (!s.cited || !ownMentionedChatIds.has(s.chat_id) || !store.project.domain) return false;
+        try {
+          const ownedHost = new URL(`https://${store.project.domain.replace(/^https?:\/\//, "")}`).hostname.toLowerCase().replace(/^www\./, "");
+          const citedHost = new URL(s.url).hostname.toLowerCase().replace(/^www\./, "");
+          return citedHost === ownedHost || citedHost.endsWith(`.${ownedHost}`);
+        } catch {
+          return false;
+        }
+      })
       .map((s) => s.chat_id),
   ).size;
   const citationSupport =
@@ -366,15 +364,6 @@ export function overviewReportPayload(
               0.1 * supportedPosition +
               0.1 * supportedCitations),
         );
-  const presenceInterval = wilsonInterval(mentionedAnswers, eligibleChats);
-  const scoreWithPresence = (presence: number) =>
-    Math.round(
-      100 *
-        (0.55 * presence +
-          0.25 * shareOfVoice +
-          0.1 * positionQuality * presence +
-          0.1 * citationSupport * presence),
-    );
   const collectionReliability =
     scoreView.chats.length === 0 ? 0 : eligibleChats / scoreView.chats.length;
   const confidenceIndex =
@@ -421,19 +410,14 @@ export function overviewReportPayload(
     const mentionedChats = new Set<string>();
     if (ownBrandId && eligible > 0) {
       for (const m of view.mentions) {
-        if (m.brand_id === ownBrandId && topicChatIds.has(m.chat_id)) {
+        if (m.brand_id === ownBrandId && m.mention_count > 0 && topicChatIds.has(m.chat_id)) {
           mentionedChats.add(m.chat_id);
         }
       }
-    } else if (eligible === 0) {
-      topicVisibilityIsProxy = topicVisibilityIsProxy || promptsByTopic.has(t.id);
     }
     const mentioned = mentionedChats.size;
     const visibility =
-      eligible > 0 ? mentioned / eligible : own ? own.visibility : 0;
-    if (eligible === 0 && (topicPromptCount.get(t.id) ?? 0) > 0) {
-      topicVisibilityIsProxy = true;
-    }
+      eligible > 0 ? mentioned / eligible : null;
     return {
       id: t.id,
       name: t.name,
@@ -447,10 +431,13 @@ export function overviewReportPayload(
   const chatDay = new Map(
     view.chats.map((c) => [c.id, c.run_date.slice(0, 10)] as const),
   );
+  const trendEligibleIds = new Set(view.chats.filter((c) => c.status === "ok" || c.status === "empty").map((c) => c.id));
+  const trendMentionedIds = new Set<string>();
   const byDay = new Map<
     string,
     {
       chats: number;
+      eligible: number;
       mentions: number;
       citations: number;
       citedUrls: Set<string>;
@@ -460,16 +447,19 @@ export function overviewReportPayload(
     const day = c.run_date.slice(0, 10);
     const cur = byDay.get(day) ?? {
       chats: 0,
+      eligible: 0,
       mentions: 0,
       citations: 0,
       citedUrls: new Set<string>(),
     };
     cur.chats += 1;
+    if (c.status === "ok" || c.status === "empty") cur.eligible += 1;
     byDay.set(day, cur);
   }
   if (own) {
     for (const m of view.mentions) {
-      if (m.brand_id !== own.brand_id) continue;
+      if (m.brand_id !== own.brand_id || m.mention_count <= 0 || !trendEligibleIds.has(m.chat_id) || trendMentionedIds.has(m.chat_id)) continue;
+      trendMentionedIds.add(m.chat_id);
       const day = chatDay.get(m.chat_id);
       if (!day) continue;
       const cur = byDay.get(day);
@@ -490,11 +480,29 @@ export function overviewReportPayload(
     .map(([date, v]) => ({
       date,
       chats: v.chats,
+      eligible_answers: v.eligible,
       mentions: v.mentions,
       citations: v.citations,
       cited_pages: v.citedUrls.size,
-      visibility: v.chats === 0 ? 0 : v.mentions / v.chats,
+      visibility: v.eligible === 0 ? null : v.mentions / v.eligible,
     }));
+
+  // A matching prompt id alone is insufficient: route, model and market must
+  // also agree before observations are compared across dates.
+  const cellsByDay = new Map<string, string[]>();
+  for (const chat of view.chats) {
+    const day = chat.run_date.slice(0, 10);
+    const cells = cellsByDay.get(day) ?? [];
+    if (trendEligibleIds.has(chat.id)) cells.push(JSON.stringify([chat.prompt_id, chat.model_channel_id, chat.model_reported ?? "unknown", chat.country_code, chat.surface_kind ?? "unknown", chat.retrieval_mode ?? "unknown"]));
+    cellsByDay.set(day, cells);
+  }
+  const daySignatures = [...cellsByDay.values()].map((cells) => JSON.stringify(cells.sort()));
+  const trendComparable = daySignatures.length >= 2 && daySignatures.every((signature) => signature !== "[]") && new Set(daySignatures).size === 1;
+  const cohortId = createHash("sha256").update(JSON.stringify({
+    prompts: scorePrompts.map((prompt) => [prompt.id, prompt.text, prompt.country_code]).sort(),
+    brands: scopedBrands.map((brand) => [brand.id, brand.name, brand.aliases, brand.patterns]).sort(),
+    channel: parsed.channel,
+  })).digest("hex");
 
   const domainMap = new Map<string, number>();
   for (const s of view.sources) {
@@ -573,18 +581,30 @@ export function overviewReportPayload(
       label: "Observed presence",
       note: "The raw presence rate remains visible beside the composite score.",
     },
+    collection_health: [...new Set(view.chats.map((c) => c.model_channel_id))].map((channelId) => {
+      const attempts = view.chats.filter((c) => c.model_channel_id === channelId);
+      const latestDate = attempts.map((c) => c.run_date).sort().at(-1)!;
+      const latest = attempts.filter((c) => c.run_date === latestDate);
+      const successful = latest.filter((c) => c.status === "ok" || c.status === "empty").length;
+      const failures = latest.filter((c) => c.status === "error" || c.status === "blocked");
+      const details = failures.map((c) => `${c.error_code ?? ""} ${c.error_detail ?? ""} ${JSON.stringify(c.raw_payload ?? {})}`).join(" ");
+      const action = /429|quota|RESOURCE_EXHAUSTED|credit|balance/i.test(details)
+        ? "Restore provider quota or credits, then retry collection."
+        : /401|403|api.key|unauthorized|authentication/i.test(details)
+          ? "Check the provider credential and account permissions, then retry collection."
+          : "Review the failed attempts in Chats and retry after resolving the provider error.";
+      return { channel_id: channelId, latest_date: latestDate, attempts: latest.length,
+        eligible_answers: successful, failures: failures.length,
+        status: failures.length === 0 ? "healthy" : successful === 0 ? "unavailable" : "partial",
+        action: failures.length ? action : "Collection succeeded on the latest observed day." };
+    }),
     score: {
       value: scoreValue,
-      label: "GeoLens Visibility Score",
-      confidence,
-      confidence_index: Number(confidenceIndex.toFixed(3)),
-      range:
-        scoreValue == null
-          ? null
-          : {
-              low: scoreWithPresence(presenceInterval.low),
-              high: scoreWithPresence(presenceInterval.high),
-            },
+      label: "Experimental GeoLens score",
+      confidence: eligibleChats === 0 ? "insufficient" : "unvalidated",
+      sample_coverage: confidence,
+      sample_coverage_index: Number(confidenceIndex.toFixed(3)),
+      range: null as { low: number; high: number } | null,
       components: {
         presence: Math.round(adjustedPresence * 100),
         share_of_voice: Math.round(shareOfVoice * 100),
@@ -598,9 +618,10 @@ export function overviewReportPayload(
         citation_support: 10,
       },
       methodology:
-        "Uses only observed evidence from the current active, non-branded prompts: 55% presence + 25% current-cohort share of voice + 10% presence-weighted answer position + 10% presence-weighted citation support. Branded prompts, archived prompts, stale competitors, failures, and statistical priors cannot inflate or lower the point score.",
+        "Experimental, uncalibrated weights: 55% observed presence + 25% configured-brand mention share + 10% presence-weighted mention position + 10% owned-domain citation coverage. Owned-domain citations do not establish endorsement. This describes the selected prompt sample, not market-wide visibility. No statistical confidence interval for this composite has been validated.",
     },
     prompt_cohort: {
+      id: cohortId,
       active_prompts: activePrompts.length,
       score_prompts: scorePrompts.length,
       branded_prompts_excluded: activePrompts.length - scorePrompts.length,
@@ -638,6 +659,8 @@ export function overviewReportPayload(
     series,
     cited_domains,
     honesty: {
+      trend_comparable: trendComparable,
+      trend_note: "Trend comparability requires the same eligible prompt versions, routes, reported models and markets on every observed day. Counts are descriptive; repeated observations are not independent market samples.",
       series_is_collected: series.length >= 1 && view.chats.length > 0,
       country_is_requested_market: true,
       topic_visibility_is_proxy: topicVisibilityIsProxy,

@@ -1,6 +1,7 @@
 import { DEFAULT_API_CHANNELS } from "@geo/adapters";
 import { getChannel } from "@geo/registry";
 import type { DemoStore } from "@geo/db";
+import { uniqueActivePrompts } from "@geo/db";
 import {
   buildCollectPayload,
   type CollectChannelResult,
@@ -16,22 +17,26 @@ export interface ScheduleCollectOptions {
   seed?: string;
   /** Max concurrent inline LLM/adapter calls (default 4). */
   concurrency?: number;
+  /** Stable for retries; distinct for independent repeat observations. */
+  observationId?: string;
+  /** Frozen at submission so delayed jobs cannot silently collect edited prompts. */
+  snapshot?: CollectionSnapshot;
 }
+
+export type CollectionSnapshot = {
+  run_date: string;
+  skipped: { prompt_id: string; channel_id: string; reason: string }[];
+  payloads: CollectJobPayload[];
+};
 
 /**
  * §6.1 scheduler: for each active prompt × channel, enqueue collect_job
  * with job_key idempotency. Skips unsupported country pairs (no chat row).
  */
-export async function scheduleProjectCollect(
+export function snapshotProjectCollect(
   store: DemoStore,
   opts?: ScheduleCollectOptions,
-): Promise<{
-  run_date: string;
-  mode: string;
-  enqueued: EnqueueResult[];
-  skipped: { prompt_id: string; channel_id: string; reason: string }[];
-  payloads: CollectJobPayload[];
-}> {
+): CollectionSnapshot {
   const runDate =
     opts?.runDate ?? new Date().toISOString().slice(0, 10);
   const channelIds = opts?.channelIds ?? [...DEFAULT_API_CHANNELS];
@@ -41,22 +46,15 @@ export async function scheduleProjectCollect(
     .map((b) => ({
       brandId: b.id,
       name: b.name,
-      aliases: b.aliases,
-      patterns: b.patterns,
+      aliases: [...b.aliases],
+      patterns: [...b.patterns],
     }));
 
-  const active = store.prompts.filter((p) => p.status === "active");
-  const enqueued: EnqueueResult[] = [];
+  const active = uniqueActivePrompts(store);
   const skipped: { prompt_id: string; channel_id: string; reason: string }[] =
     [];
   const payloads: CollectJobPayload[] = [];
 
-  const prevRedis = process.env.REDIS_URL;
-  if (opts?.forceInline) {
-    delete process.env.REDIS_URL;
-  }
-
-  try {
     for (const prompt of active) {
       for (const channelId of channelIds) {
         const meta = getChannel(channelId);
@@ -82,12 +80,21 @@ export async function scheduleProjectCollect(
           runDate,
           brands,
           seed: opts?.seed,
+          observationId: opts?.observationId,
         });
         payloads.push(payload);
       }
     }
 
-    // Run inline jobs in parallel (Cursor/LLM calls dominate latency)
+  return { run_date: runDate, skipped, payloads };
+}
+
+export async function scheduleProjectCollect(store: DemoStore, opts?: ScheduleCollectOptions) {
+    const snapshot = opts?.snapshot ?? snapshotProjectCollect(store, opts);
+    const { run_date: runDate, skipped, payloads } = snapshot;
+    if (payloads.some((p) => p.project_id !== store.project.id)) throw new Error("collection_snapshot_project_mismatch");
+    const enqueued: EnqueueResult[] = [];
+    // Run independent adapter calls with bounded concurrency.
     const concurrency = Math.max(1, opts?.concurrency ?? 4);
     const results: EnqueueResult[] = new Array(payloads.length);
     let next = 0;
@@ -95,7 +102,7 @@ export async function scheduleProjectCollect(
       while (next < payloads.length) {
         const i = next++;
         const payload = payloads[i]!;
-        results[i] = await enqueueCollectJob(payload);
+        results[i] = await enqueueCollectJob(payload, { forceInline: opts?.forceInline });
       }
     }
     await Promise.all(
@@ -105,13 +112,6 @@ export async function scheduleProjectCollect(
       ),
     );
     enqueued.push(...results);
-  } finally {
-    if (opts?.forceInline) {
-      if (prevRedis !== undefined) process.env.REDIS_URL = prevRedis;
-      else delete process.env.REDIS_URL;
-    }
-  }
-
   return {
     run_date: runDate,
     mode: opts?.forceInline ? "inline" : enqueued[0]?.mode ?? "inline",
@@ -131,19 +131,16 @@ export function applyCollectResultToStore(
     return { chat_id: null };
   }
 
-  // Idempotent: same job_key day already written?
+  const chatId = `cht_${payload.job_key.slice(0, 16)}`;
+  // Retry the same observation idempotently, retaining independent repeats.
   const existing = store.chats.find(
     (c) =>
-      c.prompt_id === payload.prompt_id &&
-      c.model_channel_id === payload.channel_id &&
-      c.run_date === payload.run_date &&
-      c.country_code === payload.country_code,
+      c.id === chatId,
   );
   if (existing) {
     return { chat_id: existing.id };
   }
 
-  const chatId = `cht_${payload.job_key.slice(0, 16)}`;
   store.chats.push({
     id: chatId,
     project_id: payload.project_id,
@@ -168,7 +165,7 @@ export function applyCollectResultToStore(
     error_code: result.errorCode,
     error_detail: result.errorDetail,
     collected_at: new Date().toISOString(),
-    retrieval_mode: "provider_api",
+    retrieval_mode: result.rawPayload && typeof result.rawPayload === "object" && "grounded" in result.rawPayload && result.rawPayload.grounded === false ? "provider_api_ungrounded" : "provider_api",
     locale: `${store.project.language || "en"}-${payload.country_code}`,
     collector_version: process.env.GIT_SHA ?? "geolens-worker-v1",
     extraction_version: "brands-v1",
@@ -208,6 +205,8 @@ export async function runProjectCollectAndApply(
   run_date: string;
   mode: string;
   chats_written: number;
+  eligible_answers: number;
+  failed_attempts: number;
   jobs: EnqueueResult[];
   skipped: { prompt_id: string; channel_id: string; reason: string }[];
 }> {
@@ -221,19 +220,24 @@ export async function runProjectCollectAndApply(
     const payload = schedule.payloads[i]!;
     const job = schedule.enqueued[i]!;
     if (job.status === "completed" && job.result) {
+      const before = store.chats.length;
       const { chat_id } = applyCollectResultToStore(
         store,
         payload,
         job.result,
       );
-      if (chat_id) chats_written += 1;
+      if (chat_id && store.chats.length > before) chats_written += 1;
     }
   }
 
+  const observationIds = new Set(schedule.payloads.map((payload) => `cht_${payload.job_key.slice(0, 16)}`));
+  const observed = store.chats.filter((chat) => observationIds.has(chat.id));
   return {
     run_date: schedule.run_date,
     mode: schedule.mode,
     chats_written,
+    eligible_answers: observed.filter((chat) => chat.status === "ok" || chat.status === "empty").length,
+    failed_attempts: observed.filter((chat) => chat.status === "error" || chat.status === "blocked").length,
     jobs: schedule.enqueued,
     skipped: schedule.skipped,
   };

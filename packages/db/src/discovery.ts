@@ -15,6 +15,7 @@ import {
 } from "@geo/core";
 import { newId, type Prompt, type Topic } from "./schema.js";
 import { getDemoStore, type DemoStore } from "./seed.js";
+import { promptIdentity, uniqueActivePrompts } from "./promptIdentity.js";
 
 const profiles = new Map<string, BrandProfile>();
 
@@ -190,6 +191,19 @@ export function prepareDomainAnalysis(
   rawDomain: string,
   opts?: { prompt_limit?: number },
 ) {
+  const requestedDomain = normalizeDomain(rawDomain);
+  const existingPanel = uniqueActivePrompts(store);
+  if (requestedDomain && store.analysisScope?.domain === requestedDomain && existingPanel.length > 0) {
+    const own = store.brands.find((brand) => brand.is_own);
+    return {
+      project: store.project, domain: requestedDomain,
+      brand_name: own?.name ?? getOrCreateProfile(store).name,
+      own_brand_id: own?.id ?? null,
+      prompts_activated: existingPanel.length,
+      competitor_count: currentAnalysisBrands(store).filter((brand) => !brand.is_own).length,
+      profile: getOrCreateProfile(store),
+    };
+  }
   const bound = analyzeProjectDomain(store, rawDomain);
   const profile = extractBrandProfile(bound.domain);
   const market = inferMarketFromDomain(bound.domain);
@@ -563,8 +577,8 @@ export function activateDiscoveredPrompts(
     if (
       store.prompts.some(
         (p) =>
-          p.text.toLowerCase() === item.text.toLowerCase() &&
-          p.country_code === item.country_code,
+          p.status === "active" && promptIdentity(p.text, p.country_code) ===
+          promptIdentity(item.text.slice(0, 200), item.country_code),
       )
     ) {
       continue;
@@ -592,6 +606,8 @@ export function importPromptsCsv(store: DemoStore, csv: string) {
   const rows = parsePromptsCsv(csv);
   const created: Prompt[] = [];
   for (const row of rows) {
+    if (store.prompts.some((p) => p.status === "active" &&
+      promptIdentity(p.text, p.country_code) === promptIdentity(row.text, row.country_code))) continue;
     let topicId: string | undefined;
     if (row.topic) {
       let topic = store.topics.find(

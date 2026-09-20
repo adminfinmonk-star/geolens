@@ -6,6 +6,7 @@ import { ExportOverviewButton } from "./export-button";
 import { ShareOverviewButton } from "./share-button";
 
 type Overview = {
+  collection_health?: { channel_id: string; latest_date: string; attempts: number; eligible_answers: number; failures: number; status: string; action: string }[];
   brand: {
     id: string;
     name: string;
@@ -28,8 +29,8 @@ type Overview = {
   score: {
     value: number | null;
     label: string;
-    confidence: "insufficient" | "limited" | "directional" | "strong";
-    confidence_index: number;
+    confidence: "insufficient" | "limited" | "directional" | "strong" | "unvalidated";
+    sample_coverage_index: number;
     range: { low: number; high: number } | null;
     components: {
       presence: number;
@@ -88,7 +89,7 @@ type Overview = {
     id: string;
     name: string;
     prompt_count: number;
-    visibility: number;
+    visibility: number | null;
     mention_estimate: number;
     chats_eligible?: number;
   }[];
@@ -110,6 +111,8 @@ type Overview = {
   };
   honesty: {
     series_is_collected: boolean;
+    trend_comparable?: boolean;
+    trend_note?: string;
     country_is_requested_market: boolean;
     topic_visibility_is_proxy: boolean;
     score_sample_thin?: boolean;
@@ -341,6 +344,7 @@ export default async function OverviewPage({
         <div className="geo-vis-actions">
           <ExportOverviewButton projectId={projectId} />
           <ShareOverviewButton projectId={projectId} />
+          <Link href={`/${projectId}/settings/reports`} className="geo-btn geo-btn-sm">Email reports</Link>
           <Link
             href={`/${projectId}/prompts`}
             className="geo-btn geo-btn-primary geo-btn-sm"
@@ -364,6 +368,21 @@ export default async function OverviewPage({
 
       {overview && (
         <>
+          {overview.collection_health?.some((channel) => channel.failures > 0) && (
+            <section className="geo-callout geo-callout-warning" style={{ marginBottom: "var(--space-4)" }} aria-label="Collection needs attention">
+              <h2 className="geo-section-title">Collection needs attention</h2>
+              {overview.collection_health.filter((channel) => channel.failures > 0).map((channel) => (
+                <p key={channel.channel_id}>{channel.channel_id}: {channel.eligible_answers}/{channel.attempts} answers collected on {channel.latest_date}. {channel.action}</p>
+              ))}
+              <Link href={`/${projectId}/chats`}>Review collection attempts</Link>
+            </section>
+          )}
+          <p className="geo-muted" style={{ marginBottom: "var(--space-4)" }}>
+            Overview measures {overview.prompt_cohort.score_prompts} active discovery prompts in the selected period.
+            Branded and archived prompts are excluded. A zero means no brand mentions in eligible answers for this sample.
+            {" "}<Link href={`/${projectId}/prompts`}>Review your prompt panel</Link>
+            {" · "}<Link href={`/${projectId}/brands`}>View historical brand results</Link>
+          </p>
           <div className="geo-vis-kpis">
             <article className="geo-vis-kpi">
               <div className="geo-vis-kpi-head">
@@ -408,7 +427,7 @@ export default async function OverviewPage({
             <section className="geo-panel geo-vis-panel geo-vis-score-card">
               <div className="geo-vis-panel-head">
                 <h2 className="geo-section-title" style={{ margin: 0 }}>
-                  GeoLens Visibility Score
+                  Experimental GeoLens score
                 </h2>
                 <span
                   className={`geo-badge ${
@@ -419,7 +438,7 @@ export default async function OverviewPage({
                         : "geo-badge-warm"
                   }`}
                 >
-                  {overview.score.confidence} confidence
+                  Uncalibrated · sample only
                 </span>
               </div>
               <div className="geo-gauge" data-band={scoreBand}>
@@ -463,7 +482,7 @@ export default async function OverviewPage({
               <p className="geo-vis-insight">
                 {overview.score.range
                   ? `Estimated range ${overview.score.range.low}–${overview.score.range.high}. `
-                  : "Awaiting collection for the active discovery prompts. "}
+                  : overview.evidence.eligible_answers > 0 ? "No validated score interval. " : "Awaiting collection for the active discovery prompts. "}
                 {overview.evidence.eligible_answers > 0
                   ? `Raw presence: ${overview.evidence.mentioned_answers}/${overview.evidence.eligible_answers} eligible answers (${pct(overview.evidence.observed_presence)}).`
                   : "No previous prompt version is reused."}
@@ -472,7 +491,7 @@ export default async function OverviewPage({
                 <span><strong>{overview.score.components.presence}</strong> Presence · 55%</span>
                 <span><strong>{overview.score.components.share_of_voice}</strong> Share of voice · 25%</span>
                 <span><strong>{overview.score.components.position}</strong> Position support · 10%</span>
-                <span><strong>{overview.score.components.citation_support}</strong> Citation support · 10%</span>
+                <span><strong>{overview.score.components.citation_support}</strong> Owned-domain citations · 10%</span>
               </div>
               <details className="geo-score-method">
                 <summary>How this score works</summary>
@@ -493,18 +512,18 @@ export default async function OverviewPage({
             <section className="geo-panel geo-vis-panel">
               <div className="geo-vis-panel-head">
                 <h2 className="geo-section-title" style={{ margin: 0 }}>
-                  Metrics trend
+                  Collected daily counts
                 </h2>
                 <span
                   className={`geo-badge ${
-                    overview.honesty.series_is_collected
+                    overview.honesty.trend_comparable
                       ? "geo-badge-positive"
                       : "geo-badge-neutral"
                   }`}
                 >
-                  {overview.honesty.series_is_collected
-                    ? "Collected"
-                    : "Sparse history"}
+                  {overview.honesty.trend_comparable
+                    ? "Matched coverage"
+                    : overview.series.length < 2 ? "Sparse history" : "Coverage differs"}
                 </span>
               </div>
               {chartSeries.length > 0 ? (
@@ -522,6 +541,7 @@ export default async function OverviewPage({
                       ? ` (${windowFrom} to ${windowTo})`
                       : ""}{" "}
                     from collected chats for {projectDomain || "this project"}.
+                    {" "}{overview.honesty.trend_note}
                   </p>
                 </>
               ) : (
@@ -686,7 +706,7 @@ export default async function OverviewPage({
                               ? t.chats_eligible === 0
                                 ? "—"
                                 : `${t.mention_estimate}/${t.chats_eligible}`
-                              : pct(t.visibility)}
+                              : t.visibility == null ? "—" : pct(t.visibility)}
                           </td>
                           <td>
                             <Link

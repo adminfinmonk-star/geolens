@@ -62,7 +62,7 @@ export function classifyAssistantReferral(input: {
     }
   }
   // GA4 native AI channel grouping (simplified)
-  if ((input.medium ?? "").toLowerCase() === "ai" || (input.source ?? "").toLowerCase().includes("ai")) {
+  if ((input.medium ?? "").toLowerCase() === "ai" || (input.source ?? "").trim().toLowerCase() === "ai assistants") {
     return {
       isAiAssistant: true,
       platform: "GA4",

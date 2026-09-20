@@ -53,8 +53,9 @@ export async function checkQueueReadiness(): Promise<boolean> {
  */
 export async function enqueueCollectJob(
   payload: CollectJobPayload,
+  options?: { forceInline?: boolean },
 ): Promise<EnqueueResult> {
-  const mode = queueMode();
+  const mode = options?.forceInline ? "inline" : queueMode();
   if (mode === "inline") {
     if (completedKeys.has(payload.job_key)) {
       return { job_key: payload.job_key, mode, status: "duplicate" };
@@ -95,27 +96,48 @@ export async function startCollectWorker(): Promise<{ close: () => Promise<void>
     return { close: async () => undefined };
   }
   const { Worker } = await import("bullmq");
+  const { createDb, closeDb, loadProjectStore, persistCollectionEvidence } = await import("@geo/db");
+  const { applyCollectResultToStore } = await import("./schedule.js");
+  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required for durable collection");
+  const db = createDb(process.env.DATABASE_URL);
   const connection = parseRedis(redisUrl()!);
   const worker = new Worker(
     "geo-collect",
     async (job) => {
       const payload = job.data as CollectJobPayload;
-      return handler(payload);
+      const store = await loadProjectStore(db, payload.project_id);
+      if (!store) throw new Error("project_not_found");
+      const result = await handler(payload) as Awaited<ReturnType<typeof processCollectJob>>;
+      // Persist only this job's evidence, never the worker's older settings.
+      store.chats = [];
+      store.mentions = [];
+      store.sources = [];
+      applyCollectResultToStore(store, payload, result);
+      await persistCollectionEvidence(db, store);
+      return result;
     },
     { connection, concurrency: 4 },
   );
   return {
     close: async () => {
       await worker.close();
+      await closeDb(db);
     },
   };
 }
 
-function parseRedis(url: string): { host: string; port: number; maxRetriesPerRequest: null } {
+export function parseRedis(url: string) {
   const u = new URL(url);
+  if (u.protocol !== "redis:" && u.protocol !== "rediss:") throw new Error("Invalid Redis protocol");
+  const database = u.pathname.slice(1) || "0";
+  if (!/^\d+$/.test(database)) throw new Error("Invalid Redis database");
   return {
     host: u.hostname || "127.0.0.1",
     port: Number(u.port || 6379),
+    db: Number(database),
+    ...(u.password ? { password: decodeURIComponent(u.password) } : {}),
+    ...(u.username ? { username: decodeURIComponent(u.username) } : {}),
+    ...(u.protocol === "rediss:" ? { tls: {} } : {}),
     maxRetriesPerRequest: null,
   };
 }

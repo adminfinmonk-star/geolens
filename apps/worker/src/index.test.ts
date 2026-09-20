@@ -8,6 +8,9 @@ import {
   runCollectEnrichJob,
   runProjectCollectAndApply,
   scheduleProjectCollect,
+  snapshotProjectCollect,
+  setCollectJobHandler,
+  processCollectJob,
 } from "./index.js";
 
 describe("runCollectEnrichJob", () => {
@@ -44,6 +47,32 @@ describe("runCollectEnrichJob", () => {
 });
 
 describe("job_key + schedule", () => {
+  it("retains failure evidence without counting it as successful analysis", async () => {
+    resetDemoStore();
+    resetInlineJobState();
+    const store = await getDemoStore();
+    setCollectJobHandler(async (payload) => ({ channelId: payload.channel_id, status: "error", text: "", mentions: [], sources: [], surfaceKind: "api", errorCode: "HTTP_401" }));
+    try {
+      const result = await runProjectCollectAndApply(store, { forceInline: true, channelIds: ["openai-1"], observationId: "failed-test" });
+      expect(result.chats_written).toBeGreaterThan(0);
+      expect(result.failed_attempts).toBe(result.chats_written);
+      expect(result.eligible_answers).toBe(0);
+    } finally {
+      setCollectJobHandler(processCollectJob);
+      resetInlineJobState();
+    }
+  });
+  it("freezes prompt text and brand aliases when an analysis is submitted", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const snapshot = snapshotProjectCollect(store, { observationId: "snapshot-test", channelIds: ["openai-1"] });
+    const first = snapshot.payloads[0]!;
+    const original = first.prompt_text;
+    store.prompts.find((p) => p.id === first.prompt_id)!.text = "Edited after submission";
+    store.brands[0]!.aliases.push("Later alias");
+    expect(first.prompt_text).toBe(original);
+    expect(first.brands.some((b) => b.aliases.includes("Later alias"))).toBe(false);
+  });
   it("honors daily and weekly project collection frequency", () => {
     expect(
       projectCollectionIsDue({
@@ -111,5 +140,22 @@ describe("job_key + schedule", () => {
       channelIds: ["openai-1"],
     });
     expect(second.enqueued.every((j) => j.status === "duplicate")).toBe(true);
+    const afterFirst = store.chats.length;
+    await runProjectCollectAndApply(store, {
+      runDate: "2026-09-05",
+      forceInline: true,
+      observationId: "independent-repeat",
+      channelIds: ["openai-1"],
+    });
+    expect(store.chats.length).toBeGreaterThan(afterFirst);
+    const afterRepeat = store.chats.length;
+    const repeated = await runProjectCollectAndApply(store, {
+      runDate: "2026-09-05",
+      forceInline: true,
+      observationId: "independent-repeat",
+      channelIds: ["openai-1"],
+    });
+    expect(store.chats.length).toBe(afterRepeat);
+    expect(repeated.eligible_answers).toBeGreaterThan(0);
   }, 60_000);
 });

@@ -66,4 +66,20 @@ describe("prompts + chat detail (memory)", () => {
     const rows = enrichChatRows(store, 3);
     expect(rows[0]?.prompt_text).toBeTruthy();
   });
+
+  it("retains the original prompt when text or market changes", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const chat = store.chats[0]!;
+    const original = store.prompts.find((prompt) => prompt.id === chat.prompt_id)!;
+    const originalText = original.text;
+    const version = await updatePrompt(null, store.project.id, original.id, {
+      text: "An independent new research question",
+      country_code: "GB",
+    });
+    expect(version?.id).not.toBe(original.id);
+    expect(original.status).toBe("archived");
+    expect((await getChatDetail(store, chat.id))?.prompt?.text).toBe(originalText);
+    expect(promptObservedMetrics(store)[version!.id]?.attempts).toBe(0);
+  });
 });

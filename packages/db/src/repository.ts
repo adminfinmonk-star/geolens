@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { createHash } from "node:crypto";
 import { extractBrandProfile } from "@geo/core";
 import type { Db } from "./client.js";
@@ -95,7 +95,7 @@ export async function persistSpineAdds(
         },
       });
   }
-  for (const pr of store.prompts) {
+  for (const pr of [...store.prompts].sort((a, b) => Number(a.status === "active") - Number(b.status === "active"))) {
     await db
       .insert(prompt)
       .values({
@@ -258,7 +258,7 @@ export async function replaceProjectCollection(
 
   // Prompt ids are versioned entities. Upsert status without deleting rows
   // referenced by earlier chats.
-  for (const pr of store.prompts) {
+  for (const pr of [...store.prompts].sort((a, b) => Number(a.status === "active") - Number(b.status === "active"))) {
     await db
       .insert(prompt)
       .values({
@@ -274,8 +274,20 @@ export async function replaceProjectCollection(
       });
   }
 
+  await persistCollectionEvidence(db, store);
+  await saveProjectExtension(db, store);
+  storeCache.set(store.project.id, store);
+}
+
+/** Commit evidence atomically, without overwriting configuration loaded before a run. */
+export async function persistCollectionEvidence(
+  db: Db,
+  store: Pick<DemoStore, "chats" | "mentions" | "sources">,
+): Promise<void> {
+  await db.transaction(async (tx) => {
+  const insertedIds = new Set<string>();
   for (const c of store.chats) {
-    await db.insert(chat).values({
+    const inserted = await tx.insert(chat).values({
       id: c.id,
       projectId: c.project_id,
       promptId: c.prompt_id,
@@ -298,11 +310,13 @@ export async function replaceProjectCollection(
       locale: c.locale,
       collectorVersion: c.collector_version,
       extractionVersion: c.extraction_version,
-    }).onConflictDoNothing();
+    }).onConflictDoNothing().returning({ id: chat.id });
+    if (inserted[0]) insertedIds.add(inserted[0].id);
   }
 
   for (const m of store.mentions) {
-    await db.insert(chatBrandMention).values({
+    if (!insertedIds.has(m.chat_id)) continue;
+    await tx.insert(chatBrandMention).values({
       chatId: m.chat_id,
       brandId: m.brand_id,
       mentionCount: m.mention_count,
@@ -312,7 +326,8 @@ export async function replaceProjectCollection(
   }
 
   for (const s of store.sources) {
-    await db.insert(chatSource).values({
+    if (!insertedIds.has(s.chat_id)) continue;
+    await tx.insert(chatSource).values({
       id: `src_${createHash("sha256").update(`${s.chat_id}|${s.url}`).digest("hex").slice(0, 24)}`,
       chatId: s.chat_id,
       url: s.url,
@@ -323,16 +338,15 @@ export async function replaceProjectCollection(
     }).onConflictDoNothing();
   }
 
-  await saveProjectExtension(db, store);
-  storeCache.set(store.project.id, store);
+  });
 }
 
 export async function loadProjectStore(
   db: Db,
   projectId: string,
 ): Promise<DemoStore | null> {
-  const cached = storeCache.get(projectId);
-  if (cached) return cached;
+  // PostgreSQL is authoritative across API and worker processes. A process-local
+  // cache otherwise hides new evidence and replays stale project settings.
 
   const projects = await db
     .select()
@@ -357,10 +371,8 @@ export async function loadProjectStore(
   const chats = await db.select().from(chat).where(eq(chat.projectId, projectId));
   const chatIds = chats.map((c) => c.id);
 
-  const allMentions = await db.select().from(chatBrandMention);
-  const mentions = allMentions.filter((m) => chatIds.includes(m.chatId));
-  const allSources = await db.select().from(chatSource);
-  const sources = allSources.filter((s) => chatIds.includes(s.chatId));
+  const mentions = chatIds.length ? await db.select().from(chatBrandMention).where(inArray(chatBrandMention.chatId, chatIds)) : [];
+  const sources = chatIds.length ? await db.select().from(chatSource).where(inArray(chatSource.chatId, chatIds)) : [];
 
   const store: DemoStore = {
     organization: {
@@ -491,31 +503,9 @@ export async function loadProjectStore(
       (ext.products?.length ?? 0) > 0 ||
       (ext.actions?.length ?? 0) > 0);
 
-  // Heal historical duplicates written before brands were archive-replaced.
-  const collapsed = dedupeStoreBrands(store);
-
-  // Reconcile persisted brands against the store: rows dropped by the dedupe or
-  // the fixture purge above must not survive in Postgres. Safe because the store
-  // was just loaded from these same rows, so any absence here is deliberate.
-  const keep = new Set(store.brands.map((b) => b.id));
-  const persisted = await db
-    .select({ id: brand.id })
-    .from(brand)
-    .where(eq(brand.projectId, projectId));
-  const stale = persisted.filter((row) => !keep.has(row.id));
-  for (const row of stale) {
-    await db.delete(brand).where(eq(brand.id, row.id));
-  }
-
-  if (collapsed > 0) {
-    // Drop merged mention rows so persistSpineAdds rewrites the summed counts.
-    for (const id of chatIds) {
-      await db.delete(chatBrandMention).where(eq(chatBrandMention.chatId, id));
-    }
-  }
-
+  // Reading a report must never delete brands or rewrite historical mentions.
   const { spineChanged, featuresSeeded } = bootstrapProjectFeatures(store);
-  if (spineChanged || collapsed > 0) {
+  if (spineChanged) {
     await persistSpineAdds(db, store);
   }
   if (!hadExtension || featuresSeeded || spineChanged || purged) {

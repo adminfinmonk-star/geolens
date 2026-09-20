@@ -56,6 +56,13 @@ export const orgMember = pgTable(
   (t) => [primaryKey({ columns: [t.organizationId, t.userId] })],
 );
 
+export const passwordReset = pgTable("password_reset", {
+  tokenHash: text("token_hash").primaryKey(),
+  userId: text("user_id").notNull().references(() => appUser.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
   userId: text("user_id")
@@ -217,6 +224,19 @@ export const auditLog = pgTable("audit_log", {
     .notNull()
     .defaultNow(),
 });
+
+export const reportSchedule = pgTable("report_schedule", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull().references(() => project.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => appUser.id, { onDelete: "cascade" }),
+  frequency: text("frequency").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  nextRunAt: timestamp("next_run_at", { withTimezone: true }).notNull(),
+  lastSentAt: timestamp("last_sent_at", { withTimezone: true }),
+  lastError: text("last_error"),
+  leaseUntil: timestamp("lease_until", { withTimezone: true }),
+  leaseToken: text("lease_token"),
+}, (t) => [uniqueIndex("report_schedule_project_user_idx").on(t.projectId, t.userId)]);
 
 /** Revocable public report links. The random id is the bearer capability. */
 export const sharedView = pgTable("shared_view", {

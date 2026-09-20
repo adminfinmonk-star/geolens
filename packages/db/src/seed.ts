@@ -22,6 +22,8 @@ export interface LogIntegration {
 }
 
 export interface GaReferralDaily {
+  provenance?: "customer_analytics_import";
+  imported_at?: string;
   date: string;
   assistant: string;
   platform: string;
