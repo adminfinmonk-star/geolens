@@ -7,6 +7,15 @@ import { useParams } from "next/navigation";
 
 const API = apiBase();
 
+const LEGACY_GENERIC_PROVIDER_ERROR = /^Provider returned (?:GOOGLE|OPENROUTER|PPLX)_ERROR$/;
+
+function diagnosticDetail(detail?: string) {
+  if (!detail) return null;
+  return LEGACY_GENERIC_PROVIDER_ERROR.test(detail)
+    ? "Legacy attempt: detailed provider diagnostics were not captured."
+    : detail;
+}
+
 type Detail = {
   chat: {
     id: string;
@@ -79,6 +88,7 @@ export default function ChatDetailPage() {
   if (!data) return <p className="geo-vis-note">Loading…</p>;
 
   const { chat, prompt, mentions, sources } = data;
+  const errorDetail = diagnosticDetail(chat.error_detail);
 
   return (
     <div className="geo-vis">
@@ -209,7 +219,7 @@ export default function ChatDetailPage() {
               Latency: {chat.latency_ms != null ? `${chat.latency_ms} ms` : "not reported"}<br />
               Provider request: {chat.provider_request_id ?? "not reported"}<br />
               Error: {chat.error_code ?? "none"}
-              {chat.error_detail ? <><br />Detail: {chat.error_detail}</> : null}
+              {errorDetail ? <><br />Detail: {errorDetail}</> : null}
             </p>
           </section>
           <section className="geo-panel geo-vis-panel">

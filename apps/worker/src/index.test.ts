@@ -73,6 +73,27 @@ describe("job_key + schedule", () => {
     expect(first.prompt_text).toBe(original);
     expect(first.brands.some((b) => b.aliases.includes("Later alias"))).toBe(false);
   });
+  it("does not schedule active prompts outside the current analysis scope", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const scoped = store.prompts.find((prompt) => prompt.status === "active")!;
+    store.analysisScope = {
+      domain: store.project.domain!,
+      brandIds: store.brands.map((brand) => brand.id),
+      topicIds: [],
+      promptIds: [scoped.id],
+      startedAt: new Date().toISOString(),
+    };
+    store.prompts.push({
+      ...scoped,
+      id: "pr_unscoped_worker",
+      text: "unrelated active prompt",
+      country_code: "AU",
+    });
+
+    const snapshot = snapshotProjectCollect(store, { channelIds: ["openai-1"] });
+    expect(snapshot.payloads.map((payload) => payload.prompt_id)).toEqual([scoped.id]);
+  });
   it("honors daily and weekly project collection frequency", () => {
     expect(
       projectCollectionIsDue({

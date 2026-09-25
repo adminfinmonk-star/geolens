@@ -3,15 +3,17 @@ import type {
   EngineRequest,
   EngineResponse,
 } from "../types.js";
-import { fixtureEngineResponse, resolveProviderMode } from "./fixtures.js";
+import { collectionBackendForProvider, fixtureEngineResponse, resolveProviderMode } from "./fixtures.js";
 import type { ProviderId } from "./fixtures.js";
 
 /**
  * Map GeoLens channels → OpenRouter model ids.
  * Override via OPENROUTER_MODEL_OPENAI / OPENROUTER_MODEL_ANTHROPIC / etc.
  */
-export function openRouterModelForChannel(channelId: string): string {
-  const env = process.env;
+export function openRouterModelForChannel(
+  channelId: string,
+  env: Record<string, string | undefined> = process.env,
+): string {
   if (channelId.startsWith("openai") || channelId === "copilot-1") {
     return (
       env.OPENROUTER_MODEL_OPENAI ??
@@ -30,7 +32,7 @@ export function openRouterModelForChannel(channelId: string): string {
     return (
       env.OPENROUTER_MODEL_GOOGLE ??
       env.OPENROUTER_MODEL_GEMINI ??
-      "google/gemini-2.0-flash-001"
+      "google/gemini-2.5-flash"
     );
   }
   if (channelId.startsWith("perplexity")) {
@@ -48,6 +50,15 @@ export function openRouterKeyPresent(
   return Boolean(env.OPENROUTER_API_KEY);
 }
 
+/** Keep provider context limits from becoming unexpectedly large output budgets. */
+export function openRouterMaxTokens(
+  env: Record<string, string | undefined> = process.env,
+): number {
+  const configured = Number.parseInt(env.OPENROUTER_MAX_TOKENS ?? "1200", 10);
+  if (!Number.isFinite(configured)) return 1200;
+  return Math.max(128, Math.min(configured, 4096));
+}
+
 /**
  * Use OpenRouter when:
  * - GEO_COLLECTION_BACKEND=openrouter, or
@@ -60,7 +71,7 @@ export function shouldUseOpenRouter(
 ): boolean {
   if (!openRouterKeyPresent(env)) return false;
   if (env.GEO_ADAPTER_MODE === "fixture") return false;
-  const backend = (env.GEO_COLLECTION_BACKEND ?? "auto").toLowerCase();
+  const backend = collectionBackendForProvider(provider, env);
   if (backend === "native" || backend === "cursor") return false;
   if (backend === "openrouter") return true;
   // auto: fill channels missing a native vendor key
@@ -186,6 +197,7 @@ export class OpenRouterRoutedAdapter implements EngineAdapter {
             { role: "user", content: `${req.prompt}\n\n(Market: ${countryLabel(req.countryCode)})` },
           ],
           temperature: 0.4,
+          max_tokens: openRouterMaxTokens(),
         }),
       });
 

@@ -1,7 +1,7 @@
 import { DEFAULT_API_CHANNELS } from "@geo/adapters";
 import { getChannel } from "@geo/registry";
 import type { DemoStore } from "@geo/db";
-import { uniqueActivePrompts } from "@geo/db";
+import { analysisScopedActivePrompts } from "@geo/db";
 import {
   buildCollectPayload,
   type CollectChannelResult,
@@ -50,7 +50,7 @@ export function snapshotProjectCollect(
       patterns: [...b.patterns],
     }));
 
-  const active = uniqueActivePrompts(store);
+  const active = analysisScopedActivePrompts(store);
   const skipped: { prompt_id: string; channel_id: string; reason: string }[] =
     [];
   const payloads: CollectJobPayload[] = [];

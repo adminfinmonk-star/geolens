@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: geo-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: geo
       POSTGRES_PASSWORD: geo
@@ -19,6 +20,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: geo-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
@@ -33,6 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
+    restart: unless-stopped
     env_file: .env
     environment:
       NODE_ENV: production
@@ -55,6 +58,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.worker
+    restart: unless-stopped
     env_file: .env
     environment:
       NODE_ENV: production
@@ -72,6 +76,7 @@ services:
       dockerfile: Dockerfile.web
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3001
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       API_INTERNAL_URL: http://api:3001

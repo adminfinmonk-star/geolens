@@ -2,7 +2,7 @@ import { classifyBranding, compareBrandRank } from "@geo/core";
 import { createHash } from "node:crypto";
 import type { DemoStore } from "./seed.js";
 import { metricsFromStore } from "./seed.js";
-import { uniqueActivePrompts } from "./promptIdentity.js";
+import { analysisScopedActivePrompts } from "./promptIdentity.js";
 
 /** Canonical brands report — dashboard, API, MCP, CSV must call this. */
 export function brandsReportPayload(store: DemoStore) {
@@ -211,7 +211,7 @@ export function overviewReportPayload(
   const reportStore = { ...store, brands: scopedBrands };
   const ownBrandConfig =
     scopedBrands.find((brand) => brand.is_own) ?? scopedBrands[0];
-  const activePrompts = uniqueActivePrompts(store);
+  const activePrompts = analysisScopedActivePrompts(store);
   const activePromptIds = new Set(activePrompts.map((prompt) => prompt.id));
   const scorePrompts = activePrompts.filter(
     (prompt) =>
@@ -583,8 +583,21 @@ export function overviewReportPayload(
     },
     collection_health: [...new Set(view.chats.map((c) => c.model_channel_id))].map((channelId) => {
       const attempts = view.chats.filter((c) => c.model_channel_id === channelId);
-      const latestDate = attempts.map((c) => c.run_date).sort().at(-1)!;
-      const latest = attempts.filter((c) => c.run_date === latestDate);
+      // A day can contain retries. Report the newest immutable observation for
+      // each prompt so a successful recovery is not permanently shown as down.
+      const latestByPrompt = new Map<string, (typeof attempts)[number]>();
+      for (const attempt of attempts) {
+        const previous = latestByPrompt.get(attempt.prompt_id);
+        const attemptOrder = `${attempt.collected_at ?? attempt.run_date}|${attempt.run_date}|${attempt.id}`;
+        const previousOrder = previous
+          ? `${previous.collected_at ?? previous.run_date}|${previous.run_date}|${previous.id}`
+          : "";
+        if (!previous || attemptOrder > previousOrder) {
+          latestByPrompt.set(attempt.prompt_id, attempt);
+        }
+      }
+      const latest = [...latestByPrompt.values()];
+      const latestDate = latest.map((c) => c.run_date).sort().at(-1)!;
       const successful = latest.filter((c) => c.status === "ok" || c.status === "empty").length;
       const failures = latest.filter((c) => c.status === "error" || c.status === "blocked");
       const details = failures.map((c) => `${c.error_code ?? ""} ${c.error_detail ?? ""} ${JSON.stringify(c.raw_payload ?? {})}`).join(" ");
@@ -596,7 +609,7 @@ export function overviewReportPayload(
       return { channel_id: channelId, latest_date: latestDate, attempts: latest.length,
         eligible_answers: successful, failures: failures.length,
         status: failures.length === 0 ? "healthy" : successful === 0 ? "unavailable" : "partial",
-        action: failures.length ? action : "Collection succeeded on the latest observed day." };
+        action: failures.length ? action : "Collection succeeded for the latest observation of every active prompt." };
     }),
     score: {
       value: scoreValue,

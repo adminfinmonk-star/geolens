@@ -106,6 +106,8 @@ export interface DemoStore {
     domain: string;
     brandIds: string[];
     topicIds: string[];
+    /** Prompt-version ids authorized for the current analysis cohort. */
+    promptIds: string[];
     startedAt: string;
   };
   /**

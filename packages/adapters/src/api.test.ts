@@ -12,6 +12,8 @@ import {
   getAdapter,
   listBuiltAdapters,
   markChannelDown,
+  openRouterModelForChannel,
+  openRouterMaxTokens,
   resetChannelHealth,
   resetRateLimiters,
   resolveProviderMode,
@@ -153,6 +155,13 @@ describe("API-first Peec channel adapters", () => {
     expect(a.constructor.name).toBe("OpenRouterRoutedAdapter");
   });
 
+  it("bounds OpenRouter output budgets to a predictable collection size", () => {
+    expect(openRouterMaxTokens({})).toBe(1200);
+    expect(openRouterMaxTokens({ OPENROUTER_MAX_TOKENS: "32" })).toBe(128);
+    expect(openRouterMaxTokens({ OPENROUTER_MAX_TOKENS: "9000" })).toBe(4096);
+    expect(openRouterMaxTokens({ OPENROUTER_MAX_TOKENS: "invalid" })).toBe(1200);
+  });
+
   it("describeAdapterRuntime never claims live without a key", () => {
     const rt = describeAdapterRuntime({
       GEO_ADAPTER_MODE: "auto",
@@ -165,6 +174,56 @@ describe("API-first Peec channel adapters", () => {
       rt.channels.find((c) => c.channel_id === "perplexity-1")?.mode,
     ).toBe("fixture");
     expect(rt.routing_policy).toMatch(/OPENROUTER_API_KEY/i);
+  });
+
+  it("can route only Google through OpenRouter even when a Gemini key exists", () => {
+    const env = {
+      GEO_ADAPTER_MODE: "auto",
+      GEO_COLLECTION_BACKEND: "auto",
+      GEO_GOOGLE_COLLECTION_BACKEND: "openrouter",
+      OPENROUTER_API_KEY: "sk-or-test",
+      GEMINI_API_KEY: "google-test",
+      OPENAI_API_KEY: "openai-test",
+    };
+    expect(shouldUseOpenRouter("google", env)).toBe(true);
+    expect(shouldUseOpenRouter("openai", env)).toBe(false);
+    const rt = describeAdapterRuntime(env);
+    const google = rt.channels.find((channel) => channel.channel_id === "google-3");
+    expect(google?.via_openrouter).toBe(true);
+    expect(google?.collection_backend).toBe("openrouter");
+    expect(google?.route_note).toMatch(/not the native Gemini API/i);
+    expect(openRouterModelForChannel("google-3", {})).toBe("google/gemini-2.5-flash");
+  });
+
+  it("reports an OpenRouter-backed channel as live using the effective route key", () => {
+    const rt = describeAdapterRuntime({
+      GEO_ADAPTER_MODE: "auto",
+      GEO_COLLECTION_BACKEND: "auto",
+      OPENROUTER_API_KEY: "sk-or-test",
+    });
+    const openai = rt.channels.find((channel) => channel.channel_id === "openai-1");
+    expect(openai).toMatchObject({
+      key_present: true,
+      native_key_present: false,
+      mode: "live",
+      via_openrouter: true,
+      via_cursor: false,
+    });
+  });
+
+  it("does not claim Cursor fallback when OpenRouter is explicitly selected without a key", () => {
+    const rt = describeAdapterRuntime({
+      GEO_ADAPTER_MODE: "auto",
+      GEO_COLLECTION_BACKEND: "openrouter",
+      CURSOR_API_KEY: "cursor-test",
+    });
+    const openai = rt.channels.find((channel) => channel.channel_id === "openai-1");
+    expect(openai).toMatchObject({
+      key_present: false,
+      mode: "fixture",
+      via_openrouter: false,
+      via_cursor: false,
+    });
   });
 
   it("fails closed instead of generating fixture evidence in production", () => {

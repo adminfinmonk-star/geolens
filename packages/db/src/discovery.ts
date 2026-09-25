@@ -15,7 +15,11 @@ import {
 } from "@geo/core";
 import { newId, type Prompt, type Topic } from "./schema.js";
 import { getDemoStore, type DemoStore } from "./seed.js";
-import { promptIdentity, uniqueActivePrompts } from "./promptIdentity.js";
+import {
+  bindPromptToAnalysisScope,
+  promptIdentity,
+  uniqueActivePrompts,
+} from "./promptIdentity.js";
 
 const profiles = new Map<string, BrandProfile>();
 
@@ -193,7 +197,16 @@ export function prepareDomainAnalysis(
 ) {
   const requestedDomain = normalizeDomain(rawDomain);
   const existingPanel = uniqueActivePrompts(store);
-  if (requestedDomain && store.analysisScope?.domain === requestedDomain && existingPanel.length > 0) {
+  const scopedPromptIds = new Set(store.analysisScope?.promptIds ?? []);
+  const coherentExistingPanel =
+    existingPanel.length > 0 &&
+    scopedPromptIds.size > 0 &&
+    existingPanel.every((prompt) => scopedPromptIds.has(prompt.id));
+  if (
+    requestedDomain &&
+    store.analysisScope?.domain === requestedDomain &&
+    coherentExistingPanel
+  ) {
     const own = store.brands.find((brand) => brand.is_own);
     return {
       project: store.project, domain: requestedDomain,
@@ -313,6 +326,7 @@ export function prepareDomainAnalysis(
     domain: bound.domain,
     brandIds: [...activeBrandIds],
     topicIds: [topic.id],
+    promptIds: [],
     startedAt: new Date().toISOString(),
   };
   const activated = [];
@@ -331,6 +345,7 @@ export function prepareDomainAnalysis(
     store.prompts.push(row);
     activated.push(row);
   }
+  store.analysisScope.promptIds = activated.map((prompt) => prompt.id);
 
   // Keep project name in sync
   updateProjectSettings(store, {
@@ -597,6 +612,7 @@ export function activateDiscoveredPrompts(
     };
     store.prompts.push(row);
     created.push(row);
+    bindPromptToAnalysisScope(store, row.id);
   }
   return created;
 }
@@ -633,6 +649,7 @@ export function importPromptsCsv(store: DemoStore, csv: string) {
     };
     store.prompts.push(prompt);
     created.push(prompt);
+    bindPromptToAnalysisScope(store, prompt.id);
   }
   return created;
 }

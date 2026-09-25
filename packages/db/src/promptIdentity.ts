@@ -21,3 +21,37 @@ export function uniqueActivePrompts(store: {
       return true;
     });
 }
+
+type AnalysisPromptStore = {
+  project: { domain?: string };
+  prompts: Prompt[];
+  chats: { prompt_id: string }[];
+  analysisScope?: { domain: string; promptIds?: string[] };
+};
+
+/**
+ * Active prompts that explicitly belong to the current domain analysis.
+ * A legacy scope without prompt ids is fail-closed so unrelated active rows
+ * cannot silently enter a report or scheduled collection.
+ */
+export function analysisScopedActivePrompts(store: AnalysisPromptStore): Prompt[] {
+  const active = uniqueActivePrompts(store);
+  const scope = store.analysisScope;
+  if (!scope || scope.domain !== store.project.domain) return active;
+  const allowed = new Set(scope.promptIds ?? []);
+  return active.filter((prompt) => allowed.has(prompt.id));
+}
+
+/** Keep user-managed prompt versions attached to the current analysis scope. */
+export function bindPromptToAnalysisScope(
+  store: AnalysisPromptStore,
+  promptId: string,
+  replacesPromptId?: string,
+) {
+  const scope = store.analysisScope;
+  if (!scope || scope.domain !== store.project.domain) return;
+  const ids = new Set(scope.promptIds ?? []);
+  if (replacesPromptId) ids.delete(replacesPromptId);
+  ids.add(promptId);
+  scope.promptIds = [...ids];
+}

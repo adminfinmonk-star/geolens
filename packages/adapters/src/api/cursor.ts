@@ -4,7 +4,7 @@ import type {
   EngineRequest,
   EngineResponse,
 } from "../types.js";
-import { fixtureEngineResponse, resolveProviderMode } from "./fixtures.js";
+import { collectionBackendForProvider, fixtureEngineResponse, resolveProviderMode } from "./fixtures.js";
 import type { ProviderId } from "./fixtures.js";
 
 /**
@@ -46,7 +46,7 @@ export function shouldUseCursor(
 ): boolean {
   if (!cursorKeyPresent(env)) return false;
   if (env.GEO_ADAPTER_MODE === "fixture") return false;
-  const backend = (env.GEO_COLLECTION_BACKEND ?? "auto").toLowerCase();
+  const backend = collectionBackendForProvider(provider, env);
   if (backend === "native" || backend === "openrouter") return false;
   if (backend === "cursor") return true;
   // auto: Cursor fills in when the native vendor key is absent

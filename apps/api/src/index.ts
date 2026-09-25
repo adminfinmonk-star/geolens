@@ -25,6 +25,7 @@ import {
   biBrandsFlat,
   billingWebhookWasProcessed,
   billingMode,
+  bindPromptToAnalysisScope,
   brandInsightsFromStore,
   brandsReportCsv,
   brandsReportPayload,
@@ -1102,14 +1103,27 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       ok: false,
       detail: "no_adapter",
     };
+    let adapterInstance: ReturnType<typeof getAdapter> | undefined;
     try {
-      const h = await getAdapter(channelId).health();
+      adapterInstance = getAdapter(channelId);
+      const h = await adapterInstance.health();
       adapterHealth = { ok: h.ok, detail: h.detail ?? (h.ok ? "ok" : "error") };
     } catch {
       /* channel without adapter */
     }
+    const runtimeChannel = describeAdapterRuntime().channels.find(
+      (row) => row.channel_id === channelId,
+    );
     return {
-      channel: ch,
+      channel: {
+        ...ch,
+        description: runtimeChannel?.route_note ?? ch.description,
+        supportsFanouts: adapterInstance?.capabilities.fanouts ?? ch.supportsFanouts,
+        supportsAds: adapterInstance?.capabilities.ads ?? ch.supportsAds,
+        supportsShopping:
+          adapterInstance?.capabilities.shopping ?? ch.supportsShopping,
+      },
+      collection: runtimeChannel ?? null,
       health: getChannelHealth(channelId),
       adapter: adapterHealth,
     };
@@ -1232,6 +1246,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
       if (!store.prompts.some((p) => p.id === row.id)) {
         store.prompts.push(row);
       }
+      if (row.status === "active") bindPromptToAnalysisScope(store, row.id);
       appendAuditLog(store, {
         source: "api",
         action: "prompt.create",
@@ -1295,6 +1310,9 @@ export async function buildServer(options?: { databaseUrl?: string }) {
         store.prompts.push({ ...existing, ...row });
       }
     } else if (existing) Object.assign(existing, row);
+    if (row.status === "active") {
+      bindPromptToAnalysisScope(store, row.id, row.id !== promptId ? promptId : undefined);
+    }
     appendAuditLog(store, {
       source: "api",
       action: "prompt.update",

@@ -166,6 +166,35 @@ describe("Phase 10 reports + api keys", () => {
     expect(report.score.components.presence).toBe(0);
   }, 60_000);
 
+  it("excludes active prompts outside the immutable analysis scope", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const scoped = store.prompts.find((prompt) =>
+      store.chats.some((chat) => chat.prompt_id === prompt.id),
+    )!;
+    for (const prompt of store.prompts) prompt.status = "archived";
+    scoped.status = "active";
+    scoped.branding = "non-branded";
+    store.prompts.push({
+      ...scoped,
+      id: "pr_unscoped",
+      text: "unrelated search productivity platforms",
+      country_code: "AU",
+      status: "active",
+    });
+    store.analysisScope = {
+      domain: store.project.domain!,
+      brandIds: store.brands.map((brand) => brand.id),
+      topicIds: [],
+      promptIds: [scoped.id],
+      startedAt: new Date().toISOString(),
+    };
+
+    const report = overviewReportPayload(store, { range: "90d" });
+    expect(report.prompt_cohort.active_prompts).toBe(1);
+    expect(report.prompt_cohort.score_prompts).toBe(1);
+  }, 60_000);
+
   it("requires matching eligible sample counts across all observed days", async () => {
     resetDemoStore();
     const store = await getDemoStore();
@@ -208,5 +237,28 @@ describe("Phase 10 reports + api keys", () => {
     expect(overviewReportPayload(store, { range: "90d" }).score.components.citation_support).toBeGreaterThan(0);
     store.sources = store.sources.map((source) => ({ ...source, url: "https://acme.example.attacker.test/" }));
     expect(overviewReportPayload(store, { range: "90d" }).score.components.citation_support).toBe(0);
+  });
+
+  it("shows recovered channel health while retaining earlier same-day failures", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    const prompt = store.prompts.find((candidate) => candidate.status === "active")!;
+    const original = store.chats.find((chat) => chat.prompt_id === prompt.id)!;
+    for (const candidate of store.prompts) candidate.status = candidate.id === prompt.id ? "active" : "archived";
+    store.chats = [
+      { ...original, id: "health-failed", status: "error", error_code: "HTTP_402", collected_at: "2026-09-25T00:01:00.000Z", run_date: "2026-09-25" },
+      { ...original, id: "health-recovered", status: "ok", error_code: undefined, collected_at: "2026-09-25T00:07:00.000Z", run_date: "2026-09-25" },
+    ];
+    store.mentions = [];
+    store.sources = [];
+
+    const report = overviewReportPayload(store, { range: "90d" });
+    expect(report.evidence.failed_attempts).toBe(1);
+    expect(report.collection_health[0]).toMatchObject({
+      status: "healthy",
+      attempts: 1,
+      failures: 0,
+      eligible_answers: 1,
+    });
   });
 });

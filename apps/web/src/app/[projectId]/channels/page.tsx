@@ -212,12 +212,18 @@ export default async function ChannelsPage({
                       return (
                         <tr key={r.channel_id}>
                           <td>
-                            <strong>{r.description}</strong>
+                            <strong>{rt?.route_note ?? r.description}</strong>
                             <small className="geo-pr-row-meta">
                               {r.channel_id}
                             </small>
                           </td>
-                          <td>{providerLabel(r.channel_id)}</td>
+                          <td>
+                            {viaOpenRouter
+                              ? `OpenRouter → ${providerLabel(r.channel_id)}`
+                              : viaCursor
+                                ? `Cursor → ${providerLabel(r.channel_id)}`
+                                : providerLabel(r.channel_id)}
+                          </td>
                           <td>
                             <span
                               className={`geo-badge ${

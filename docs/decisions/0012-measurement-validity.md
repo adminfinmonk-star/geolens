@@ -24,6 +24,12 @@ accounts. Both accept `GEO_QA_WEB_URL` for an alternate test port.
 
 Payment setup and provider credentials remain user-owned integration tasks.
 
+Native Gemini can be temporarily routed through OpenRouter without changing
+other providers by setting `GEO_GOOGLE_COLLECTION_BACKEND=openrouter`. The
+saved observation retains `google-3` as the model-family channel, records the
+actual OpenRouter model in `model_reported`, and marks `via: openrouter` in raw
+provenance. Remove the override to return to the native Gemini API.
+
 ## Earlier remediation
 
 - Active prompt identity normalizes case, whitespace and market. Database

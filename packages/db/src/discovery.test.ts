@@ -122,5 +122,30 @@ describe("discovery store helpers", () => {
     prepareDomainAnalysis(store, "google.com");
     expect(store.prompts.filter((p) => p.status === "active").map((p) => p.id)).toEqual(ids);
     expect(store.prompts.find((p) => p.id === ids[0])!.text).toBe("User-selected product comparison question");
+    expect(store.analysisScope?.promptIds).toEqual(ids);
+  });
+
+  it("rebuilds a same-domain panel when an unscoped prompt contaminates it", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    prepareDomainAnalysis(store, "thefinmonk.com");
+    const originalIds = new Set(store.analysisScope!.promptIds);
+    store.prompts.push({
+      id: "pr_unrelated_search",
+      project_id: store.project.id,
+      text: "best search and productivity platforms in Australia",
+      country_code: "AU",
+      status: "active",
+      branding: "non-branded",
+    });
+
+    prepareDomainAnalysis(store, "thefinmonk.com");
+
+    const active = store.prompts.filter((prompt) => prompt.status === "active");
+    expect(active).toHaveLength(4);
+    expect(active.every((prompt) => prompt.text.toLowerCase().includes("fintech"))).toBe(true);
+    expect(active.some((prompt) => originalIds.has(prompt.id))).toBe(false);
+    expect(store.analysisScope?.promptIds).toEqual(active.map((prompt) => prompt.id));
+    expect(store.prompts.find((prompt) => prompt.id === "pr_unrelated_search")?.status).toBe("archived");
   });
 });

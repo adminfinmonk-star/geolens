@@ -33,6 +33,14 @@ export type ProviderId =
   | "google"
   | "copilot";
 
+export function collectionBackendForProvider(
+  provider: ProviderId,
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const key = `GEO_${provider.toUpperCase()}_COLLECTION_BACKEND`;
+  return (env[key] ?? env.GEO_COLLECTION_BACKEND ?? "auto").toLowerCase();
+}
+
 /**
  * Provider-flavored deterministic responses so channel-level differences
  * are visible without live credentials. Each provider biases brand order.
@@ -309,34 +317,44 @@ export function describeAdapterRuntime(
     providers: rows,
     channels: Object.entries(CHANNEL_PROVIDER_ROUTE).map(
       ([channel_id, route]) => {
-        const backend = (env.GEO_COLLECTION_BACKEND ?? "auto").toLowerCase();
-        const missingNative = !providerKeyPresent(route.provider, env);
+        const backend = collectionBackendForProvider(route.provider, env);
+        const nativeKeyPresent = providerKeyPresent(route.provider, env);
+        const missingNative = !nativeKeyPresent;
         const via_openrouter =
           Boolean(env.OPENROUTER_API_KEY) &&
-          backend !== "native" &&
-          backend !== "cursor" &&
-          (backend === "openrouter" || missingNative) &&
+          (backend === "openrouter" || (backend === "auto" && missingNative)) &&
           env.GEO_ADAPTER_MODE !== "fixture";
         const via_cursor =
           Boolean(env.CURSOR_API_KEY) &&
           !via_openrouter &&
-          backend !== "native" &&
-          (backend === "cursor" || missingNative) &&
+          (backend === "cursor" || (backend === "auto" && missingNative)) &&
           env.GEO_ADAPTER_MODE !== "fixture";
+        const effectiveKeyPresent = nativeKeyPresent || via_openrouter || via_cursor;
         return {
           channel_id,
           provider: route.provider,
-          key_present: providerKeyPresent(route.provider, env),
-          mode: resolveProviderMode(route.provider, env),
+          collection_backend: backend,
+          key_present: effectiveKeyPresent,
+          native_key_present: nativeKeyPresent,
+          mode:
+            env.GEO_ADAPTER_MODE === "fixture" || !effectiveKeyPresent
+              ? ("fixture" as const)
+              : ("live" as const),
           surface_kind: "api" as const,
-          route_note: route.note,
+          route_note: via_openrouter
+            ? route.provider === "google"
+              ? "OpenRouter chat completions using the configured Google-family model; this is not the native Gemini API, Google Search grounding, or a consumer UI."
+              : `OpenRouter chat completions using the configured ${route.provider} model-family; this is not the native provider API or a consumer UI.`
+            : via_cursor
+              ? "Cursor model API route; this is not the native provider API or a consumer UI."
+              : route.note,
           via_openrouter,
           via_cursor,
         };
       },
     ),
     routing_policy:
-      "OPENROUTER_API_KEY with GEO_COLLECTION_BACKEND=openrouter|auto fills channels missing native keys. CURSOR_API_KEY is the fallback. Native vendor keys still preferred when set.",
+      "GEO_<PROVIDER>_COLLECTION_BACKEND can override one provider. OPENROUTER_API_KEY fills missing native keys in auto mode; CURSOR_API_KEY is the fallback.",
     honesty:
       "surface_kind is always api (or simulator). We do not scrape consumer UIs. OpenRouter/Cursor are multi-model text, not identical to consumer AI-search UIs.",
   };
