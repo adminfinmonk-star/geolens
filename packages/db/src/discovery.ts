@@ -1,4 +1,5 @@
 import {
+  buildAnalysisPromptPanel,
   coverageOverview,
   extractBrandProfile,
   generateDiscoveryPrompts,
@@ -13,15 +14,16 @@ import {
   type BrandProfile,
   type DiscoveredPrompt,
 } from "@geo/core";
-import { newId, type Prompt, type Topic } from "./schema.js";
-import { getDemoStore, type DemoStore } from "./seed.js";
 import {
   bindPromptToAnalysisScope,
   promptIdentity,
   uniqueActivePrompts,
 } from "./promptIdentity.js";
+import { newId, type Prompt, type Topic } from "./schema.js";
+import { type DemoStore, getDemoStore } from "./seed.js";
 
 const profiles = new Map<string, BrandProfile>();
+const PROMPT_STRATEGY_VERSION = "profile-buying-situations-v2";
 
 function normalizeProfile(raw: BrandProfile): BrandProfile {
   return {
@@ -50,6 +52,16 @@ export function saveBrandProfile(
   const next = normalizeProfile({ ...cur, ...patch });
   store.brandProfile = next;
   profiles.set(store.project.id, next);
+  if (
+    store.analysisScope &&
+    ["industry", "targetMarkets", "products", "personas"].some(
+      (key) => key in patch,
+    )
+  ) {
+    // The next Analyze call must build a fresh immutable prompt version from
+    // the reviewed discovery inputs. Historical prompt evidence stays intact.
+    store.analysisScope.promptStrategyVersion = undefined;
+  }
   return next;
 }
 
@@ -149,6 +161,12 @@ const INDUSTRY_COMPETITORS: Record<string, string[]> = {
   ],
   "E-commerce": ["Nike", "Adidas", "Allbirds", "Everlane", "Shopify"],
   Fintech: ["Stripe", "PayPal", "Square", "Wise"],
+  "Secured consumer lending": [
+    "Bajaj Finance",
+    "HDFC Bank",
+    "ICICI Bank",
+    "Axis Bank",
+  ],
   Eyewear: ["Warby Parker", "LensCrafters", "Zenni", "GlassesUSA"],
   Apparel: ["Nike", "Adidas", "Everlane", "Uniqlo", "Zara"],
   "Fintech IN": ["Groww", "Zerodha", "Paytm", "PhonePe"],
@@ -159,6 +177,9 @@ const INDUSTRY_COMPETITORS: Record<string, string[]> = {
 function competitorPoolForProfile(industry: string, domain: string): string[] {
   const host = domain.toLowerCase();
   const market = inferMarketFromDomain(domain);
+  if (industry === "Secured consumer lending") {
+    return INDUSTRY_COMPETITORS["Secured consumer lending"]!;
+  }
   if (market.country === "IN" && (industry === "Fintech" || /fin|pay|bank/.test(host))) {
     return INDUSTRY_COMPETITORS["Fintech IN"]!;
   }
@@ -205,6 +226,7 @@ export function prepareDomainAnalysis(
   if (
     requestedDomain &&
     store.analysisScope?.domain === requestedDomain &&
+    store.analysisScope.promptStrategyVersion === PROMPT_STRATEGY_VERSION &&
     coherentExistingPanel
   ) {
     const own = store.brands.find((brand) => brand.is_own);
@@ -217,8 +239,14 @@ export function prepareDomainAnalysis(
       profile: getOrCreateProfile(store),
     };
   }
+  const previousProfile = getOrCreateProfile(store);
+  const preserveReviewedProfile =
+    previousProfile.reviewed &&
+    normalizeDomain(previousProfile.domain) === requestedDomain;
   const bound = analyzeProjectDomain(store, rawDomain);
-  const profile = extractBrandProfile(bound.domain);
+  const profile = preserveReviewedProfile
+    ? { ...previousProfile, domain: bound.domain }
+    : extractBrandProfile(bound.domain);
   const market = inferMarketFromDomain(bound.domain);
   const slug = bound.domain.split(".")[0]!.toLowerCase();
   const pool = competitorPoolForProfile(profile.industry, bound.domain);
@@ -229,11 +257,27 @@ export function prepareDomainAnalysis(
 
   profile.name = canonicalOwn;
   profile.domain = bound.domain;
+  const marketCodeByName: Record<string, string> = {
+    india: "IN",
+    "united states": "US",
+    usa: "US",
+    "united kingdom": "GB",
+    uk: "GB",
+    canada: "CA",
+    australia: "AU",
+    singapore: "SG",
+    germany: "DE",
+    france: "FR",
+  };
+  const configuredMarkets = profile.targetMarkets
+    .map((value) => {
+      const normalized = value.trim().toLowerCase();
+      if (/^[a-z]{2}$/i.test(normalized)) return normalized.toUpperCase();
+      return marketCodeByName[normalized];
+    })
+    .filter((value): value is string => Boolean(value));
   const marketCodes = Array.from(
-    new Set([
-      market.country,
-      ...(market.country === "IN" ? ["US", "GB", "SG"] : ["GB", "CA", "AU"]),
-    ]),
+    new Set([market.country, ...configuredMarkets]),
   ).slice(0, 4);
   profile.targetMarkets = marketCodes.map(countryDisplayName);
   saveBrandProfile(store, profile);
@@ -303,44 +347,41 @@ export function prepareDomainAnalysis(
     location: market.location,
     timezone: timezoneForCountry(market.country),
   });
-  const industry = profile.industry;
-  const promptCategory = industry.toLowerCase().replace(/\s*\/\s*/g, " and ");
-  const limit = Math.max(1, Math.min(opts?.prompt_limit ?? 4, 12));
-  const selectedMarkets = marketCodes.slice(0, Math.min(limit, marketCodes.length));
-  const seedRows = selectedMarkets.map((country, index) => {
-    const location = countryDisplayName(country);
-    const templates = [
-      `best ${promptCategory} in ${location} 2026`,
-      `best alternatives to leading ${promptCategory} in ${location}`,
-      `top rated ${promptCategory} in ${location}`,
-      `most recommended ${promptCategory} for teams in ${location}`,
-    ];
-    return { country, text: templates[index % templates.length]! };
+  const limit = Math.max(1, Math.min(opts?.prompt_limit ?? 8, 12));
+  const seedRows = buildAnalysisPromptPanel({
+    profile,
+    countries: marketCodes,
+    limit,
   });
-
-  const topic =
-    store.topics.find(
-      (candidate) => candidate.name.toLowerCase() === industry.toLowerCase(),
-    ) ?? createTopic(store, industry);
+  const topicIds = new Map<string, string>();
+  for (const seed of seedRows) {
+    const topic =
+      store.topics.find(
+        (candidate) => candidate.name.toLowerCase() === seed.topic.toLowerCase(),
+      ) ?? createTopic(store, seed.topic);
+    topicIds.set(seed.topic.toLowerCase(), topic.id);
+  }
   store.analysisScope = {
     domain: bound.domain,
+    promptStrategyVersion: PROMPT_STRATEGY_VERSION,
     brandIds: [...activeBrandIds],
-    topicIds: [topic.id],
+    topicIds: [...new Set(topicIds.values())],
     promptIds: [],
     startedAt: new Date().toISOString(),
   };
   const activated = [];
-  for (const { text, country } of seedRows) {
+  for (const seed of seedRows) {
     const row = {
       id: newId("pr"),
       project_id: store.project.id,
-      text: text.slice(0, 200),
-      country_code: country,
-      topic_id: topic.id,
+      text: seed.text.slice(0, 200),
+      country_code: seed.country_code,
+      topic_id: topicIds.get(seed.topic.toLowerCase()),
       status: "active" as const,
-      branding: classifyBranding(text, canonicalOwn),
-      intent_type: classifyPromptIntent(text),
-      volume_score: 4,
+      branding: seed.branding,
+      intent_type: seed.intent_type,
+      volume_score: seed.volume_score,
+      persona: seed.persona,
     };
     store.prompts.push(row);
     activated.push(row);

@@ -102,6 +102,19 @@ type Overview = {
     visibility: number;
   }[];
   cited_domains: { domain: string; count: number }[];
+  opportunity_state: {
+    state: "not_mentioned";
+    headline: string;
+    interpretation: string;
+    competitor_winners: {
+      brand_id: string;
+      brand_name: string;
+      mentioned_answers: number;
+      presence: number;
+    }[];
+    cited_domains: { domain: string; count: number }[];
+    markets_without_mentions: { code: string; eligible_answers: number }[];
+  } | null;
   domain?: string | null;
   filters?: {
     range: string;
@@ -377,6 +390,51 @@ export default async function OverviewPage({
               <Link href={`/${projectId}/chats`}>Review collection attempts</Link>
             </section>
           )}
+          {overview.opportunity_state?.state === "not_mentioned" ? (
+            <section
+              className="geo-panel geo-vis-panel"
+              style={{ marginBottom: "var(--space-4)" }}
+              aria-label="Brand visibility opportunity"
+            >
+              <div className="geo-vis-panel-head">
+                <div>
+                  <span className="geo-badge geo-badge-warm">Measured visibility gap</span>
+                  <h2 className="geo-section-title" style={{ marginTop: "var(--space-2)" }}>
+                    {overview.opportunity_state.headline}
+                  </h2>
+                </div>
+                <Link href={`/${projectId}/prompts`} className="geo-btn geo-btn-ghost geo-btn-sm">
+                  Inspect prompt evidence
+                </Link>
+              </div>
+              <p className="geo-muted">{overview.opportunity_state.interpretation}</p>
+              {overview.opportunity_state.competitor_winners.length > 0 ? (
+                <p className="geo-vis-note">
+                  Brands appearing instead: {overview.opportunity_state.competitor_winners
+                    .map((row) => `${row.brand_name} (${row.mentioned_answers} answers)`)
+                    .join(" · ")}.
+                </p>
+              ) : null}
+              {overview.opportunity_state.cited_domains.length > 0 ? (
+                <p className="geo-vis-note">
+                  Most cited source domains in this cohort: {overview.opportunity_state.cited_domains
+                    .map((row) => `${row.domain} (${row.count})`)
+                    .join(" · ")}.
+                </p>
+              ) : null}
+              <div className="geo-vis-actions" style={{ marginTop: "var(--space-3)" }}>
+                <Link href={`/${projectId}/competitors`} className="geo-btn geo-btn-ghost geo-btn-sm">
+                  Compare winning brands
+                </Link>
+                <Link href={`/${projectId}/sources/domains`} className="geo-btn geo-btn-ghost geo-btn-sm">
+                  Review cited sources
+                </Link>
+                <Link href={`/${projectId}/actions`} className="geo-btn geo-btn-primary geo-btn-sm">
+                  Build an action plan
+                </Link>
+              </div>
+            </section>
+          ) : null}
           <p className="geo-muted" style={{ marginBottom: "var(--space-4)" }}>
             Overview measures {overview.prompt_cohort.score_prompts} active discovery prompts in the selected period.
             Branded and archived prompts are excluded. A zero means no brand mentions in eligible answers for this sample.

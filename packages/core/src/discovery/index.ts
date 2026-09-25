@@ -37,6 +37,12 @@ export interface DiscoveredPrompt {
   volume_score: number;
 }
 
+export interface AnalysisPromptPanelOptions {
+  profile: BrandProfile;
+  countries: string[];
+  limit?: number;
+}
+
 export interface DiscoverySetup {
   profile: BrandProfile;
   countries: string[];
@@ -117,6 +123,33 @@ export function extractBrandProfile(domain: string): BrandProfile {
   const slug = host.split(".")[0] ?? "brand";
   const market = inferMarketFromDomain(host);
   const name = slug.charAt(0).toUpperCase() + slug.slice(1);
+
+  // Verified first-party profile hint for the bundled design-partner project.
+  // Discovery remains offline; reviewed profiles entered in onboarding take
+  // precedence over this hint in the database layer.
+  if (host === "thefinmonk.com") {
+    return {
+      domain: host,
+      name: "Thefinmonk",
+      industry: "Secured consumer lending",
+      tagline: "Loans against cars for Indian vehicle owners.",
+      description:
+        "Thefinmonk helps car owners access cash against their vehicle without selling it.",
+      identityTags: ["Consumer finance", "Secured lending", "India"],
+      targetMarkets: market.markets,
+      products: [
+        "Loan against car",
+        "Vehicle-backed loan",
+        "Emergency cash loan",
+      ],
+      personas: [
+        "Car owner seeking liquidity",
+        "Self-employed car owner",
+        "Small business owner",
+      ],
+      reviewed: false,
+    };
+  }
 
   const industry =
     /(^|\.)google\./.test(host)
@@ -368,6 +401,58 @@ export function generateDiscoveryPrompts(
     }
   }
   return out;
+}
+
+/**
+ * Build the small, actively monitored cohort used by Overview collection.
+ * Every row is a non-branded discovery/buying-situation prompt: branded
+ * demand is useful elsewhere, but would mechanically inflate visibility.
+ */
+export function buildAnalysisPromptPanel(
+  options: AnalysisPromptPanelOptions,
+): DiscoveredPrompt[] {
+  const { profile } = options;
+  const countries = [...new Set(options.countries.map((c) => c.toUpperCase()))]
+    .filter(Boolean);
+  const limit = Math.max(1, Math.min(options.limit ?? 8, 12));
+  const ownSlug = profile.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const products = profile.products
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .filter(
+      (value) => value.toLowerCase().replace(/[^a-z0-9]/g, "") !== ownSlug,
+    );
+  const topics = products.length > 0 ? products : [profile.industry];
+  const personas = profile.personas.map((value) => value.trim()).filter(Boolean);
+  const safePersonas = personas.length > 0 ? personas : ["buyer"];
+  const safeCountries = countries.length > 0 ? countries : ["US"];
+  const templates = [
+    (topic: string, persona: string, location: string) =>
+      `best ${topic.toLowerCase()} options for ${persona.toLowerCase()} in ${location}`,
+    (topic: string, _persona: string, location: string) =>
+      `compare ${topic.toLowerCase()} eligibility, rates and repayment terms in ${location}`,
+    (topic: string, persona: string, location: string) =>
+      `how should a ${persona.toLowerCase()} choose a ${topic.toLowerCase()} provider in ${location}`,
+    (topic: string, _persona: string, location: string) =>
+      `which ${topic.toLowerCase()} providers have transparent fees in ${location}`,
+  ];
+
+  return Array.from({ length: limit }, (_, index) => {
+    const country = safeCountries[index % safeCountries.length]!;
+    const topic = topics[index % topics.length]!;
+    const persona = safePersonas[index % safePersonas.length]!;
+    const template = templates[index % templates.length]!;
+    const text = template(topic, persona, countryDisplayName(country));
+    return {
+      text,
+      country_code: country,
+      topic,
+      branding: classifyBranding(text, profile.name),
+      intent_type: classifyPromptIntent(text),
+      persona,
+      volume_score: promptVolumeScore(text, country, profile.industry),
+    };
+  }).filter((prompt) => prompt.branding === "non-branded");
 }
 
 export interface CoverageCell {

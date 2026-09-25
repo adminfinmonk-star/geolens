@@ -104,6 +104,8 @@ export interface DemoStore {
   /** Current domain-scoped configuration. Historical rows remain in the store. */
   analysisScope?: {
     domain: string;
+    /** Version of the deterministic monitored-prompt strategy. */
+    promptStrategyVersion?: string;
     brandIds: string[];
     topicIds: string[];
     /** Prompt-version ids authorized for the current analysis cohort. */

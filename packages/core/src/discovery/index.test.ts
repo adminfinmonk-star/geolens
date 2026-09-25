@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildAnalysisPromptPanel,
   classifyBranding,
   coverageOverview,
   extractBrandProfile,
@@ -23,6 +24,32 @@ describe("extractBrandProfile", () => {
     const p = extractBrandProfile("https://openrouter.ai");
     expect(p.industry).toMatch(/AI/i);
     expect(p.industry).not.toMatch(/CRM/i);
+  });
+
+  it("uses the verified lending profile for the design-partner domain", () => {
+    const profile = extractBrandProfile("thefinmonk.com");
+    expect(profile.industry).toMatch(/lending/i);
+    expect(profile.products).toContain("Loan against car");
+    expect(profile.personas.join(" ")).toMatch(/car owner/i);
+  });
+});
+
+describe("buildAnalysisPromptPanel", () => {
+  it("builds a balanced, profile-led cohort without own-brand prompts", () => {
+    const profile = extractBrandProfile("thefinmonk.com");
+    const rows = buildAnalysisPromptPanel({
+      profile,
+      countries: ["IN", "US", "GB", "SG"],
+      limit: 8,
+    });
+    expect(rows).toHaveLength(8);
+    expect(new Set(rows.map((row) => row.country_code))).toEqual(
+      new Set(["IN", "US", "GB", "SG"]),
+    );
+    expect(rows.every((row) => row.branding === "non-branded")).toBe(true);
+    expect(rows.every((row) => !/thefinmonk/i.test(row.text))).toBe(true);
+    expect(rows.some((row) => /loan against car/i.test(row.text))).toBe(true);
+    expect(rows.every((row) => row.persona.length > 0)).toBe(true);
   });
 });
 

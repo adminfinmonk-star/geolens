@@ -513,6 +513,34 @@ export function overviewReportPayload(
     .map(([domain, count]) => ({ domain, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
+  const opportunity_state =
+    eligibleChats > 0 && mentionedAnswers === 0
+      ? {
+          state: "not_mentioned" as const,
+          headline: `${own?.brand_name ?? "The analyzed brand"} was not mentioned in ${eligibleChats} eligible answer${eligibleChats === 1 ? "" : "s"}.`,
+          interpretation:
+            "This is a measured zero for the active non-branded prompt cohort, not a collection failure or an estimate of total market awareness.",
+          competitor_winners: ranked
+            .filter((row) => !row.is_own && row.mention_count > 0)
+            .slice(0, 3)
+            .map((row) => ({
+              brand_id: row.brand_id,
+              brand_name: row.brand_name,
+              mentioned_answers: row.visibility_count,
+              presence: row.visibility,
+            })),
+          cited_domains: cited_domains.slice(0, 3),
+          markets_without_mentions: countries
+            .filter(
+              (country) =>
+                country.eligible_answers > 0 && country.mentioned_answers === 0,
+            )
+            .map((country) => ({
+              code: country.code,
+              eligible_answers: country.eligible_answers,
+            })),
+        }
+      : null;
 
   const liveSurfaces = view.chats.filter(
     (c) => c.surface_kind === "api" || c.surface_kind === "ui",
@@ -671,6 +699,7 @@ export function overviewReportPayload(
     topics,
     series,
     cited_domains,
+    opportunity_state,
     honesty: {
       trend_comparable: trendComparable,
       trend_note: "Trend comparability requires the same eligible prompt versions, routes, reported models and markets on every observed day. Counts are descriptive; repeated observations are not independent market samples.",

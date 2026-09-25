@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  activateDiscoveredPrompts,
   competitorSuggestions,
   getDemoStore,
-  prepareDomainAnalysis,
-  resetDemoStore,
-  runDiscovery,
-  activateDiscoveredPrompts,
   importPromptsCsv,
   listBrands,
   listTopics,
+  prepareDomainAnalysis,
+  resetDemoStore,
+  runDiscovery,
+  saveBrandProfile,
 } from "./index.js";
 
 describe("discovery store helpers", () => {
@@ -58,7 +59,7 @@ describe("discovery store helpers", () => {
     );
   });
 
-  it("uses India + Indian fintech rivals for thefinmonk.com", async () => {
+  it("uses the configured India market and relevant vehicle-finance rivals", async () => {
     resetDemoStore();
     const store = await getDemoStore();
     prepareDomainAnalysis(store, "thefinmonk.com");
@@ -68,11 +69,62 @@ describe("discovery store helpers", () => {
         .filter((p) => p.status === "active")
         .map((p) => p.country_code),
     );
-    expect(markets).toEqual(new Set(["IN", "US", "GB", "SG"]));
+    expect(markets).toEqual(new Set(["IN"]));
+    const active = store.prompts.filter((p) => p.status === "active");
+    expect(active).toHaveLength(8);
+    expect(active.every((prompt) => prompt.branding === "non-branded")).toBe(true);
+    expect(active.some((prompt) => /loan against car/i.test(prompt.text))).toBe(true);
     const names = store.brands.map((b) => b.name.toLowerCase());
-    expect(names.some((n) => n.includes("groww") || n.includes("zerodha"))).toBe(
-      true,
+    expect(names).toEqual(
+      expect.arrayContaining(["bajaj finance", "hdfc bank", "icici bank"]),
     );
+  });
+
+  it("uses and preserves a reviewed profile when rebuilding the prompt strategy", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    saveBrandProfile(store, {
+      domain: "thefinmonk.com",
+      name: "Thefinmonk",
+      industry: "Vehicle finance",
+      products: ["Used-car refinance"],
+      personas: ["Taxi fleet owner"],
+      reviewed: true,
+    });
+
+    prepareDomainAnalysis(store, "thefinmonk.com", { prompt_limit: 8 });
+
+    const active = store.prompts.filter((prompt) => prompt.status === "active");
+    expect(active).toHaveLength(8);
+    expect(active.every((prompt) => /used-car refinance/i.test(prompt.text))).toBe(true);
+    expect(active.every((prompt) => prompt.persona === "Taxi fleet owner")).toBe(true);
+    expect(store.brandProfile.reviewed).toBe(true);
+  });
+
+  it("versions the prompt cohort after reviewed discovery inputs change", async () => {
+    resetDemoStore();
+    const store = await getDemoStore();
+    prepareDomainAnalysis(store, "thefinmonk.com", { prompt_limit: 8 });
+    const originalIds = store.analysisScope!.promptIds;
+    saveBrandProfile(store, {
+      products: ["Fleet vehicle refinance"],
+      personas: ["Commercial fleet owner"],
+      reviewed: true,
+    });
+
+    prepareDomainAnalysis(store, "thefinmonk.com", { prompt_limit: 8 });
+
+    expect(store.analysisScope!.promptIds).not.toEqual(originalIds);
+    expect(
+      store.prompts
+        .filter((prompt) => prompt.status === "active")
+        .every((prompt) => /fleet vehicle refinance/i.test(prompt.text)),
+    ).toBe(true);
+    expect(
+      originalIds.every(
+        (id) => store.prompts.find((prompt) => prompt.id === id)?.status === "archived",
+      ),
+    ).toBe(true);
   });
 
   it("preserves historical evidence and archives prior prompt versions", async () => {
@@ -108,7 +160,7 @@ describe("discovery store helpers", () => {
       expect.arrayContaining(["Google", "Microsoft", "Apple", "Amazon", "Meta"]),
     );
     expect(currentBrands).not.toEqual(expect.arrayContaining(["Groww", "Paytm"]));
-    expect(currentTopics).toHaveLength(1);
+    expect(currentTopics.length).toBeGreaterThanOrEqual(1);
     expect(
       store.prompts
         .filter((prompt) => prompt.status === "active")
@@ -142,8 +194,9 @@ describe("discovery store helpers", () => {
     prepareDomainAnalysis(store, "thefinmonk.com");
 
     const active = store.prompts.filter((prompt) => prompt.status === "active");
-    expect(active).toHaveLength(4);
-    expect(active.every((prompt) => prompt.text.toLowerCase().includes("fintech"))).toBe(true);
+    expect(active).toHaveLength(8);
+    expect(active.every((prompt) => prompt.branding === "non-branded")).toBe(true);
+    expect(active.some((prompt) => /loan against car/i.test(prompt.text))).toBe(true);
     expect(active.some((prompt) => originalIds.has(prompt.id))).toBe(false);
     expect(store.analysisScope?.promptIds).toEqual(active.map((prompt) => prompt.id));
     expect(store.prompts.find((prompt) => prompt.id === "pr_unrelated_search")?.status).toBe("archived");

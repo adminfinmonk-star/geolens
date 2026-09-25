@@ -164,6 +164,11 @@ describe("Phase 10 reports + api keys", () => {
     expect(report.evidence.mentioned_answers).toBe(0);
     expect(report.score.value).toBe(0);
     expect(report.score.components.presence).toBe(0);
+    expect(report.opportunity_state).toMatchObject({
+      state: "not_mentioned",
+      headline: expect.stringMatching(/not mentioned/i),
+    });
+    expect(report.opportunity_state?.markets_without_mentions.length).toBeGreaterThan(0);
   }, 60_000);
 
   it("excludes active prompts outside the immutable analysis scope", async () => {

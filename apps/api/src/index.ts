@@ -787,7 +787,7 @@ export async function buildServer(options?: { databaseUrl?: string }) {
     if (!store) return reply.code(404).send({ error: "project_not_found" });
 
     try {
-      const prepared = prepareDomainAnalysis(store, raw, { prompt_limit: 4 });
+      const prepared = prepareDomainAnalysis(store, raw, { prompt_limit: 8 });
       const gate = checkCollect(store);
       if (!gate.ok) {
         await persistProjectStore(db, store);
@@ -2628,9 +2628,32 @@ async function main() {
   if (!hasDatabaseUrl()) {
     console.warn("DATABASE_URL unset — API running in memory demo mode");
   }
-  const app = await buildServer();
   const port = Number(process.env.PORT ?? 3001);
-  await app.listen({ port, host: "0.0.0.0" });
+  let attempt = 0;
+  for (;;) {
+    try {
+      const app = await buildServer();
+      await app.listen({ port, host: "0.0.0.0" });
+      return;
+    } catch (error) {
+      const code =
+        error instanceof Error
+          ? (error as Error & { code?: string }).code
+          : undefined;
+      const transient =
+        code === "ECONNRESET" ||
+        code === "ECONNREFUSED" ||
+        code === "ETIMEDOUT" ||
+        code === "EHOSTUNREACH";
+      if (!transient) throw error;
+      attempt += 1;
+      const delayMs = Math.min(30_000, 1_000 * 2 ** Math.min(attempt - 1, 5));
+      console.error(
+        `API dependency unavailable (${code}); retrying startup in ${delayMs}ms`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
 }
 
 const isMain =
